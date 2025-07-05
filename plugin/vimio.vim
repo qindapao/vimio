@@ -192,5 +192,5 @@ augroup END
 
 " :TODO: This will destroy the contents of the system clipboard. 
 "        Do we want to improve it?
-call vimio#shapes#switch_define_graph_set(0)
+autocmd VimEnter * call vimio#shapes#switch_define_graph_set(0)
 
