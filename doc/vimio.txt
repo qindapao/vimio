@@ -95,6 +95,8 @@ Requirements:
 
   • Vim 8.2+ with +popupwin & +mouse  
   • Terminal/GUI with Unicode box-drawing  
+  • Clipboard support(vim compile with +clipboard support)
+    • in linux `sudo apt install vim-gtk3`
 
 Manual (“packages”):
 
@@ -948,8 +950,8 @@ Let’s first talk about all the operation sets, and then give some examples.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     
-    example.2   Copy a five-pointed star from the messy graphics below, and 
-                there cannot be other characters inside the five-pointed star. 
+    example.2   Copy a six-pointed star from the messy graphics below, and 
+                there cannot be other characters inside the six-pointed star. 
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │

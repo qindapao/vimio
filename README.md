@@ -33,6 +33,8 @@ Inspired by [Asciio](https://github.com/nkh/P5-App-Asciio) by Nadim Khemir.
 ### Requirements
 
 - Vim 8.2+ with `+popupwin` and `+mouse`
+- Clipboard support(vim compile with +clipboard support)
+    - in linux `sudo apt install vim-gtk3`
 - A GUI version of Vim (e.g. gVim or Neovim-Qt)  
   ⚠️ Terminal Vim is not fully tested yet — support is planned.
 
