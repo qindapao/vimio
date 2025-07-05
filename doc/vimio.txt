@@ -24,7 +24,7 @@ CONTENTS                                                     *vimio-contents*
   6. Copy and Cut and Paste............................|vimio-copy-cut-paste|
     6.1 Copy.....................................................|vimio-copy|
     6.2 Cut.......................................................|vimio-cut|
-    6.2 Paste...................................................|vimio-paste|
+    6.3 Paste...................................................|vimio-paste|
   7. Shape Preview......................................|vimio-shape-preview|
   8. shape template....................................|vimio-shape-template|
     8.1 Default shape template..........................|vimio-default-shape|
@@ -848,7 +848,7 @@ an example:
        |/ \_( # |" 
       C/ ,--___/
     EOF
-    
+
     let g:vimio_config_shapes = {'set_index': a:index, 'value': [
         \ {
         \ 'index': a:indexes[0],
@@ -864,11 +864,11 @@ an example:
     let g:vimio_shapes_define_graph_functions = {
         \ 'index': 1,
         \ 'value': [
-        \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0], 
+        \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0],
         \   [60, 0], [600, 0], [600, 0], 0, 0, [600, 0], 0, [40, 0], 0, 0, 0],
         \   0, 'basic.vim'],
         \ ['Vimio__DefineSmartDrawShapesFiglet', [0, 0, 0, 0, 0, 0], 0,
-        \   'figlet.vim']
+        \ 'figlet.vim'],
         \ ['Vimio__DefineSmartDrawShapesLed', [0], 0, 'led.vim'],
         \ ['Vimio__DefineSmartDrawShapesanimal', [0], 0, 'animal.vim'],
         \ ]
