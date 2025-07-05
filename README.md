@@ -152,7 +152,11 @@ While Vimio doesn’t aim to replicate Asciio’s full feature set, it brings a 
 
 ## License
 
-MIT License © 2025 qindapao  
-Inspired by Asciio by Nadim Khemir  
-Project repository: https://github.com/nkh/P5-App-Asciio
+MIT License © 2025 qindapao
+
+---
+
+## Credits
+
+Inspired by [Asciio](https://github.com/nkh/P5-App-Asciio) by Nadim Khemir.
 
