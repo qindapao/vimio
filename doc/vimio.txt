@@ -1,0 +1,1180 @@
+*vimio.txt*    Vimio — ASCII & Unicode Diagramming Plugin
+
+==============================================================================
+CONTENTS                                                     *vimio-contents*
+
+  0. Inspiration and Background...........................|vimio-inspiration|
+  1. Overview................................................|vimio-overview|
+  2. Installation and Setup...................................|vimio-install|
+  3. First Steps and Examples..............................|vimio-quickstart|
+    3.1 Virtual text editing mode........................|vimio-virtual-text|
+    3.2 Highlight current col...........................|vimio-highlight-col|
+    3.3 Free input.........................................|vimio-free-input|
+  4. Draw line and rectangle.....................................|vimio-draw|
+    4.1 Draw straight line.........................|vimio-draw-straight-line|
+    4.2 Change the type of straight line.............|vimio-change-line-type|
+    4.3 Quickly draw a rectangle.......................|vimio-draw-rectangle|
+    4.4 Automatically handle line crossings.....................|vimio-cross|
+    4.5 Change the style of the cross points..............|vimio-cross-style|
+    4.6 Draw diagonal line.........................|vimio-draw-diagonal-line|
+    4.7 Automatically add arrows..........................|vimio-auto-arrows|
+  5. Eraser....................................................|vimio-eraser|
+    5.1 Little Eraser...................................|vimio-little-eraser|
+    5.2 Big eraser.........................................|vimio-big-eraser|
+  6. Copy and Cut and Paste............................|vimio-copy-cut-paste|
+    6.1 Copy.....................................................|vimio-copy|
+    6.2 Cut.......................................................|vimio-cut|
+    6.2 Paste...................................................|vimio-paste|
+  7. Shape Preview......................................|vimio-shape-preview|
+  8. shape template....................................|vimio-shape-template|
+    8.1 Default shape template..........................|vimio-default-shape|
+    8.2 User-defined shape templates...............|vimio-user-defined-shape|
+  9. Cursor marking and character operation....................|vimio-cursor|
+ 10. Summary of all operations................................|vimio-summary| 
+ 11. CJK supports.................................................|vimio-cjk|
+ 12. Configuration Options.....................................|vimio-config|
+ 13. Troubleshooting & FAQ........................................|vimio-faq|
+ 14. License & Credits........................................|vimio-license|
+
+==============================================================================
+0. Inspiration and Background                             *vimio-inspiration*
+
+                __     __  _               _ 
+                \ \   / / (_)  _ __ ___   (_)   ___  
+                 \ \ / /  | | | '_ ` _ \  | |  / _ \ 
+                  \ V /   | | | | | | | | | | | (_) |       
+                   \_/    |_| |_| |_| |_| |_|  \___/        
+                                                            
+                                                            
+Vimio draws its inspiration from and pays homage to Asciio 
+(https://github.com/nkh/P5-App-Asciio), Nadim Khemir’s object-oriented 
+ASCII/Unicode diagramming suite in Perl 5 that has been evolving for over twenty 
+years. Asciio offers a full GUI/TUI experience with shape grouping, automatic 
+routing, advanced connectors, and a wide range of additional features, all 
+accessible via keyboard-only workflows.
+
+Vimio, by contrast, is purely text-based—there is no object model, no grouping,
+and no metadata. Everything you draw is just characters in a Vim buffer. It’s 
+designed to be lightweight, keyboard-driven, and seamlessly integrated into the
+editing workflow. While it doesn’t aim to replicate Asciio’s full feature set,
+it brings a focused, minimal approach to diagramming directly within Vim. For 
+more complex and structured diagrams, Asciio is the best choice.
+
+I collaborated with Nadim on Asciio’s later development and drew heavily from 
+its design philosophy when building Vimio. Asciio is a remarkable piece of 
+engineering in the realm of text-based diagramming, and for anyone interested 
+in ASCII/Unicode graphics, it offers a wealth of ideas and techniques worth 
+exploring.
+
+==============================================================================
+1. Overview                                                  *vimio-overview*
+
+Vimio is a lightweight diagramming plugin for Vim, designed for quick and 
+precise ASCII and Unicode drawing directly in the editor.
+
+Key features include:
+
+  • Virtual text mode: draw anywhere, even beyond line ends  
+  • Line tools: horizontal, vertical, diagonal, with smart joins and automatic
+                cross-point characters  
+  • Box-drawing: instant rectangles, adaptive corners, auto arrows  
+  • Erasers: cleanly remove characters, including wide glyphs  
+  • Clipboard: copy/cut/paste shapes or characters with precision  
+  • Shape templates: ASCII art, banners, LEDs, and user-defined sets  
+  • Live preview: floating overlay follows your cursor  
+  • Highlight marking: select irregular shapes for fine-grained edits  
+  • CJK support: draw with Chinese, Japanese, and Korean characters  
+
+
+
+
+==============================================================================
+2. Installation and Setup                                     *vimio-install*
+
+Requirements:
+
+  • Vim 8.2+ with +popupwin & +mouse  
+  • Terminal/GUI with Unicode box-drawing  
+
+Manual (“packages”):
+
+    mkdir -p ~/.vim/pack/vimio/start  
+    cp -r /path/to/vimio ~/.vim/pack/vimio/start  
+
+vim-plug:
+
+    Plug 'qindapao/vimio'  
+
+Reload Vim or run:
+
+    :packloadall  
+
+Disable default mappings before loading (if desired):
+
+    let g:vimio_enable_default_mappings = 0  
+
+All current default mappings are in vimio.vim, modify them in your own vimrc.
+
+Notice: Currently, text containing TAB characters is not supported.
+
+All operation instructions are based on the default mapping.
+
+==============================================================================
+3. First Steps and Examples                                *vimio-quickstart*
+
+3.1. virtual text editing mode                           *vimio-virtual-text*
+
+  • `<Leader>vea` Enter virtual text mode so that vim becomes a canvas
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│  your text       ▇                                      │
+    │ 3│                                                         │
+    └──┴─────────────────────────────────────────────────────────┘
+    Your cursor can be anywhere on each line.
+
+  • `<Leader>ven` Exit virtual text mode, Your cursor cannot go beyond the end 
+    of the line.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│  your tex▇                                              │
+    │ 3│                                                         │
+    └──┴─────────────────────────────────────────────────────────┘
+
+It is strongly recommended to stay in virtual text mode while using vimio.
+
+3.2. Highlight current col                              *vimio-highlight-col*
+
+  • `<leader>scsc`  Its function is to provide a vertical reference line 
+    when we draw. If you don't like it, you can ignore this operation.
+
+  • `<leader>sncsc` Unhighlight the current column
+
+3.3. Free input                                           *vimio-free-input*
+
+vim natively supports free editing in drawing mode, `S-R` enters this global 
+replacement mode, which is what we call free mode.
+
+==============================================================================
+4. Draw line and rectangle                                       *vimio-draw*
+
+4.1. Draw straight line                            *vimio-draw-straight-line*
+
+  1. Move the cursor to the start of the line.
+  2. `M-l` x 10         draw line to the right.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    ----------▇                                          │
+    │ 3│                                                         │
+    │ 4│                                                         │
+    │ 5│                                                         │
+    │ 6│                                                         │
+    └──┴─────────────────────────────────────────────────────────┘
+  3. `M-j` x 5          draw line to the down
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    ----------.                                          │
+    │ 3│              |                                          │
+    │ 4│              |                                          │
+    │ 5│              |                                          │
+    │ 6│              |                                          │
+    │ 7│              ▇                                          │
+    └──┴─────────────────────────────────────────────────────────┘
+  4. `M-h` x 10         draw line to the left
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    ----------.                                          │
+    │ 3│              |                                          │
+    │ 4│              |                                          │
+    │ 5│              |                                          │
+    │ 6│              |                                          │
+    │ 7│    ▇---------'                                          │
+    └──┴─────────────────────────────────────────────────────────┘
+  5. `M-k` x 5          draw line to the up
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    ▇---------.                                          │
+    │ 3│    |         |                                          │
+    │ 4│    |         |                                          │
+    │ 5│    |         |                                          │
+    │ 6│    |         |                                          │
+    │ 7│    '---------'                                          │
+    └──┴─────────────────────────────────────────────────────────┘
+  6. `M-l` x 1          draw line to the right
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    .▇--------.                                          │
+    │ 3│    |         |                                          │
+    │ 4│    |         |                                          │
+    │ 5│    |         |                                          │
+    │ 6│    |         |                                          │
+    │ 7│    '---------'                                          │
+    └──┴─────────────────────────────────────────────────────────┘
+  7. In the end, we get a rectangle.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    .---------.                                          │
+    │ 3│    |         |                                          │
+    │ 4│    |         |                                          │
+    │ 5│    |         |                                          │
+    │ 6│    |         |                                          │
+    │ 7│    '---------'                                          │
+    └──┴─────────────────────────────────────────────────────────┘
+
+4.2.Change the type of straight line                 *vimio-change-line-type*
+
+  1. `sl`               Change line type
+     (switch line)
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    ┌─────────┐                                          │
+    │ 3│    │         │                                          │
+    │ 4│    │         │                                          │
+    │ 5│    │         │                                          │
+    │ 6│    │         │                                          │
+    │ 7│    └─────────┘                                          │
+    │ 8│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │now line type:['─', '│']                                    │
+    └────────────────────────────────────────────────────────────┘
+  2.This time we drew a unicode rectangle instead of an ascii rectangle, and 
+    when you press `sl`, the line type changes in a cycle.
+  3.Switch line type based on the line type of the character under the current 
+    cursor
+
+    `su`                Change line type besed on cursor char
+    (switch under)                    
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    .---------.                                          │
+    │ 3│    |         |                                          │
+    │ 4│    |         |                                          │
+    │ 5│    |         |                                          │
+    │ 6│    |         |                                          │
+    │ 7│    '-----▇---'                                          │
+    │ 8│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │now line type:['-', '|']                                    │
+    └────────────────────────────────────────────────────────────┘
+    When you place the cursor on an ASCII drawing character, the ASCII line type
+    is switched back, regardless of the current line type. The same rule applies
+    to other line types.
+  4.Displays the current line type
+
+    `ss`                show current line type
+    (switch show)
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│        ▇                                                │
+    │ 2│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │now line type:['═', '║']                                    │
+    └────────────────────────────────────────────────────────────┘
+4.3.Quickly draw a rectangle                           *vimio-draw-rectangle*
+
+  1.You need to enter the visual block mode and select a rectangle
+
+    `C-S-V`             Enter the visual selection block mode
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    ░░░░░░░░░░░                                          │
+    │ 3│    ░░░░░░░░░░░                                          │
+    │ 4│    ░░░░░░░░░░░                                          │
+    │ 5│    ░░░░░░░░░░░                                          │
+    │ 6│    ░░░░░░░░░░░                                          │
+    │ 7│    ░░░░░░░░░░█                                          │
+    │ 8│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+  2.Press `sw`, Then, based on the current line type, you quickly get a 
+    rectangle.
+
+    `sw`                Generate a rectangle based on the visible block
+    (visual block)
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    █═════════╗                                          │
+    │ 3│    ║         ║                                          │
+    │ 4│    ║         ║                                          │
+    │ 5│    ║         ║                                          │
+    │ 6│    ║         ║                                          │
+    │ 7│    ╚═════════╝                                          │
+    │ 8│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    
+    The cursor position may change after the rectangle is generated, which is 
+    normal.
+
+4.4.Automatically handle line crossings                         *vimio-cross* 
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    ┌─────────┐ │              │   │                     │
+    │ 3│    │         │ │      ────────┼───┼───────────          │
+    │ 4│    │        x│ │             x│   │x         .-------.  │
+    │ 5│    │   ──────┼─┼────          │   │     |    |       |  │
+    │ 6│    │         │ │x                 │    x|   x|       |  │
+    │ 7│    └─────────┘ │       -----------------+----+-         │
+    │ 8│                │                        |    |          │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    When we draw, whether it is a line or a rectangle intersection, the 
+    characters at the intersection point are automatically handled without 
+    manual intervention.
+
+    The points marked with x in the above diagram are intersection points, 
+    which have been automatically processed.
+
+4.5.Change the style of the cross points.                 *vimio-cross-style*
+
+    `sx`                change cross style
+    (swith x style)
+    
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    ┌─────────┐ │2                                       │
+    │ 3│    │   ──────)─)────                                    │
+    │ 4│    │         │ │                                        │
+    │ 5│    │   ──────┼─┼────                                    │
+    │ 6│    │         │ │1                                       │
+    │ 7│    └─────────┘ │                                        │
+    │ 8│                │                                        │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │now index: 1                                                │
+    └────────────────────────────────────────────────────────────┘
+
+    When the crossing style is switched, the prompt bar will display the current
+    style index. From the above diagram, you can see that the character at the 
+    crossing point has changed. The main purpose of this is that for certain 
+    graphics, such as circuit diagrams, when a crossing occurs, you may want to
+    use a symbol like '(' to represent the crossing point.
+
+4.6.Draw a diagonal line                           *vimio-draw-diagonal-line*
+
+    `M-S-U/N/I/M`       Draw diagonal lines in four directions
+
+4.7.Automatically add arrows                              *vimio-auto-arrows*
+
+    `sa`                auto add arrows
+    (add arrow)
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│    ┌───┐         ────┐                                  │
+    │ 4│    │   │A        B   │                                  │
+    │ 5│    └───┘         ────┘                                  │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    Our current line type is unicode normal line, then we draw a line from A to 
+    B, and when we reach B, press `sa`, and the arrow automatically appears, 
+    and it is a unicode normal line type arrow.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│    ┌───┐         ┌───┐                                  │
+    │ 4│    │   ├────────>│   │                                  │
+    │ 5│    └───┘         └───┘                                  │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    If the current line type is something else, such as a bold line, then the 
+    arrow drawn will be a bold arrow(A bit ugly, may be adjusted later).
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│    ┌───┐         ┌───┐                                  │
+    │ 4│    │   ┝━━━━━━━━▶│   │                                  │
+    │ 5│    └───┘         └───┘                                  │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+==============================================================================
+5. Eraser                                                      *vimio-eraser*
+
+5.1. Little eraser                                      *vimio-little-eraser*
+
+    `C-M-l/h/j/k`   The eraser erases any characters it encounters in the path 
+                    in four directions.
+5.2. Big eraser                                            *vimio-big-eraser*
+
+The big eraser is a native feature of vim. The method is to select a 
+rectangular area in visual block mode, then press `S-R`, and then enter a space.
+This replaces the entire rectangular block with spaces, achieving the purpose 
+of deletion.
+
+==============================================================================
+6. Copy and Cut and Paste                              *vimio-copy-cut-paste*
+6.1. Copy                                                        *vimio-copy*
+
+    `xy`                copy visual block to clip             
+    `sy`                Copy the character under the cursor to the clip
+6.2. Cut                                                          *vimio-cut*
+    
+    `xx`                visual block cut
+    The cut content is retained in the system clipboard for later use.
+
+6.3. Paste                                                      *vimio-paste*
+    
+    `xc`                visual block Replace(The character to be replaced needs 
+                        to be entered.) 
+    1. First, visual block select the content you want to delete.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░                   │
+    │ 2│     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░                   │
+    │ 3│     ░░░░text to be deleted line 1░░░░                   │
+    │ 4│     ░░░░text to be deleted line 2░░░░                   │
+    │ 5│     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░                   │
+    │ 6│     ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█                   │
+    │ 7│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    2. Then press `xc`, Finally, enter the character you want to replace with. 
+        If it is a space, it is equivalent to deleting.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│     *********************************                   │
+    │ 2│     *********************************                   │
+    │ 3│     *********************************                   │
+    │ 4│     *********************************                   │
+    │ 5│     *********************************                   │
+    │ 6│     *********************************                   │
+    │ 7│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    The above is the effect of the last input of the asterisk.The deleted 
+    content is saved to the system clipboard for later use.
+    
+    `sp`                Paste the characters from the clip to the current cursor      
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│    #                            *                       │
+    │ 3│    ^                            ^                       │
+    │ 4│    |   `sy`                     |  `sp`                 │
+    │ 5│    '-------                     '-------                │
+    │ 6│                                                         │
+    │ 7│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    `sp` is often used together with `sy`, one copies a character, the other 
+    pastes a character, which is very useful in fine ascii art creation.
+    The effect of the above operation is that the '*' becomes a '#'.
+
+    `sr`                Replace the the visible block area with the character 
+                        in the clip
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│               ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░          │
+    │ 2│      *        ░░░text to be replace line 1░░░░          │
+    │ 3│      ^        ░░░text to be replace line 2░░░░          │
+    │ 4│      |        ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░█          │
+    │ 5│      |                           ^                      │
+    │ 6│      |                           │                      │
+    │ 7│ 1. `sy` select it                │                      │
+    │ 8│ 3. press `sr`               2. visual block select      │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    After the above operations, we get  
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│               ******************************************│
+    │ 2│      *        ******************************************│
+    │ 3│               ******************************************│
+    │ 4│               ******************************************│
+    │ 5│                                                         │
+    │ 6│                                                         │
+    │ 7│                                                         │
+    │ 8│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    
+    `C-S-Right/Left/Up/Down`
+                        Paste a character from the clipboard and move the 
+                        cursor.
+    
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│               A             B                           │
+    │ 2│      *                                                  │
+    │ 3│      ^                                                  │
+    │ 4│      |        D             C                           │
+    │ 5│      |                                                  │
+    │ 6│      |               2.`C-S-Right/Left/Up/Down`         │
+    │ 7│ 1. `sy` select it       move from A->B->C->D            │
+    │ 8│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    After the above operations, we get  
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│               ***************                           │
+    │ 2│      *        *             *                           │
+    │ 3│               *             *                           │
+    │ 4│               ***************                           │
+    │ 5│                                                         │
+    │ 6│                                                         │
+    │ 7│                                                         │
+    │ 8│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    
+    `C-M-Space`         Paste the shape from the clip and completely cover the 
+                        same area
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│  .------.             ┌─────────┐                       │
+    │ 3│  |      |             │     A   │                       │
+    │ 4│  |      |             │         │                       │
+    │ 5│  '------'             └─────────┘                       │
+    │ 6│    ^             2.At point A, press `C-M-Space`        │
+    │ 7│    │                                                    │
+    │ 8│    │                                                    │
+    │ 9│    └──the content in clip                               │
+    │10│ 1. visual block select then `xy`                        │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────┬───────────────────────────────┘
+                                 │                             
+                                 │
+                                 v
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│  .------.             ┌─────────┐                       │
+    │ 3│  |      |             │     .------.                    │
+    │ 4│  |      |             │     |      |                    │
+    │ 5│  '------'             └─────|      |                    │
+    │ 6│                             '------'                    │
+    │ 7│                                                         │
+    │ 8│                                                         │
+    │ 9│                                                         │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    `C-S-Space`         Paste the shape from the clip and cover the same area 
+                        ignore spaces
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│  .------.             ┌─────────┐                       │
+    │ 3│  |      |             │     A   │                       │
+    │ 4│  |      |             │         │                       │
+    │ 5│  '------'             └─────────┘                       │
+    │ 6│    ^             2.At point A, press `C-S-Space`        │
+    │ 7│    │                                                    │
+    │ 8│    │                                                    │
+    │ 9│    ╰──the content in clip                               │
+    │10│ 1. visual block select then `xy`                        │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────┬───────────────────────────────┘
+                                 │                             
+                                 │
+                                 v
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│  .------.             ┌─────────┐                       │
+    │ 3│  |      |             │     .------.                    │
+    │ 4│  |      |             │     |   │  |                    │
+    │ 5│  '------'             └─────|───┘  |                    │
+    │ 6│                             '------'                    │
+    │ 7│                                                         │
+    │ 8│                                                         │
+    │ 9│                                                         │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    
+    In order to better distinguish the difference between the two types of 
+    pasting, let's take a more vivid example
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                             .           │
+    │ 3│     .                                      / \          │
+    │ 4│    / \             `C-S-Space` ───────>   .---.         │
+    │ 5│   '---'                                  / \ / \        │
+    │ 6│ Text graphics                           '---'---'       │
+    │ 7│ in the clipboard                                        │
+    │ 8│                                             .           │
+    │ 9│                                            / \          │
+    │10│                    `C-M-Space` ───────>   .   .         │
+    │11│                                          / \ / \        │
+    │12│                                         '---'---'       │
+    │13│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    
+    
+
+==============================================================================
+7. Shape Preview                                        *vimio-shape-preview* 
+
+This function is used to preview the content in the current system clipboard, 
+but not to insert it, so that users can know what the next insertion will be 
+and preview the effect after the text is inserted.
+
+    `C-j/k/h/l`         When using these keys to move, the cursor automatically
+                        follows and displays a preview window.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│                █   _.---._                              │
+    │ 4│                 .''       ''.                           │
+    │ 5│                :             :                          │
+    │ 6│                |             |                          │
+    │ 7│                :             :                          │
+    │ 8│                 '..       ..'                           │
+    │ 9│                    '-...-'                              │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    If we copy an ascii circle to the system clipboard, then when you move it 
+    like this, a lighter virtual text will appear. You move the cursor with the 
+    shortcut keys above, and this virtual preview text will follow your cursor.
+    When you move to the right position, you can press `C-M-Space` or 
+    `C-S-Space` to paste it. I have already mentioned the difference between 
+    these two pasting methods above.
+    
+    `so`                Make the preview window always appear
+
+    The effect of this is that virtual text previewing the clipboard contents 
+    always appears. If a mouse is supported, the preview will now also appear 
+    when the mouse moves the cursor, and pressing `C-mouseleft` will immediately
+    insert the shape at the cursor position.
+
+    `sq`                Turn off preview window always appear.
+
+    `so` and `sq` is the opposite operation
+
+    `sv`                Displays the preview window without moving.
+    
+    `st`                Controls whether the preview window ignores spaces 
+                        (transparent or opaque)
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│                ____                                     │
+    │ 4│               /    \                                    │
+    │ 5│              / █ ____                                   │
+    │ 6│              \  /    \                                  │
+    │ 7│               \/      \                                 │
+    │ 8│                \      /                                 │
+    │ 9│                 \____/                                  │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    There is already a regular hexagon drawn below the preview position. If it 
+    is an overlay preview, you will see something like the above.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│                ____                                     │
+    │ 4│               /    \                                    │
+    │ 5│              / █ ____                                   │
+    │ 6│              \  /   /\                                  │
+    │ 7│               \/___/  \                                 │
+    │ 8│                \      /                                 │
+    │ 9│                 \____/                                  │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    There is already a regular hexagon drawn below the preview position. If it 
+    is a non-overlap preview, you will see the above situation, just like the
+    underlying graphics are transparent.
+    
+    `st` is used to switch between these two preview modes.
+
+==============================================================================
+8. shape template                                      *vimio-shape-template*
+
+8.1. Default shape template                             *vimio-default-shape*
+
+Shape templates are some predefined text graphics templates defined in the 
+draw_shaps directory that can be directly inserted into the buffer.
+
+A text template can have up to 3 levels of dimensions.
+
+    `sg`                Switch the largest category, switch a template file.     
+
+    `sf`                Switch lev1 forward
+    `sb`                Switch lev1 reverse
+
+    `M-u`
+    `<M-ScrollWheelDown>` 
+                        Switch lev2 forwrad
+
+    `M-y`
+    `<M-ScrollWheelUp>`   
+                        Switch lev2 reverse
+
+    `M-t`               Displays the currently selected text graphic,If the 
+                        contents of the clipboard are contaminated by something 
+                        else, this operation is immediately restored.
+    
+    `sk`                For some templates, this operation means the update 
+                        step of lev2, which is often used to set the length 
+                        or width of the switching graphics.
+
+    When using the above operations to display or switch graphics sets, you 
+    can see real-time feedback in the preview window.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│    .        .        .---.                              │
+    │ 2│   / \      / \      (     )      .---.                  │
+    │ 3│  '---'    /   \      '---'      /     \                 │
+    │ 4│          /     \    __         :       :    _           │
+    │ 5│         '-------'  /  \  ____  |       |   | |__        │
+    │ 6│                    \__/  \   \ :       :   | '_ \       │
+    │ 7│                           \   \ \     /    | |_) |      │
+    │ 8│                            )   ) '---'     |_.__/       │
+    │ 9│                           /   /                         │
+    │10│                          /___/                          │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+8.2. User-defined shape templates                  *vimio-user-defined-shape*
+
+Users can define their own shape templates in the draw_shaps directory. Here is
+an example:
+
+    1. The file name is `animal.vim`, Save the following content in the file.
+    
+    function! Vimio__DefineSmartDrawShapesanimal(indexes, index)
+        let cat =<< EOF
+       /\_/\ 
+      ( o.o )
+       > ^ <
+    EOF
+        let dog =<< EOF
+      _=,_
+    o_/6 /#\
+    \__ |##/
+    ='|--\
+      /   #'-.
+      \#|_   _'-. /
+       |/ \_( # |" 
+      C/ ,--___/
+    EOF
+    
+    let g:vimio_config_shapes = {'set_index': a:index, 'value': [
+        \ {
+        \ 'index': a:indexes[0],
+        \ 'step': [1, 1],
+        \ 'value': [ cat, dog ]
+        \ }
+        \ ],
+        \ }
+    endfunction
+
+    2. Register your shape template in `autoload/vimio/shapes.vim`
+
+    let g:vimio_shapes_define_graph_functions = {
+        \ 'index': 1,
+        \ 'value': [
+        \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0], 
+        \   [60, 0], [600, 0], [600, 0], 0, 0, [600, 0], 0, [40, 0], 0, 0, 0],
+        \   0, 'basic.vim'],
+        \ ['Vimio__DefineSmartDrawShapesFiglet', [0, 0, 0, 0, 0, 0], 0,
+        \   'figlet.vim']
+        \ ['Vimio__DefineSmartDrawShapesLed', [0], 0, 'led.vim'],
+        \ ['Vimio__DefineSmartDrawShapesanimal', [0], 0, 'animal.vim'],
+        \ ]
+        \ }
+
+
+==============================================================================
+9. Cursor marking and character operation                      *vimio-cursor*
+
+If the characters we want to copy or cut are not standard rectangles, then we 
+cannot operate them all at once using the visual block. At this time, we need to
+use the cursor to highlight and mark the characters we want to operate, and then
+give us the marking results through the highlighted visual feedback, and then
+operate them in a unified way. We can copy or cut them in a unified way. Then
+we can delete them or copy them to other places without the characters in
+irrelevant positions.
+
+Let’s first talk about all the operation sets, and then give some examples.
+
+    `C-S-N`             Highlight the character under the cursor without moving
+    `C-S-J/K/L/H`       Highlight the character under the cursor and move
+                        direction
+    `si`                Start free highlighting in normal mode, After entering
+                        this mode, all characters encountered on the moving
+                        path will be highlighted 
+    `si`(v block)       Same as above, but this is in visual mode
+    `sj`                Clear the highlights we marked in normal mode.
+    `sj`(v block)       Clear the highlights we marked in visual block mode
+    `C-S-C`             Clear all highlights on the screen and disable all
+                        highlighting
+    `sd`                just disable all highlighting(Existing highlights will
+                        be retained), It is the reverse operation of `si`
+    `C-x`               Copy all highlighted characters to a rectangle, then 
+                        save it to the clipboard
+    `C-S-X`             Cut all highlighted characters to a rectangle, then
+                        save it to the clipboard
+    `C-S-G`             Replace all highlighted characters with character in 
+                        the clip
+
+
+    example.1   `C-S-N` Highlight all the asterisks and cut them out (equivalent
+                to deleting)  
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│   My*name*is*Lily.                                      │
+    │ 3│   His*name*is*Kat.                                      │
+    │ 4│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └───────────────────────────┬────────────────────────────────┘
+                                │
+                                │   `C-S-N` highlight
+                                │
+                                v
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│   My▒name▒is▒Lily.                                      │
+    │ 3│   His▒name▒is▒Kat.                                      │
+    │ 4│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └───────────────────────────┬────────────────────────────────┘
+                                │
+                                │   `C-S-X` Cut all highlighted characters
+                                v
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│   My name is Lily.                                      │
+    │ 3│   His name is Kat.                                      │
+    │ 4│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    
+    example.2   Copy a five-pointed star from the messy graphics below, and 
+                there cannot be other characters inside the five-pointed star. 
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                (  /\ -*                                 │
+    │ 2│              ____/  \____                               │
+    │ 3│              \ ^*&*()   / *                             │
+    │ 4│             **\********/* *                             │
+    │ 5│             **/ * *   *\***                             │
+    │ 6│              /___ *  ___\                               │
+    │ 7│                  \* /                                   │
+    │ 8│                   \/                                    │
+    │ 9│                                                         │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └───────────────────────────┬────────────────────────────────┘
+                                │
+                                │
+                                │  Various highlight calibration operations
+                                │
+                                │
+                                v
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                (  ▒▒ -*                                 │
+    │ 2│              ▒▒▒▒▒  ▒▒▒▒▒                               │
+    │ 3│              ▒ ^*&*()   ▒ *                             │
+    │ 4│             **▒********▒* *                             │
+    │ 5│             **▒ * *   *▒***                             │
+    │ 6│              ▒▒▒▒ *  ▒▒▒▒                               │
+    │ 7│                  ▒* ▒                                   │
+    │ 8│                   ▒▒                                    │
+    │ 9│                                                         │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └───────────────────────────┬────────────────────────────────┘
+                                │
+                                │
+                                │  `C-x` Copy the characters in the highlighted                  
+                                │        group, then paste
+                                v
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                (  /\ -*                                 │
+    │ 2│              ____/  \____         █    /\               │
+    │ 3│              \ ^*&*()   / *       ____/  \____          │
+    │ 4│             **\********/* *       \          /          │
+    │ 5│             **/ * *   *\***        \        /           │
+    │ 6│              /___ *  ___\          /        \           │
+    │ 7│                  \* /             /___    ___\          │
+    │ 8│                   \/                  \  /              │
+    │ 9│                                        \/               │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    The other cases are similar, except that the scope and scenario of the 
+    highlighted selection are different. Regardless of whether you cut or copy,
+    the highlighted characters are copied to the system clipboard. You can paste
+    them again or perform other operations, which can be combined at will.
+
+
+==============================================================================
+10. Summary of all operations                                 *vimio-summary*
+
+.------------------------------------------------------------------------------.
+| Category     operate              Function                                   |
+.------------------------------------------------------------------------------.
+| Prepare      `<Leader>vea`    Enter virtual text mode so that vim becomes    |
+|                               a canvas                                       |
+|              `<Leader>ven`    Exit virtual text mode                         |
+|              `<leader>scsc`   Highlight the current col                      |
+|              `<leader>scsn`   Unhighlight the current col                    |
+.------------------------------------------------------------------------------.
+| FreeInput    `S-R`            global replacement mode                        |
+.------------------------------------------------------------------------------.
+| Draw         `M-l/j/h/k`      draw straight lines                            |
+|              `M-S-U/N/I/M`    Draw diagonal lines                            |
+|              `sa`             auto add arrows                                |
+|              `sw`             (visual block)Draw rectangle                   |
+|              `sl`             Change line type                               |
+|              `su`             Change line type besed on cursor char          |
+|              `ss`             Show current line type                         |
+|              `sx`             change cross style                             |
+.------------------------------------------------------------------------------.
+| Eraser       `C-M-l/h/j/k`    Little eraser                                  |
+|              `S-R`            (visual block)global replace,Entering a space  |
+|                                will delete                                   |
+.------------------------------------------------------------------------------.
+| Copy         `xy`             (visual block)copy to clip                     |
+|              `sy`             Copy the character under the cursor to the clip|
+.------------------------------------------------------------------------------.
+| Cut          `xx`             (visual block) cut                             |
+.------------------------------------------------------------------------------.
+| Paste        `xc`             (visual block) Replace(The character to be     |       
+|                               replaced needs to be entered.)                 |           
+|              `sp`             Paste the characters from the clip to the      |        
+|                               current cursor                                 |
+|              `sr`             (visual block)Replace the the visible block    |     
+|                               area with the character in the clip            |     
+|                                                                              |
+|              `C-S-Right/Left/Up/Down`                                        |
+|                               Paste a character from the clipboard and move  | 
+|                               the cursor.                                    | 
+|              `C-M-Space`      Paste the shape from the clip and completely   |      
+|                               cover the same area                            |      
+|              `C-S-Space`      Paste the shape from the clip and cover the    |     
+|                               same area ignore spaces                        |     
+.------------------------------------------------------------------------------.
+| Preview      `C-j/k/h/l`      Display preview and move                       |
+|              `so`             Make the preview window always appear          |
+|              `sq`             Turn off preview window always appear.         |
+|              `sv`             Displays the preview window without moving.    |
+|              `st`             Controls whether the preview window ignores    |  
+|                               spaces (transparent or opaque)                 |  
+.------------------------------------------------------------------------------.
+| Shape template                                                               |
+|                                                                              |
+|             `sg`              Switch the largest category, switch a template |
+|                               file.                                          |
+|             `sf`              Switch lev1 forward                            |       
+|             `sb`              Switch lev1 reverse                            |       
+|             `M-u`                                                            |         
+|             `<M-ScrollWheelDown>`                                            |         
+|                               Switch lev2 forwrad                            |       
+|             `M-y`                                                            |         
+|             `<M-ScrollWheelUp>`                                              |         
+|                               Switch lev2 reverse                            |       
+|             `M-t`             Displays the currently selected text graphic,  |
+|                               If the contents of the clipboard are           |
+|                               contaminated by something else, this operation |
+|                               is immediately restored.                       |
+|             `sk`              For some templates, this operation means the   |
+|                               update step of lev2, which is often used to set|
+|                               the length or width of the switching graphics. |      
+.------------------------------------------------------------------------------.
+| Cursor highlight marking                                                     |  
+|             `C-S-N`           Highlight the character under the cursor       |
+|                               without moving                                 |
+|             `C-S-J/K/L/H`     Highlight the character under the cursor and   |
+|                               move direction                                 |            
+|             `si`              Start free highlighting in normal mode, After  |
+|                               entering this mode, all characters encountered |
+|                               on the moving path will be highlighted         |                     
+|             `si`(v block)     Same as above, but this is in visual mode      |       
+|             `sj`              Clear the highlights we marked in normal mode. |       
+|             `sj`(v block)     Clear the highlights we marked in visual block |
+|                               mode                                           |
+|             `C-S-C`           Clear all highlights on the screen and disable |
+|                               all highlightin                                |           
+|             `sd`              just disable all highlighting(Existing         |
+|                               highlights will be retained), It is the reverse|
+|                               operation of `si`                              |
+|             `C-x`             Copy all highlighted characters to a rectangle,|
+|                               then save it to the clipboard                  |            
+|             `C-S-X`           Cut all highlighted characters to a rectangle, |
+|                               then save it to the clipboard                  |            
+|             `C-S-G`           Replace all highlighted characters with        |
+|                               character in the clip                          |                    
+'------------------------------------------------------------------------------'
+
+==============================================================================
+11. CJK supports                                                  *vimio-cjk* 
+
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                        /\               │
+    │ 3│    vimio 支持中文                 ____/  \____          │
+    │ 4│          한국어 그림 지원         \          /          │
+    │ 5│          日本語描画をサポート      \        /           │
+    │ 6│                                    /        \           │
+    │ 7│                                   /___    ___\          │
+    │ 8│                                       \  /              │
+    │ 9│                                        \/               │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    As long as there is a correct alignment font, `vimio` can support Chinese, 
+    Japanese and Korean text alignment and drawing
+
+==============================================================================
+12. Configuration Options                                      *vimio-config*
+
+Except for key mapping, it is not recommended for users to configure other
+configurations by themselves at present. User configuration function may be 
+launched in the future.
+
+Disable default mappings before loading (if desired):
+
+    let g:vimio_enable_default_mappings = 0  
+
+All current default mappings are in vimio.vim, modify them in your own vimrc.
+
+==============================================================================
+13. Troubleshooting & FAQ                                         *vimio-faq*
+
+Q: Misaligned blocks with tabs?  
+A: Convert tabs: `:set expandtab | :retab`.
+
+Q: Missing box glyphs?  
+A: Ensure your font supports Unicode drawing.
+
+Q: Key conflicts?  
+A: Disable defaults, then remap needed keys:
+
+    let g:vimio_enable_default_mappings = 0  
+    nnoremap <Leader>d :call vimio#draw#line_left_right('l')<CR>
+
+==============================================================================
+14. License & Credits                                         *vimio-license*
+
+MIT License © 2025 qindapao
+Inspired by Asciio by Nadim Khemir.
+Project repository: https://github.com/nkh/P5-App-Asciio
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:
+
