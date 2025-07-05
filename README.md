@@ -32,11 +32,20 @@ Inspired by [Asciio](https://github.com/nkh/P5-App-Asciio) by Nadim Khemir.
 
 ### Requirements
 
-- Vim 8.2+ with `+popupwin` and `+mouse`
-- Clipboard support(vim compile with +clipboard support)
-    - in linux `sudo apt install vim-gtk3`
-- A GUI version of Vim (e.g. gVim or Neovim-Qt)  
-  ⚠️ Terminal Vim is not fully tested yet — support is planned.
+- Vim 8.2+ compiled with:
+  - `+popupwin` (for popup window support)
+  - `+mouse` (for mouse interaction, optional)
+  - `+clipboard` (for system clipboard integration)
+
+- Clipboard support on Linux:
+  - Install a GUI-enabled Vim build such as `vim-gtk3`:
+    ```bash
+    sudo apt install vim-gtk3
+    ```
+
+- A GUI version of Vim is recommended (e.g. gVim)  
+  ⚠️ **Neovim is not supported**, as Vimio relies on Vim 8's `popup_*()` API, which Neovim does not implement. Maybe adapted in the future.  
+  ⚠️ **Terminal Vim is partially supported** — many features work, including popup windows (with transparency in some terminals), but key mappings may conflict with terminal shortcuts, and rendering could vary depending on terminal emulator. Full support and refinement are planned in future versions.
 
 ### Using [vim-plug](https://github.com/junegunn/vim-plug)
 
@@ -149,6 +158,7 @@ While Vimio doesn’t aim to replicate Asciio’s full feature set, it brings a 
 - Currently tested primarily in GUI Vim (e.g. gVim).  
 - Terminal Vim support is experimental and may have rendering issues.  
 - TAB characters are not supported in drawing mode.
+- do not surport Neovim, Maybe adapted in the future.
 
 ---
 
