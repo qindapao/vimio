@@ -69,8 +69,9 @@ exploring.
 ==============================================================================
 1. Overview                                                  *vimio-overview*
 
-Vimio is a lightweight diagramming plugin for Vim, designed for quick and 
-precise ASCII and Unicode drawing directly in the editor.
+Vimio is a lightweight Vim plugin for drawing text-based diagrams—such as
+flowcharts, architecture sketches, and layout mockups—using only ASCII and
+Unicode characters, directly in your editor.
 
 Key features include:
 
@@ -84,8 +85,6 @@ Key features include:
   • Live preview: floating overlay follows your cursor  
   • Highlight marking: select irregular shapes for fine-grained edits  
   • CJK support: draw with Chinese, Japanese, and Korean characters  
-
-
 
 
 ==============================================================================
