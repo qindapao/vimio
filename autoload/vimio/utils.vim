@@ -98,19 +98,15 @@ function! vimio#utils#get_line_cells(row, ...)
 endfunction
 
 function! vimio#utils#get_plugin_root() abort
-    let path = expand('<sfile>:p')
-    let prev = ''
-
-    while fnamemodify(path, ':t') !=# 'vimio' && path !=# prev
-        let prev = path
-        let path = fnamemodify(path, ':h')
-    endwhile
-
-    if fnamemodify(path, ':t') ==# 'vimio'
-        return path
-    else
-        return expand('$VIM')
+    if exists('s:vimio_cached_plugin_root') && !empty(s:vimio_cached_plugin_root)
+        return s:vimio_cached_plugin_root
     endif
+
+    let plugin_file = globpath(&runtimepath, 'plugin/vimio.vim')
+    let plugin_root = fnamemodify(plugin_file, ':h:h')
+
+    let s:vimio_cached_plugin_root = plugin_root
+    return plugin_root
 endfunction
 
 function! vimio#utils#set_line_str(line_list, line, jumpline, jumpcol)
