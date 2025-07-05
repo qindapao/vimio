@@ -23,6 +23,10 @@ function! vimio#shapes#switch_lev1_index(direction)
 endfunction
 
 function! vimio#shapes#switch_lev2_index(direction)
+    if !exists('g:vimio_config_shapes')
+       call vimio#shapes#switch_define_graph_set(0)
+    endif
+
     let step = g:vimio_config_shapes['value'][g:vimio_config_shapes['set_index']]['step'][g:vimio_state_switch_lev2_step_index] * a:direction
 
     " If index is an array, the limit value is the first element of the array, otherwise it is the number of elements in value

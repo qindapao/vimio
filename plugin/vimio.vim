@@ -190,7 +190,3 @@ augroup VimioStateVisualModeMappings
 augroup END
 
 
-" :TODO: This will destroy the contents of the system clipboard. 
-"        Do we want to improve it?
-autocmd VimEnter * call vimio#shapes#switch_define_graph_set(0)
-

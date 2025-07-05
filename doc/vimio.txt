@@ -1027,7 +1027,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 |                               a canvas                                       |
 |              `<Leader>ven`    Exit virtual text mode                         |
 |              `<leader>scsc`   Highlight the current col                      |
-|              `<leader>scsn`   Unhighlight the current col                    |
+|              `<leader>sncsn`  Unhighlight the current col                    |
 .------------------------------------------------------------------------------.
 | FreeInput    `S-R`            global replacement mode                        |
 .------------------------------------------------------------------------------.
