@@ -58,7 +58,7 @@ let g:vimio_shapes_define_graph_functions = {
     \ 'index': 1,
     \ 'value': [
     \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0], [60, 0], [600, 0], [600, 0], 0, 0, [600, 0], 0, [40, 0], 0, 0, 0], 0, 'basic.vim'],
-    \ ['Vimio__DefineSmartDrawShapesFiglet', [0, 0, 0, 0, 0, 0], 0, 'figlet.vim']
+    \ ['Vimio__DefineSmartDrawShapesFiglet', [0, 0, 0, 0, 0, 0], 0, 'figlet.vim'],
     \ ['Vimio__DefineSmartDrawShapesLed', [0], 0, 'led.vim'],
     \ ['Vimio__DefineSmartDrawShapesanimal', [0], 0, 'animal.vim'],
     \ ]
