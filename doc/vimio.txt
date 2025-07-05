@@ -1,4 +1,5 @@
 *vimio.txt*    Vimio — ASCII & Unicode Diagramming Plugin
+               Version 1.0.0
 
 ==============================================================================
 CONTENTS                                                     *vimio-contents*
@@ -1179,10 +1180,22 @@ Q: Missing box glyphs?
 A: Ensure your font supports Unicode drawing.
 
 Q: Key conflicts?  
-A: Disable defaults, then remap needed keys:
+A: Disable default mappings, then define your own entry key for drawing mode:
 
-    let g:vimio_enable_default_mappings = 0  
-    nnoremap <Leader>d :call vimio#draw#line_left_right('l')<CR>
+    let g:vimio_enable_default_mappings = 0
+
+    nnoremap <C-d> :call vimio#draw#line_left_right('l')<CR>
+
+    Note: Vimio uses a modal drawing system — once triggered, you can continue
+          drawing with directional keys. Avoid using <Leader> mappings for
+          this, as they are not suitable for continuous input.
+
+Q: How to check the current version of Vimio?  
+A: Use the command:  
+   >
+   :VimioVersion
+   <
+   It will print the currently installed version (e.g. 1.0.0).
 
 ==============================================================================
 14. License & Credits                                         *vimio-license*

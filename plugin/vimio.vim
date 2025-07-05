@@ -3,6 +3,8 @@
 " Entry point for the vimio plugin.
 " Initializes configuration, commands, mappings, and loads shape templates.
 
+let g:vimio_version = '1.0.0'
+
 if exists('g:vimio_loaded')
     finish
 endif
@@ -189,4 +191,6 @@ augroup VimioStateVisualModeMappings
     autocmd ModeChanged *:[vV\x16]* let g:vimio_state_initial_pos_before_enter_visual = [line('.'), virtcol('.')]
 augroup END
 
+" Show Vimio version
+command! VimioVersion echo "Vimio version: " . g:vimio_version
 
