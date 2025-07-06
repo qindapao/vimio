@@ -108,7 +108,7 @@ endfunction
 function vimio#popup#close_block()
     if exists('g:vimio_state_block_popup_id') && g:vimio_state_block_popup_id != 0
         call popup_close(g:vimio_state_block_popup_id)
-        let g:vimio_state_block_popup_id = 0
+        call vimio#popup#on_block_popup_close(g:vimio_state_block_popup_id, v:null)
     endif
 endfunction
 

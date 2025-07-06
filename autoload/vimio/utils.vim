@@ -7,6 +7,8 @@
 " Contents:
 " - vimio#utils#get_reg(reg_name)
 " - vimio#utils#get_doublewidth_cols(row,...)
+" - vimio#utils#get_doublewidth_cols_old(row,...)
+" - vimio#utils#get_doublewidth_cols_new(row,...)
 " - vimio#utils#get_line_cells(row,...)
 " - vimio#utils#get_plugin_root()
 " - vimio#utils#set_line_str(line_list,line,jumpline,jumpcol)
@@ -26,7 +28,43 @@ function! vimio#utils#get_reg(reg_name)
     return regcontent
 endfunction
 
-function! vimio#utils#get_doublewidth_cols(row, ...)
+" TODO: Once this new implementation is verified to be stable,
+"       remove the old version (vimio#utils#get_doublewidth_cols_old)
+"       and promote this as the primary implementation.
+function! vimio#utils#get_doublewidth_cols_new(row, ...) abort
+    " Extract the line content for the given row
+    let l:line = getline(a:row)
+
+    " Count the number of characters (not bytes) in the line
+    let l:charcount = strchars(l:line)
+
+    " Prepare to map each character index to its byte offset
+    let l:byteidx = 0
+    let l:char_byte_offsets = []
+
+    " First pass: build a list of byte offsets for each character
+    for l:charidx in range(l:charcount)
+        call add(l:char_byte_offsets, l:byteidx)
+        " Extract a single character correctly using the character index
+        let l:ch = strcharpart(l:line, l:charidx, 1)
+        let l:byteidx += strlen(l:ch)
+    endfor
+
+    " Second pass: identify double-width characters and record their screen columns
+    let l:cols = []
+    for l:charidx in range(l:charcount)
+        let l:ch = strcharpart(l:line, l:charidx, 1)
+        if strdisplaywidth(l:ch) > 1
+            let l:bidx = l:char_byte_offsets[l:charidx]
+            call add(l:cols, virtcol([a:row, l:bidx + 1]))
+        endif
+    endfor
+
+    return l:cols
+endfunction
+
+
+function! vimio#utils#get_doublewidth_cols_old(row, ...)
     let l:cols = []
     let l:col = 1
     let l:line = get(a:, 1, getline(a:row))
@@ -69,6 +107,26 @@ function! vimio#utils#get_doublewidth_cols(row, ...)
     endwhile
     
     return l:cols
+endfunction
+
+" get_doublewidth_cols() - Shadow wrapper for validating the new implementation.
+"
+" This function runs both the old and new versions of get_doublewidth_cols,
+" compares their results, and echoes a warning if they differ.
+" It always returns the result from the old implementation to ensure stability.
+function! vimio#utils#get_doublewidth_cols(row, ...) abort
+    let l:args = [a:row] + a:000
+    let l:old = call('vimio#utils#get_doublewidth_cols_old', l:args)
+    let l:new = call('vimio#utils#get_doublewidth_cols_new', l:args)
+
+    if !vimio#utils#flat_list_equal(l:old, l:new)
+        echom '[vimio] Mismatch in get_doublewidth_cols:'
+        echom '   -> row: ' . a:row
+        echom '   -> old: ' . string(l:old)
+        echom '   -> new: ' . string(l:new)
+    endif
+
+    return l:old
 endfunction
 
 function! vimio#utils#get_line_cells(row, ...)
@@ -161,4 +219,27 @@ endfunction
 function! vimio#utils#is_single_char_text(textlist) abort
   return len(a:textlist) == 1 && strchars(a:textlist[0]) == 1
 endfunction
+
+
+" flat_list_equal() - Compare two flat (1-dimensional) lists for exact equality.
+"
+" This function checks whether two lists have the same length and contain
+" the same elements in the same order. It is intended for simple, flat lists
+" of strings or numbers. It does not support nested lists or dictionaries.
+"
+" Returns:
+"   v:true  if the lists are equal
+"   v:false if they differ in length or any element
+function! vimio#utils#flat_list_equal(list1, list2) abort
+    if len(a:list1) != len(a:list2)
+        return v:false
+    endif
+    for i in range(len(a:list1))
+        if a:list1[i] !=# a:list2[i]
+            return v:false
+        endif
+    endfor
+    return v:true
+endfunction
+
 
