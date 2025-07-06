@@ -22,6 +22,7 @@ let g:vimio_state_draw_line_index = 0
 let g:vimio_state_cross_style_index = 0
 let g:vimio_state_switch_lev2_step_index = 0
 let g:vimio_state_multi_cursors = []
+let g:vimio_state_shapes_sub_funcs = []
 
 
 function! vimio#state#draw_line_record_pre_pos()
