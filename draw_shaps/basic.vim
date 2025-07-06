@@ -875,6 +875,18 @@ EOF
 EOF
 
 
+let g:vimio_state_shapes_sub_funcs = [
+    \ 'Vimio__GenerateLeftRightTriangle',
+    \ 'Vimio__GenerateSixPointedStar',
+    \ 'Vimio__GenerateUpTriangle',
+    \ 'Vimio__GenerateDownTriangle',
+    \ 'Vimio__GenerateHexagon',
+    \ 'Vimio__GenerateProcessRight',
+    \ 'Vimio__GenerateProcessLeft',
+    \ 'Vimio__GenerateIfBox',
+    \ 'Vimio__GenerateRhombus',
+    \ ]
+
 let g:vimio_config_shapes = {'set_index': a:index, 'value': [
     \ {
     \ 'index': a:indexes[0],
@@ -968,11 +980,5 @@ let g:vimio_config_shapes = {'set_index': a:index, 'value': [
     \ },
     \ ],
     \ }
-
-" " Cancel all sub-functions to save memory (this step is not needed at present,
-" the function is used to dynamically generate graphics)
-" delfunction! Vimio__GenerateDownTriangle
-" ... ...
-
 endfunction
 

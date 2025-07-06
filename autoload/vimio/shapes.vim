@@ -12,6 +12,7 @@
 " - vimio#shapes#switch_define_graph_set(is_show)
 " - vimio#shapes#get_default_graph_functions()
 " - vimio#shapes#get_all_graph_functions()
+" - vimio#shapes#cleanup_shape_subfuncs()
 
 function! vimio#shapes#switch_lev1_index(direction)
     if a:direction == 1
@@ -109,7 +110,28 @@ function! vimio#shapes#update_lev2_info()
     endif
 endfunction
 
+
+function! vimio#shapes#cleanup_shape_subfuncs() abort
+    if exists('g:vimio_state_shapes_sub_funcs') && !empty(g:vimio_state_shapes_sub_funcs)
+        for fname in g:vimio_state_shapes_sub_funcs
+            " exists('g:var')     Check if global variable g:var exists
+            " exists(':Cmd')      Check if Ex command :Cmd exists
+            " exists('*Func')     Check if function Func() exists
+            " exists('#Group')    Check if autocommand group Group exists
+            " exists('##Event')   Check if event (e.g. BufEnter) exists
+            if type(fname) == type('') && exists('*' . fname)
+                execute 'delfunction!' fname
+            endif
+        endfor
+        let g:vimio_state_shapes_sub_funcs = []
+    endif
+endfunction
+
+
 function! vimio#shapes#load_and_use_custom_drawset_funcs(func_name, indexes, index, file_name)
+    " First clear all sub-functions in the previous template to release memory
+    call vimio#shapes#cleanup_shape_subfuncs()
+
     " Get the plugin root directory (prefer vimio, fallback to $VIM if not found)
     let plugin_root = vimio#utils#get_plugin_root()
     let plugin_path = plugin_root . '/draw_shaps/' . a:file_name
