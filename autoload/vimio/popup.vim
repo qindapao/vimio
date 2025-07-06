@@ -27,6 +27,12 @@ function! vimio#popup#update_block()
     let regcontent = vimio#utils#get_reg('+')
 
     let l:new_text = split(regcontent, "\n")
+    if vimio#utils#is_single_char_text(l:new_text)
+        call vimio#utils#hide_cursor()
+    else
+        call vimio#utils#restore_cursor()
+    endif
+    
     let mask = []
     " Transparent space
     if g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index] == 'overlay'
@@ -88,14 +94,21 @@ function! vimio#popup#update_block()
             \ 'zindex': 100,
             \ 'highlight': 'VimioVirtualText',
             \ 'moved': 'any',
-            \ 'mask': mask
+            \ 'mask': mask,
+            \ 'callback': function('vimio#popup#on_block_popup_close')
             \ })
     endif
+endfunction
+
+function! vimio#popup#on_block_popup_close(id, result) abort
+  call vimio#utils#restore_cursor()
+  let g:vimio_state_block_popup_id = 0
 endfunction
 
 function vimio#popup#close_block()
     if exists('g:vimio_state_block_popup_id') && g:vimio_state_block_popup_id != 0
         call popup_close(g:vimio_state_block_popup_id)
+        let g:vimio_state_block_popup_id = 0
     endif
 endfunction
 

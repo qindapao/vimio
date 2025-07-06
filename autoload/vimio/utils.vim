@@ -10,6 +10,9 @@
 " - vimio#utils#get_line_cells(row,...)
 " - vimio#utils#get_plugin_root()
 " - vimio#utils#set_line_str(line_list,line,jumpline,jumpcol)
+" - vimio#utils#hide_cursor()
+" - vimio#utils#restore_cursor()
+" - vimio#utils#is_single_char_text(textlist)
 
 function! vimio#utils#get_reg(reg_name)
     let regcontent = getreg(a:reg_name)
@@ -114,5 +117,51 @@ function! vimio#utils#set_line_str(line_list, line, jumpline, jumpcol)
     call setline(a:line, line_str)
     " This is set to list directly.
     call cursor(a:jumpline, a:jumpcol)
+endfunction
+
+function! vimio#utils#hide_cursor() abort
+    if exists('&guicursor')
+        if !exists('g:vimio_state_saved_guicursor')
+            let g:vimio_state_saved_guicursor = &guicursor
+            " echom "[vimio] saved guicursor: " . g:vimio_state_saved_guicursor
+        endif
+
+        let g:vimio_state_saved_cursor_highlight = matchstr(execute('silent! highlight Cursor'), 'xxx\s\+\zs.*')
+        let g:vimio_state_saved_lcursor_highlight = matchstr(execute('slient! highlight lCursor'), 'xxx\s\+\zs.*')
+        highlight Cursor guifg=NONE guibg=NONE gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE
+        highlight lCursor guifg=NONE guibg=NONE gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE 
+
+        " Set the 'guicursor' option to make the cursor effectively invisible in all modes.
+        " 'a' applies the setting to all modes (normal, insert, visual, etc.)
+        " 'Cursor/lCursor' defines empty or minimal highlight groups for the cursor,
+        " which can result in a hidden or transparent cursor depending on the environment.
+        let &guicursor = 'a:Cursor/lCursor'
+        " echom "[vimio] guicursor set to hidden"
+    endif
+endfunction
+
+function! vimio#utils#restore_cursor() abort
+    " echom "[vimio] restore_cursor called"
+    if exists('g:vimio_state_saved_guicursor')
+        if exists('g:vimio_state_saved_cursor_highlight')
+            execute 'highlight Cursor ' . g:vimio_state_saved_cursor_highlight
+            unlet g:vimio_state_saved_cursor_highlight
+        endif
+
+        if exists('g:vimio_state_saved_lcursor_highlight')
+            execute 'highlight lCursor ' . g:vimio_state_saved_lcursor_highlight
+            unlet g:vimio_state_saved_lcursor_highlight
+        endif    
+
+        " echom "[vimio] restoring guicursor: " . g:vimio_state_saved_guicursor
+        let &guicursor = g:vimio_state_saved_guicursor
+        unlet g:vimio_state_saved_guicursor
+    " else
+    "     echom "[vimio] g:vimio_state_saved_guicursor does not exist"
+    endif
+endfunction
+
+function! vimio#utils#is_single_char_text(textlist) abort
+  return len(a:textlist) == 1 && strchars(a:textlist[0]) == 1
 endfunction
 
