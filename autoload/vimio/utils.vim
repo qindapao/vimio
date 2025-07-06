@@ -120,12 +120,9 @@ function! vimio#utils#set_line_str(line_list, line, jumpline, jumpcol)
 endfunction
 
 function! vimio#utils#hide_cursor() abort
-    if exists('&guicursor')
-        if !exists('g:vimio_state_saved_guicursor')
-            let g:vimio_state_saved_guicursor = &guicursor
-            " echom "[vimio] saved guicursor: " . g:vimio_state_saved_guicursor
-        endif
-
+    if exists('&guicursor') && !exists('g:vimio_state_saved_guicursor')
+        let g:vimio_state_saved_guicursor = &guicursor
+        " echom "[vimio] saved guicursor: " . g:vimio_state_saved_guicursor
         let g:vimio_state_saved_cursor_highlight = matchstr(execute('silent! highlight Cursor'), 'xxx\s\+\zs.*')
         let g:vimio_state_saved_lcursor_highlight = matchstr(execute('silent! highlight lCursor'), 'xxx\s\+\zs.*')
         highlight Cursor guifg=NONE guibg=NONE gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE
