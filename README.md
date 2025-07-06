@@ -66,11 +66,38 @@ Then reload Vim or run:
 :packloadall
 ```
 
+### Config
+
 To disable default mappings:
 
 ```vim
 let g:vimio_enable_default_mappings = 0
 ```
+
+Then check `plugin/vimio.vim` for all default mappings and redefine them in your `.vimrc` as you like.
+
+
+To define your own set of shape templates:
+
+```vim
+let g:vimio_custom_shapes_dir = expand('~/.vim/vimio_custom_shapes')
+let g:vimio_user_shapes_define_graph_functions = [
+      \ ['Vimio__DefineSmartDrawShapesanimal', [0], 0, 'my_animal1.vim'],
+      \ ['Vimio__DefineSmartDrawShapesanimal', [0], 0, 'my_animal2.vim'],
+      \ ]
+```
+
+Then place your custom template files in the directory you specified (g:vimio_custom_shapes_dir).
+
+⚠️ Important: Please avoid using the following file names in your custom templates, as they are reserved by the plugin and may cause conflicts:
+
+basic.vim  
+figlet.vim  
+led.vim  
+animal.vim  
+
+Use unique names like my_animal.vim, custom_led.vim, etc., to ensure compatibility.
+
 
 ---
 

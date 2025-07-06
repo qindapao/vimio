@@ -10,6 +10,8 @@
 " - vimio#shapes#update_lev2_info()
 " - vimio#shapes#load_and_use_custom_drawset_funcs(func_name,indexes,index,file_name)
 " - vimio#shapes#switch_define_graph_set(is_show)
+" - vimio#shapes#get_default_graph_functions()
+" - vimio#shapes#get_all_graph_functions()
 
 function! vimio#shapes#switch_lev1_index(direction)
     if a:direction == 1
@@ -51,6 +53,22 @@ function! vimio#shapes#switch_lev2_index(direction)
     call vimio#popup#update_block()
 endfunction
 
+function! vimio#shapes#get_default_graph_functions() abort
+  return [
+        \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0], [60, 0], [600, 0], [600, 0], 0, 0, [600, 0], 0, [40, 0], 0, 0, 0], 0, 'basic.vim'],
+        \ ['Vimio__DefineSmartDrawShapesFiglet', [0, 0, 0, 0, 0, 0], 0, 'figlet.vim'],
+        \ ['Vimio__DefineSmartDrawShapesLed', [0], 0, 'led.vim'],
+        \ ['Vimio__DefineSmartDrawShapesanimal', [0], 0, 'animal.vim'],
+        \ ]
+endfunction
+
+function! vimio#shapes#get_all_graph_functions() abort
+  let default = vimio#shapes#get_default_graph_functions()
+  let user = get(g:, 'vimio_user_shapes_define_graph_functions', [])
+  return default + user
+endfunction
+
+
 " 'index': Function Set Index
 " '[0, 0, 0]': Index of subcategories within each major category of functions
 " 0: Index of lev1 categories of functions
@@ -60,12 +78,7 @@ endfunction
 " and we are worried about the startup speed, so it is set to the last group.
 let g:vimio_shapes_define_graph_functions = {
     \ 'index': 1,
-    \ 'value': [
-    \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0], [60, 0], [600, 0], [600, 0], 0, 0, [600, 0], 0, [40, 0], 0, 0, 0], 0, 'basic.vim'],
-    \ ['Vimio__DefineSmartDrawShapesFiglet', [0, 0, 0, 0, 0, 0], 0, 'figlet.vim'],
-    \ ['Vimio__DefineSmartDrawShapesLed', [0], 0, 'led.vim'],
-    \ ['Vimio__DefineSmartDrawShapesanimal', [0], 0, 'animal.vim'],
-    \ ]
+    \ 'value': vimio#shapes#get_all_graph_functions()
     \ }
 
 " If lev2_index is an array [300, 124],Prove that the current graph is dynamically
@@ -99,9 +112,22 @@ endfunction
 function! vimio#shapes#load_and_use_custom_drawset_funcs(func_name, indexes, index, file_name)
     " Get the plugin root directory (prefer vimio, fallback to $VIM if not found)
     let plugin_root = vimio#utils#get_plugin_root()
-    let file_path = plugin_root . '/draw_shaps/' . a:file_name
+    let plugin_path = plugin_root . '/draw_shaps/' . a:file_name
+    let user_dir = get(g:, 'vimio_custom_shapes_dir', '')
+    let user_path = user_dir !=# '' ? user_dir . '/' . a:file_name : ''
 
-    execute 'source' file_path
+    if user_path !=# '' && filereadable(user_path)
+        let file_path = user_path
+    elseif filereadable(plugin_path)
+        let file_path = plugin_path
+    else
+        echohl ErrorMsg
+        echom 'vimio: Cannot find draw shape file: ' . a:file_name
+        echohl None
+        return
+    endif
+
+    execute 'source' fnameescape(file_path)
 
     " Call function
     let result = call(a:func_name, [a:indexes, a:index])
