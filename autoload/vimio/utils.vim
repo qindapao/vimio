@@ -28,42 +28,48 @@ function! vimio#utils#get_reg(reg_name)
     return regcontent
 endfunction
 
-" TODO: Once this new implementation is verified to be stable,
-"       remove the old version (vimio#utils#get_doublewidth_cols_old)
-"       and promote this as the primary implementation.
+" Although this algorithm does not rely on character sets, 
+" it is relatively slow.
 function! vimio#utils#get_doublewidth_cols_new(row, ...) abort
     " Extract the line content for the given row
-    let l:line = getline(a:row)
+    let line = getline(a:row)
 
     " Count the number of characters (not bytes) in the line
-    let l:charcount = strchars(l:line)
+    let charcount = strchars(line)
 
     " Prepare to map each character index to its byte offset
-    let l:byteidx = 0
-    let l:char_byte_offsets = []
+    let byteidx = 0
+    let char_byte_offsets = []
+    let chars = []
 
     " First pass: build a list of byte offsets for each character
-    for l:charidx in range(l:charcount)
-        call add(l:char_byte_offsets, l:byteidx)
+    for charidx in range(charcount)
+        call add(char_byte_offsets, byteidx)
         " Extract a single character correctly using the character index
-        let l:ch = strcharpart(l:line, l:charidx, 1)
-        let l:byteidx += strlen(l:ch)
+        let ch = strcharpart(line, charidx, 1)
+        call add(chars, ch)
+        let byteidx += strlen(ch)
     endfor
 
     " Second pass: identify double-width characters and record their screen columns
     let l:cols = []
-    for l:charidx in range(l:charcount)
-        let l:ch = strcharpart(l:line, l:charidx, 1)
-        if strdisplaywidth(l:ch) > 1
-            let l:bidx = l:char_byte_offsets[l:charidx]
-            call add(l:cols, virtcol([a:row, l:bidx + 1]))
+    for charidx in range(charcount)
+        let ch = chars[charidx]
+        
+        " Performance-sensitive: faster than `get()` due to simpler control
+        " flow & minimal function overhead
+        let w = strdisplaywidth(ch)
+
+        if w > 1
+            let bidx = char_byte_offsets[charidx]
+            call add(cols, virtcol([a:row, bidx + 1]))
         endif
     endfor
 
-    return l:cols
+    return cols
 endfunction
 
-
+" Although it may not be entirely accurate, it is very fast.
 function! vimio#utils#get_doublewidth_cols_old(row, ...)
     let l:cols = []
     let l:col = 1
@@ -116,25 +122,43 @@ endfunction
 " It always returns the result from the old implementation to ensure stability.
 function! vimio#utils#get_doublewidth_cols(row, ...) abort
     let l:args = [a:row] + a:000
-    let l:old = call('vimio#utils#get_doublewidth_cols_old', l:args)
-    let l:new = call('vimio#utils#get_doublewidth_cols_new', l:args)
 
-    if !vimio#utils#flat_list_equal(l:old, l:new)
-        echom '[vimio] Mismatch in get_doublewidth_cols:'
-        echom '   -> row: ' . a:row
-        echom '   -> old: ' . string(l:old)
-        echom '   -> new: ' . string(l:new)
-    endif
+    " let t1 = reltime()
+    let l:old = call('vimio#utils#get_doublewidth_cols_old', l:args)
+    " let t2 = reltime()
+    " let l:new = call('vimio#utils#get_doublewidth_cols_new', l:args)
+    " let t3 = reltime()
+
+    " let time_old = reltimefloat(reltime(t1, t2)) * 1000
+    " let time_new = reltimefloat(reltime(t2, t3)) * 1000
+    " call vimio#debug#log("old: %.3f ms; new: %.3f ms", time_old, time_new)
+
+    " if !vimio#utils#flat_list_equal(l:old, l:new)
+    "     echom '[vimio] Mismatch in get_doublewidth_cols:'
+    "     echom '   -> row: ' . a:row
+    "     echom '   -> old: ' . string(l:old)
+    "     echom '   -> new: ' . string(l:new)
+    " endif
 
     return l:old
 endfunction
 
-function! vimio#utils#get_line_cells(row, ...)
+
+function! vimio#utils#get_line_cells(row, ...) abort
+    let args = [a:row] + a:000
+
+    let l:old = call('vimio#utils#get_line_cells_insert_double_char', args)
+    " let l:new = call('vimio#utils#get_line_cells_common', args)
+    return l:old
+endfunction
+
+
+function! vimio#utils#get_line_cells_insert_double_char(row, ...)
     " In vim, virtcol returns the display column, taking into account the actual
     " display width of tabs and multibyte characters.
     " col returns a column based on bytes
     " virtcol2col Convert virtual column to byte column
-    if a:row < 0
+    if a:row < 1 || a:row > line('$')
         return [[], 0]
     endif
 
@@ -157,6 +181,28 @@ function! vimio#utils#get_line_cells(row, ...)
     call extend(line_chars_array, repeat([' '], max_width-real_phy_width))
     return [line_chars_array, phy_col - 1]
 endfunction
+
+" this function is slow
+function! vimio#utils#get_line_cells_common(row, ...)
+    if a:row < 1 || a:row > line('$')
+        return [[], 0]
+    endif
+
+    let phy_col = get(a:, 1, virtcol('.'))
+    let cells = vimio#utils#get_row_cells(a:row)
+
+    let chars = []
+    for cell in cells
+        call add(chars, cell.char)
+    endfor
+
+    let real_phy_width = virtcol([a:row, '$'])-1
+    let max_width = max([phy_col, real_phy_width])
+    call extend(chars, repeat([' '], max_width-real_phy_width))
+    
+    return [chars, phy_col - 1]
+endfunction
+
 
 function! vimio#utils#get_plugin_root() abort
     if exists('s:vimio_cached_plugin_root') && !empty(s:vimio_cached_plugin_root)
@@ -242,4 +288,268 @@ function! vimio#utils#flat_list_equal(list1, list2) abort
     return v:true
 endfunction
 
+" Get the character at row r, column c. Return '' if out of bounds
+function! vimio#utils#get_char(r, c) abort
+    if a:r < 1 || a:r > line('$')
+        return ''
+    endif
+    let l = getline(a:r)
+        if a:c < 1 || a:c > strlen(l)
+        return ''
+    endif
+    return l[a:c - 1]
+endfunction
+
+function! vimio#utils#get_row_cells(row) abort
+    let old = vimio#utils#get_row_cells_normal(a:row)
+    " let new = vimio#utils#get_row_cells_regex(a:row)
+
+    " call vimio#debug#log_obj('old', old, '----old----')
+    " call vimio#debug#log_obj('new', new, '----new----')
+
+    return old
+endfunction
+
+
+" The prerequisite for efficiency is that a single line of data should not
+" contain too much characters.
+function! vimio#utils#get_row_cells_normal(row) abort
+    if a:row < 1 || a:row > line('$')
+        return [[], []]
+    endif
+
+    let cells    = []
+
+    " The current byte column, starting at 1
+    let bcol = 1
+    let screen_col = 1
+    for ch in split(getline(a:row), '\zs')
+        " Performance-sensitive: faster than `get()` due to simpler control
+        " flow & minimal function overhead
+        let w = strdisplaywidth(ch)
+
+        call add(cells, {
+                    \ 'row': a:row,
+                    \ 'byte_col': bcol,
+                    \ 'width': w,
+                    \ 'char': ch,
+                    \ 'screen_col': screen_col
+                    \ })
+        if w > 1
+            " :TODO: screen_col + 1?
+            call add(cells, {
+                        \ 'row': a:row,
+                        \ 'byte_col': bcol+1,
+                        \ 'width': 0,
+                        \ 'char': '',
+                        \ 'screen_col': screen_col+1
+                        \ })
+        endif
+
+        " Advance byte column
+        let bcol += strlen(ch)
+        let screen_col += w
+    endfor
+
+    return cells
+endfunction
+
+
+function! vimio#utils#get_row_cells_regex(row) abort
+    if a:row < 1 || a:row > line('$')
+        return [[], []]
+    endif
+
+    let cells = []
+    let line_str = getline(a:row)
+
+    " 字符分割
+    let chars = split(line_str, '\zs')
+
+    " 获取双宽字符的显示列号列表（VirtCol）
+    let double_cols = vimio#utils#get_doublewidth_cols(a:row, line_str)
+    " The obtained is the second half of the double-width character, perform a
+    " subtract one operation.
+    let double_cols = map(double_cols, 'v:val - 1')
+    
+    let double_col_set = {}
+    for col in double_cols
+        let double_col_set[col] = 1
+    endfor
+
+    " call vimio#debug#log_obj("double_cols", double_cols)
+    " call vimio#debug#log_obj("double_col_set", double_col_set)
+
+    let bcol = 1
+    let screen_col = 1
+    for ch in chars
+        let virtcol = screen_col
+
+        " 判断是否为双宽字符（根据屏幕列）
+        if has_key(double_col_set, screen_col)
+            call add(cells, {
+                        \ 'row': a:row,
+                        \ 'byte_col': bcol,
+                        \ 'width': 2,
+                        \ 'char': ch,
+                        \ 'screen_col': screen_col
+                        \ })
+            call add(cells, {
+                        \ 'row': a:row,
+                        \ 'byte_col': bcol + 1,
+                        \ 'width': 0,
+                        \ 'char': '',
+                        \ 'screen_col': screen_col + 1
+                        \ })
+        else
+            call add(cells, {
+                        \ 'row': a:row,
+                        \ 'byte_col': bcol,
+                        \ 'width': 1,
+                        \ 'char': ch,
+                        \ 'screen_col': screen_col
+                        \ })
+        endif
+
+        let bcol += strlen(ch)
+        let screen_col += has_key(double_col_set, virtcol) ? 2 : 1
+    endfor
+
+    return cells
+endfunction
+
+
+" Function: vimio#utils#uniq_nested_lists
+" Purpose:
+"   Removes duplicate nested lists (e.g., [[10, 5], [12, 3], [10, 5]]) from a list.
+"   This is useful when working with coordinate pairs or other structured data.
+"
+" Parameters:
+"   a:list - A list of nested lists (e.g., [[row, col], [row, col], ...])
+"
+" Returns:
+"   A new list with duplicate nested lists removed.
+"
+" Example:
+"   Input:  [[10, 5], [12, 3], [10, 5]]
+"   Output: [[10, 5], [12, 3]]
+function! vimio#utils#uniq_nested_lists(list) abort
+  " Step 1: Make a copy of the input list to avoid modifying the original
+  " Step 2: Convert each nested list to a string (e.g., [10, 5] → "[10, 5]")
+  " Step 3: Use uniq() to remove duplicate strings
+  " Step 4: Convert each string back to a list using eval()
+  return map(
+        \ uniq(map(copy(a:list), {_, v -> string(v)})),
+        \ {_, s -> eval(s)}
+        \ )
+endfunction
+
+" let keys = ['3,5', '4,6']
+" let coords = [
+"       \ {'row': 3, 'screen_col': 5, 'char': 'A', ...},
+"       \ {'row': 4, 'screen_col': 6, 'char': 'B', ...},
+"       \ {'row': 5, 'screen_col': 7, 'char': 'C', ...}
+"       \ ]
+
+" let result = vimio#utils#resolve_coords(keys, coords)
+" result => [{'row': 3, 'screen_col': 5, 'char': 'A'}, {'row': 4, 'screen_col': 6, 'char': 'B'}]
+function! vimio#utils#resolve_coords(keys, coords) abort
+    let coord_map = {}
+    for coord in a:coords
+        let k = coord.row . ',' . coord.screen_col
+        let coord_map[k] = coord
+    endfor
+
+    return map(copy(a:keys), 'copy(get(coord_map, v:val, {}))')
+endfunction
+
+"==============================================================================
+" resolve_coords_excluding(keys, coords) abort
+"==============================================================================
+function! vimio#utils#resolve_coords_excluding(keys, coords) abort
+    " 1) build a set of excluded keys
+    let excluded = {}
+    for k in a:keys
+        let excluded[k] = 1
+    endfor
+
+    " 2) collect all coords whose 'row,screen_col' 不在 excluded 里
+    let result = []
+    for c in a:coords
+        let key = c.row . ',' . c.screen_col
+        if !has_key(excluded, key)
+            call add(result, copy(c))
+        endif
+    endfor
+
+    return result
+endfunction
+
+
+
+
+
+function! vimio#utils#build_graph(coords, keyfn) abort
+    let graph = {}
+    for coord in a:coords
+        let key = call(a:keyfn, [coord])
+        let graph[key] = []
+    endfor
+    return graph
+endfunction
+
+
+" Build an adjacency graph from a list of coordinate dictionaries.
+" Each key is "row,screen_col", and the value is an empty list
+" to be filled with neighbor keys later.
+function! vimio#utils#build_select_graph(coords) abort
+    return vimio#utils#build_graph(a:coords, {c -> c.row . ',' . c.screen_col})
+endfunction
+
+
+" Remove duplicate dictionaries based on selected keys (e.g., row + screen_col)
+function! vimio#utils#uniq_dicts_by_key(dicts) abort
+    let seen = {}
+    let result = []
+
+    for item in a:dicts
+        let key = item.row . ',' . item.screen_col
+        if !has_key(seen, key)
+            let seen[key] = 1
+            call add(result, item)
+        endif
+    endfor
+
+    return result
+endfunction
+
+function! vimio#utils#uniq_select_dicts(dicts) abort
+    return vimio#utils#uniq_dicts_by(a:dicts, {c -> c.row . ',' . c.screen_col})
+endfunction
+
+
+" Remove duplicate dictionaries based on a user-defined key function.
+" Example: call uniq_dicts_by(cells, {c -> c.row . ',' . c.screen_col})
+function! vimio#utils#uniq_dicts_by(dicts, keyfn) abort
+    let seen = {}
+    let result = []
+
+    for item in a:dicts
+        let key = call(a:keyfn, [item])
+        if !has_key(seen, key)
+            let seen[key] = 1
+            call add(result, item)
+        endif
+    endfor
+
+    return result
+endfunction
+
+function! vimio#utils#merge_dicts(...) abort
+    let merged = {}
+    for d in a:000
+        call extend(merged, copy(d))
+    endfor
+    return merged
+endfunction
 

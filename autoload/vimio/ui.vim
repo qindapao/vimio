@@ -15,12 +15,6 @@
 " - vimio#ui#copy_char_under_cursor_to_clip()
 
 
-function! vimio#ui#switch_visual_block_popup_type()
-    let g:vimio_state_visual_block_popup_types_index = (g:vimio_state_visual_block_popup_types_index + 1) % len(g:vimio_config_visual_block_popup_types)
-
-    " Update pop-up window
-    call vimio#popup#update_block()
-endfunction
 
 " vim enters visual mode and selects an area the same size as the x register
 " ctrl j k h l move this selection area

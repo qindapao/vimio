@@ -1,1 +1,7 @@
 *.swp
+.tags
+GPATH
+GRTAGS
+GTAGS
+.temp
+

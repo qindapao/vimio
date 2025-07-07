@@ -47,18 +47,22 @@ function! vimio#replace#paste_block_clip(is_space_replace)
 
         let reg_line = reg_text[i]
         let j = 0
-        for char in split(reg_line, '\zs')
-            let char_phy_len = strdisplaywidth(char)
+        for ch in split(reg_line, '\zs')
+            " Performance-sensitive: faster than `get()` due to simpler control
+            " flow & minimal function overhead
+            let char_phy_len = strdisplaywidth(ch)
+
+
             if len(reg_x_chars) <= i
                 call add(reg_x_chars, [])
                 call add(reg_x_phy_lens, [])
             endif
 
             if char_phy_len == 2
-                call extend(reg_x_chars[i], [char, ''])
+                call extend(reg_x_chars[i], [ch, ''])
                 call extend(reg_x_phy_lens[i], [2, 0])
             else
-                call extend(reg_x_chars[i], [char])
+                call extend(reg_x_chars[i], [ch])
                 call extend(reg_x_phy_lens[i], [1])
             endif
             let j += char_phy_len
@@ -134,6 +138,7 @@ function! vimio#replace#replace_char_under_cursor_from_clip(direction)
     " Get the width of the replaced character
     let new_char_width = strdisplaywidth(now_char)
     let cursor_char_width = strdisplaywidth(cursor_char)
+
     if cursor_char_width == 0
         let cursor_char_width = 1
     endif
@@ -194,9 +199,11 @@ function! vimio#replace#visual_replace_char() range
     " Get the currently selected text range
     execute "normal! gv"
     " Enter command mode and perform the replacement operation.
-    if strdisplaywidth(char) == 2
+    let char_screen_width = strdisplaywidth(char)
+
+    if char_screen_width == 2
         execute "normal! :s/\\%V  /" . char . "/g\<CR>"
-    elseif strdisplaywidth(char) == 1 && len(char) != 1
+    elseif char_screen_width == 1 && len(char) != 1
         execute "normal! :s/\\%V /" . char . "/g\<CR>"
     else
         execute "normal! :s/\\%V /" . '\' . char . "/g\<CR>"

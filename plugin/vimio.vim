@@ -22,6 +22,11 @@ runtime autoload/vimio/state.vim
 highlight VimioVirtualText ctermfg=LightGray guifg=#D3D3D3 ctermbg=NONE guibg=NONE
 highlight VimioCursorsMultiCursor cterm=reverse gui=reverse guibg=Yellow guifg=Black
 
+
+command! VimioToggleDebug call vimio#debug#toggle()
+command! VimioTodoId call vimio#todo#find_max_braced_number()
+command! VimioTodoSummary call vimio#todo#collect_sorted_todo_items()
+
 if g:vimio_enable_default_mappings
     " =========================Switch drawing mode==============================
     nnoremap <Leader>vea :set ve=all<CR>| " Open virtual text editing mode
@@ -112,7 +117,7 @@ if g:vimio_enable_default_mappings
 
     " ===========================Preview control================================
     " Controls whether the preview window ignores spaces (transparent or opaque)
-    nnoremap <silent> st :call vimio#ui#switch_visual_block_popup_type()<CR>
+    nnoremap <silent> st :call vimio#popup#switch_visual_block_popup_type()<CR>
     " Cursor tracking preview mode on (always show preview)
     " Quickly insert shape in clip(C-MouseLeft) Note: This is only effective in cursor tracking preview mode
     nnoremap <silent> so :call vimio#ui#visual_block_mouse_move_start()<CR>
@@ -150,15 +155,15 @@ if g:vimio_enable_default_mappings
 
     " =======Smart selection and multi-cursor control with highlighting=========
     " Highlights the character under the cursor without moving
-    nnoremap <silent> <C-S-N> :call vimio#cursors#add_cursor('null')<CR>
+    nnoremap <silent> <C-S-N> :call vimio#cursors#vhl_add_and_move('null')<CR>
     " Highlight the character under the cursor and move down
-    nnoremap <silent> <C-S-J> :call vimio#cursors#add_cursor('j')<CR>
+    nnoremap <silent> <C-S-J> :call vimio#cursors#vhl_add_and_move('j')<CR>
     " Highlight the character under the cursor and move up
-    nnoremap <silent> <C-S-K> :call vimio#cursors#add_cursor('k')<CR>
+    nnoremap <silent> <C-S-K> :call vimio#cursors#vhl_add_and_move('k')<CR>
     " Highlight the character under the cursor and move right
-    nnoremap <silent> <C-S-L> :call vimio#cursors#add_cursor('l')<CR>
+    nnoremap <silent> <C-S-L> :call vimio#cursors#vhl_add_and_move('l')<CR>
     " Highlight the character under the cursor and move left
-    nnoremap <silent> <C-S-H> :call vimio#cursors#add_cursor('h')<CR>
+    nnoremap <silent> <C-S-H> :call vimio#cursors#vhl_add_and_move('h')<CR>
     " Start free highlighting in normal mode
     nnoremap <silent> si :call vimio#cursors#add_cursor_mouse_move_start()<CR>
     " Start free highlighting in visual block mode
@@ -179,6 +184,47 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> <C-S-G> :call vimio#cursors#replace_highlight_group_to_clip()<CR>
     " Use the mouse to easily select a rectangle(noremap <M-LeftMouse> <C-S-V>)
 
+    " Solid area selection
+    " 4 direction
+    nnoremap <silent> <leader>s4 :call vimio#select#solid_select(v:false)<CR>
+    " 8 direction
+    nnoremap <silent> <leader>s8 :call vimio#select#solid_select(v:true)<CR>
+
+    " border area selection
+    " 4 direction
+    nnoremap <silent> <leader>b4 :call vimio#select#border_select(v:false, 'min')<CR>
+    nnoremap <silent> <leader>bm4 :call vimio#select#border_select(v:false, 'max')<CR>
+    " 8 direction
+    nnoremap <silent> <leader>b8 :call vimio#select#border_select(v:true, 'min')<CR>
+    nnoremap <silent> <leader>bm8 :call vimio#select#border_select(v:true, 'max')<CR>
+
+    " line selection
+    nnoremap <silent> <leader>l4 :call vimio#select#line_select(v:false, v:false)<CR>
+    nnoremap <silent> <leader>p4 :call vimio#select#line_select(v:false, v:true)<CR>
+    nnoremap <silent> <leader>l8 :call vimio#select#line_select(v:true, v:false)<CR>
+    nnoremap <silent> <leader>p8 :call vimio#select#line_select(v:true, v:true)<CR>
+
+    " border inner selection
+    nnoremap <silent> <leader>i4 :call vimio#select#highlight_inside_border(v:false, v:false, 'min')<CR>
+    nnoremap <silent> <leader>im4 :call vimio#select#highlight_inside_border(v:false, v:false, 'max')<CR>
+    nnoremap <silent> <leader>i8 :call vimio#select#highlight_inside_border(v:true, v:false, 'min')<CR>
+    nnoremap <silent> <leader>im8 :call vimio#select#highlight_inside_border(v:true, v:false, 'max')<CR>
+
+    " border and inner selection
+    nnoremap <silent> <leader>a4 :call vimio#select#highlight_inside_border(v:false, v:true, 'min')<CR>
+    nnoremap <silent> <leader>am4 :call vimio#select#highlight_inside_border(v:false, v:true, 'max')<CR>
+    nnoremap <silent> <leader>a8 :call vimio#select#highlight_inside_border(v:true, v:true, 'min')<CR>
+    nnoremap <silent> <leader>am8 :call vimio#select#highlight_inside_border(v:true, v:true, 'max')<CR>
+
+    " Box selection based on penetration lines
+    nnoremap <silent> <leader>lb :call vimio#select#highlight_inside_line()<CR>
+
+    nnoremap <silent> <leader>s :call vimio#select#extract_outgoing_spokes(v:false)<CR>
+    nnoremap <silent> <leader>sm :call vimio#select#extract_outgoing_spokes(v:true)<CR>
+
+    " select all related
+    nnoremap <silent> <leader>r4 :call vimio#select#highlight_all_related(v:false)<CR>
+    nnoremap <silent> <leader>r8 :call vimio#select#highlight_all_related(v:true)<CR>
 
     " =====================================mouse===============================
     " Quickly insert shape in clip
@@ -189,6 +235,12 @@ endif
 augroup VimioStateVisualModeMappings
     autocmd!
     autocmd ModeChanged *:[vV\x16]* let g:vimio_state_initial_pos_before_enter_visual = [line('.'), virtcol('.')]
+augroup END
+
+" fix for [bug]{0004}
+augroup VimioVhlCleanup
+    autocmd!
+    autocmd BufLeave * call vimio#cursors#vhl_remove_all()
 augroup END
 
 " Show Vimio version
