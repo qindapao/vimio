@@ -89,7 +89,7 @@ function! vimio#todo#collect_sorted_todo_items() abort
     for idx in range(len(lines))
         let line = lines[idx]
         " Filter out completed tasks
-        if line =~? '^\s*x'
+        if line =~? '^\s*[x\~]'
             continue
         endif
 
