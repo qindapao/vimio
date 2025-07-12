@@ -18,6 +18,10 @@ function! vimio#select#flood_fill_border_only(sr, sc, use_diagonal) abort
     return s:flood_fill_by_predicate(a:sr, a:sc, { ch -> has_key(g:vimio_config_border_chars, ch) }, a:use_diagonal)
 endfunction
 
+function! vimio#select#flood_fill_text(sr, sc, use_diagonal) abort
+    return s:flood_fill_by_predicate(a:sr, a:sc, { ch -> !has_key(g:vimio_config_non_text_borders, ch) }, a:use_diagonal)
+endfunction
+
 " function! s:flood_fill_by_predicate(sr, sc, predicate, use_diagonal) abort
 "     let start1 = reltime()
 "     let result_old =  s:flood_fill_by_predicate_old(a:sr, a:sc, a:predicate, a:use_diagonal)
@@ -1224,4 +1228,26 @@ function! vimio#select#highlight_all_related(use_diagonal) abort
     " echomsg printf('⏱ apply_highlight: %.2f ms', reltimefloat(reltime(t5, t6)) * 1000)
     " echomsg printf('⏱ total: %.2f ms', reltimefloat(reltime(t_start, t6)) * 1000)
 endfunction
+
+" Border Selection Mode
+function! vimio#select#highlight_text(use_diagonal) abort
+    call vimio#select#_clear_row_cache()
+    let row = line('.')
+    let col = col('.')
+
+    let g:vimio_state_select_shape_state.last_pos = [row, col]
+
+    let ch = vimio#utils#get_char(row, col)
+    " Non-printable or unprintable characters → Clear and exit
+    if ch ==# '' || (ch !=# ' ' && strdisplaywidth(ch) == 0)
+        return
+    endif
+
+    let sc = virtcol('.')
+
+    let pos_list = vimio#select#flood_fill_text(line('.'), sc, a:use_diagonal)
+
+    call vimio#cursors#vhl_add_points_and_apply(pos_list)
+endfunction
+
 

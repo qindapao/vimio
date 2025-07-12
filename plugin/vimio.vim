@@ -226,6 +226,10 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> <leader>r4 :call vimio#select#highlight_all_related(v:false)<CR>
     nnoremap <silent> <leader>r8 :call vimio#select#highlight_all_related(v:true)<CR>
 
+    " select text only
+    nnoremap <silent> <leader>t4 :call vimio#select#highlight_text(v:false)<CR>
+    nnoremap <silent> <leader>t8 :call vimio#select#highlight_text(v:true)<CR>
+
     " =====================================mouse===============================
     " Quickly insert shape in clip
     " C-MouseLeft

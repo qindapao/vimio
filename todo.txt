@@ -116,6 +116,7 @@ o [fil]{0025}(  !!) select.vim
     o [ref]{0032}(    ) 目前取最大环(vimio#select#highlight_inside_border)效率极其低下，可以考虑用
                         vimio#select#extract_all_closed_loops 找到所有闭合环，然后筛选出经过当前点
                         的，然后再从里面筛选出路径最长的环。
+    x [req]{0049}(    ) 增加一个实心块文本选择模式，排除所有的交点字符，选择纯文本。
 
 o [ref]{0024}(   !) 所有的代码中哪些函数变量应该是全局哪些应该是局部，还有变量管理要清理一遍。
 o [ref]{0027}(   !) 所有的函数都应该加 `abort` 标签。
