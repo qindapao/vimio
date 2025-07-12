@@ -553,3 +553,18 @@ function! vimio#utils#merge_dicts(...) abort
     return merged
 endfunction
 
+" safe add list 
+function! vimio#utils#list_set_value_safe(list, index, value)
+    if len(a:list) <= a:index
+        call extend(a:list, repeat([''], a:index + 1 - len(a:list)))
+    endif
+    let a:list[a:index] = a:value
+endfunction
+
+function! vimio#utils#list_get_item_screen_len(list, index)
+    if len(a:list) <= a:index
+        return 0
+    endif
+    return strdisplaywidth(a:list[a:index])
+endfunction
+

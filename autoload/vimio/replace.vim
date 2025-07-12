@@ -36,6 +36,13 @@ function! vimio#replace#paste_block_clip(is_space_replace)
     let row_phy_lens = []
     let start_row = line('.')
     let col = virtcol('.')
+
+
+    let [chars_arr, index] = vimio#utils#get_line_cells(start_row, col)
+    if get(chars_arr, index, '') ==# ''
+        let col -= 1
+    endif
+
     for i in range(len(reg_text))
         let row = start_row + i
         let [chars_arr, index] = vimio#utils#get_line_cells(row, col)
@@ -69,26 +76,90 @@ function! vimio#replace#paste_block_clip(is_space_replace)
         endfor
 
         let k = 0
+
         let k_index = index
+
+        " echom "k_index: " . string(k_index)
+        " echom "chars_arr: " . string(chars_arr)
         while 1
-            " If the overlay character is not a space, overlay
-            if reg_x_chars[i][k] == ' '
-                if a:is_space_replace
-                    if k_index >= len(chars_arr)
-                        call add(chars_arr, reg_x_chars[i][k])
-                    else
-                        let chars_arr[k_index] = reg_x_chars[i][k]
-                    endif
-                else
-                    if k_index >= len(chars_arr)
-                        call add(chars_arr, reg_x_chars[i][k])
-                    endif
+            let top = reg_x_chars[i][k]
+
+            if k_index >= len(chars_arr)
+                call add(chars_arr, top)
+                
+                let k += 1
+                if k >= j
+                    break
                 endif
-            else
-                if k_index >= len(chars_arr)
-                    call add(chars_arr, reg_x_chars[i][k])
-                else
-                    let chars_arr[k_index] = reg_x_chars[i][k]
+                let k_index += 1
+                continue
+            endif
+
+            let bottom = chars_arr[k_index]
+            let top_width = reg_x_phy_lens[i][k]
+            let bottom_width = strdisplaywidth(bottom)
+
+             " top     0                   
+             " bottom  0     current slot -> ' '
+             "               pre slot     -> ' '
+             " top     0
+             " bottom  1     current slot -> ' '
+             "                          .- 0  pre slot     -> ' ' 
+             "                          |     pre pre slot -> ' '
+             "               pre slot --'- 1  pre slot     -> ' '
+             " top     0
+             " bottom  2     current slot -> ' '
+             "               next slot    -> ' '
+             "                          .- 0  pre slot     ->  ' '
+             "                          |     pre pre slot ->  ' '
+             "               pre slot---'- 1  pre slot     ->  ' '
+             " top     1
+             " bottom  0     current slot -> top
+             "               pre slot     -> ' '
+             " top     1
+             " bottom  1     current slot -> top
+             " top     1
+             " bottom  2     current slot -> top
+             "               next slot    -> ' '
+             " top     2
+             " bottom  0     current slot -> top
+             "               pre slot     -> ' '
+             "                           .- 2   next slot   -> ''
+             "                           |      next next slot -> ' '
+             "               next slot---'- 1/0 next slot   -> ''
+             " top     2
+             " bottom  1     current slot -> top
+             "                           .- 2   next slot -> ''
+             "                           |      next next slot -> ' '
+             "               next slot---'- 1/0 next slot -> ''
+             " top     2
+             " bottom  2     current slot -> top
+
+            " If the overlay character is not a space, overlay
+            if top != ' ' || a:is_space_replace
+                if top_width == 1
+                    let chars_arr[k_index] = top
+                    if bottom_width == 0
+                        let chars_arr[k_index-1] = ' '
+                    elseif bottom_width == 2
+                        call vimio#utils#list_set_value_safe(chars_arr, k_index+1, ' ')
+                    endif
+                elseif top_width == 2
+                    let chars_arr[k_index] = top
+                    if bottom_width == 0
+                        let chars_arr[k_index-1] = ' '
+                        let next_width = vimio#utils#list_get_item_screen_len(chars_arr, k_index+1)
+                        call vimio#utils#list_set_value_safe(chars_arr, k_index+1, '')
+                        if next_width == 2
+                            call vimio#utils#list_set_value_safe(chars_arr, k_index+2, ' ')
+                        endif
+                    elseif bottom_width == 1
+                        let next_width = vimio#utils#list_get_item_screen_len(chars_arr, k_index+1)
+                        call vimio#utils#list_set_value_safe(chars_arr, k_index+1, '')
+                        if next_width == 2
+                            call vimio#utils#list_set_value_safe(chars_arr, k_index+2, ' ')
+                        endif
+                    endif
                 endif
             endif
 

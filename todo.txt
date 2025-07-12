@@ -1,8 +1,8 @@
-   !   轻微
-  !!   一般优先级      - 正在进行中             [bug] Bug               
- !!!   重要优先级      o 待执行                 [req] Requirement       
-!!!!   紧迫优先级      x 已经完成               [opt] Optimize
-                       ~ 后续待讨论的内容       [tst] Test
+           
+     !   轻微          - 正在进行中             [bug] Bug               
+    !!   一般优先级    o 待执行                 [req] Requirement       
+   !!!   重要优先级    x 已经完成               [opt] Optimize
+  !!!!   紧迫优先级    ~ 后续待讨论的内容       [tst] Test
                                                 [ref] refactor
                                                 [doc] Document
                                                 [fil] File
@@ -32,9 +32,9 @@
     o [req]{0048}(    ) 使用一种特殊的方法，文件后缀？来识别我们的格式的文件，然后增加可以折叠已经完成的项目的功能。
                         (标 x 的项目，也可以显示它们，用户可以切换)
 
-- [fil]{0011}(!!!!) replace.vim
-    - [fuc]{0014}(!!!!) vimio#replace#paste_block_clip
-        - [bug]{0003}(!!!!) 如果覆盖层的右边界恰好在被覆盖的文本的某个双宽字符的左半槽上面，覆盖后会少一个空格，导致整体
+x [fil]{0011}(!!!!) replace.vim
+    x [fuc]{0014}(!!!!) vimio#replace#paste_block_clip
+        x [bug]{0003}(!!!!) 如果覆盖层的右边界恰好在被覆盖的文本的某个双宽字符的左半槽上面，覆盖后会少一个空格，导致整体
                             内容左移，英文覆盖中文的情况下也是错乱的。
 
 

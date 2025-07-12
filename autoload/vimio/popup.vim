@@ -133,7 +133,7 @@ function! s:build_mask(new_text) abort
         if l:line_length < l:max_display_length
             let new_text[i] .= repeat(' ', l:max_display_length - l:line_length)
         endif
-    endfor 
+    endfor
 
     for i in range(len(new_text))
         let line = new_text[i]
@@ -148,7 +148,7 @@ function! s:build_mask(new_text) abort
             if char == ' '
                 call add(mask, [j + 1, j + 1, i + 1, i + 1])
             endif
-            let j += 1
+            let j += strdisplaywidth(char)
         endfor
     endfor
 
