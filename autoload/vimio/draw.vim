@@ -16,6 +16,9 @@
 "       they need to be removed first.
 " :TODO: The following should be extracted as a UI module (user behavior key 
 "       binding) draw (drawing behavior)
+" :TODO: There is already cross-caching in place, and if performance is not
+"       satisfactory, consider using caching. However, the current performance
+"       is sufficient, so there is no need to use caching.
 function! vimio#draw#line_left_right(direction)
     " let start_time = reltime()
     call vimio#state#draw_line_auto_group_record_pre_pos_set()
@@ -40,15 +43,15 @@ function! vimio#draw#line_left_right(direction)
 
     " Get the character above, below, left, and right of the previous character
     if a:direction == 'l'
-        let pre_right = g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index][0]
-        let pre_left = (index>1)?get(line_chars_array, index-2, ''):''
-        let pre_up = (up_index>0)?get(up_line_chars_array, up_index-1, ''):''
-        let pre_down = (down_index>0)?get(down_line_chars_array, down_index-1, ''):''
+        let pre_right = [ g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index][0] ]
+        let pre_left = [ (index>1)?get(line_chars_array, index-2, ''):'' ]
+        let pre_up = [ (up_index>0)?get(up_line_chars_array, up_index-1, ''):'' ]
+        let pre_down = [ (down_index>0)?get(down_line_chars_array, down_index-1, ''):'' ]
     elseif a:direction == 'h'
-        let pre_left = g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index][0]
-        let pre_right = get(line_chars_array, index+2, '')
-        let pre_up = get(up_line_chars_array, up_index+1, '')
-        let pre_down = get(down_line_chars_array, down_index+1, '')
+        let pre_left = [ g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index][0] ]
+        let pre_right = [ get(line_chars_array, index+2, '') ]
+        let pre_up = [ get(up_line_chars_array, up_index+1, '') ]
+        let pre_down = [ get(down_line_chars_array, down_index+1, '') ]
     endif
 
     let pre_index = index + (a:direction == 'l' ? -1 : 1)
@@ -70,10 +73,10 @@ function! vimio#draw#line_left_right(direction)
     endif
 
     " Get the character above, below, left, and right of the current character
-    let left = (index>0)?get(line_chars_array, index-1, ''):''
-    let right = get(line_chars_array, index+1, '')
-    let up = get(up_line_chars_array, up_index, '')
-    let down = get(down_line_chars_array, down_index, '')
+    let left = [ (index>0)?get(line_chars_array, index-1, ''):'' ]
+    let right = [ get(line_chars_array, index+1, '') ]
+    let up = [ get(up_line_chars_array, up_index, '') ]
+    let down = [ get(down_line_chars_array, down_index, '') ]
 
     let entered_if = 0
     for table_param in g:vimio_config_draw_normal_char_funcs_map
@@ -187,15 +190,15 @@ function! vimio#draw#line_up_down(direction)
 
     " Get the character above, below, left, and right of the previous character
     if a:direction == 'j'
-        let pre_down = g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index][1]
-        let pre_up = get(up2_line_chars_array, up2_index, '')
-        let pre_left = (up1_index>0)?get(up1_line_chars_array, up1_index-1, ''):''
-        let pre_right = get(up1_line_chars_array, up1_index+1, '')
+        let pre_down = [ g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index][1] ]
+        let pre_up = [ get(up2_line_chars_array, up2_index, '') ]
+        let pre_left = [ (up1_index>0)?get(up1_line_chars_array, up1_index-1, ''):'' ]
+        let pre_right = [ get(up1_line_chars_array, up1_index+1, '') ]
     elseif a:direction == 'k'
-        let pre_down = get(down2_line_chars_array, down2_index, '')
-        let pre_up = g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index][1]
-        let pre_left = (index>0)?get(down1_line_chars_array, down1_index-1, ''):''
-        let pre_right = get(down1_line_chars_array, down1_index+1, '')
+        let pre_down = [ get(down2_line_chars_array, down2_index, '') ]
+        let pre_up = [ g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index][1] ]
+        let pre_left = [ (index>0)?get(down1_line_chars_array, down1_index-1, ''):'' ]
+        let pre_right = [ get(down1_line_chars_array, down1_index+1, '') ]
     endif
 
     if a:direction == 'j'
@@ -233,10 +236,10 @@ function! vimio#draw#line_up_down(direction)
     endif
 
     " Get the character above, below, left, and right of the current character
-    let down = get(down1_line_chars_array, down1_index, '')
-    let up = get(up1_line_chars_array, up1_index, '')
-    let left = (index>0)?get(line_chars_array, index-1, ''):''
-    let right = get(line_chars_array, index+1, '')
+    let down = [ get(down1_line_chars_array, down1_index, '') ]
+    let up = [ get(up1_line_chars_array, up1_index, '') ]
+    let left = [ (index>0)?get(line_chars_array, index-1, ''):'' ]
+    let right = [ get(line_chars_array, index+1, '') ]
 
     let entered_if = 0
     for table_param in g:vimio_config_draw_normal_char_funcs_map

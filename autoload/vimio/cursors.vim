@@ -373,7 +373,7 @@ endfunction
 " copy it to the clipboard, and optionally erase the originals in batch.
 "==============================================================================
 
-function! vimio#cursors#create_rectangle_string(points, delete_original, replace_char) abort
+function! vimio#cursors#create_rectangle_string(points, delete_original, replace_char, is_update_clip) abort
     " 1) Compute bounding box
     let rows    = map(copy(a:points), 'v:val[1]')
     let cols    = map(copy(a:points), 'v:val[2]')
@@ -417,7 +417,10 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
     endfor
 
     " 5) Yank to system clipboard
-    let @+ = join(lines, "\n")
+    let lines_str = join(lines, "\n")
+    if a:is_update_clip
+        let @+ = lines_str
+    endif
 
     " 6) Batch‐erase the original points if requested
     if a:delete_original
@@ -426,6 +429,7 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
 
     " 7) Clear any temporary cursors
     call vimio#cursors#clear_cursors()
+    return [lines_str, min_row, min_col]
 endfunction
 
 
@@ -496,6 +500,6 @@ endfunction
 function! vimio#cursors#replace_highlight_group_to_clip()
     let char = getreg('+')
     let char = empty(char) ? ' ' : strcharpart(char, 0, 1)
-    call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, char)
+    call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, char, 1)
 endfunction
 

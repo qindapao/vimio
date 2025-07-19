@@ -1,6 +1,43 @@
 " autoload/vimio/debug.vim
 " ---------------
 
+
+" :scriptnames Command to print all script IDs
+function! s:describe_funcref(funcref) abort
+    if type(a:funcref) != v:t_func
+        return string(a:funcref)
+    endif
+
+    " Extract function name and SNR number
+    let funcref_str = string(a:funcref)
+    let fun_name = matchstr(funcref_str, "'\\zs<SNR>\\d\\+_\\w\\+\\ze'")
+    let snr_id = matchstr(fun_name, '<SNR>\zs\d\+')
+
+    " Find the corresponding file path in scriptnames
+    let script_path = ''
+    for line in split(execute('scriptnames'), "\n")
+        if line =~ '^ *' . snr_id . ':'
+            let script_path = substitute(line, '^ *\d\+: *', '', '')
+            break
+        endif
+    endfor
+
+    " Obtain the line number information of the verbose function
+    let verbose_output = execute('verbose function ' . fun_name)
+    let location = matchstr(verbose_output, '\(line\|行\) \d\+')
+
+    return fun_name . ' (' . script_path . ' ' . location . ')'
+endfunction
+
+function! s:print_value(key, value, pad) abort
+    if type(a:value) == v:t_func
+        echom a:pad . string(a:key) . ': ' . s:describe_funcref(a:value)
+    else
+        echom a:pad . string(a:key) . ': ' . string(a:value)
+    endif
+endfunction
+
+
 "==============================================================================
 " vimio#debug#pretty_print(name, obj, indent_unit [, title])
 "
@@ -50,35 +87,37 @@ function! vimio#debug#pretty_print(name, obj, indent_unit, ...) abort
         if frame.type ==# 'dict'
             if frame.idx < len(frame.children)
                 let key      = frame.children[frame.idx]
-                let value    = frame.val[key]
+                " This might be a function reference, so it should be named
+                " with an uppercase letter at the beginning.
+                let Value    = frame.val[key]
                 " Prepare to resume this frame
                 let next    = copy(frame)
                 let next.idx = frame.idx + 1
                 call add(stack, next)
 
                 " Print and, if container, push child frame
-                if type(value) == v:t_dict
+                if type(Value) == v:t_dict
                     echom pad . string(key) . ' =>'
-                    let child_keys = sort(keys(value))
+                    let child_keys = sort(keys(Value))
                     call add(stack, {
                                 \ 'type'    :'dict',
-                                \ 'val'     :value,
+                                \ 'val'     :Value,
                                 \ 'children':child_keys,
                                 \ 'idx'     :0,
                                 \ 'level'   :lvl+1
                                 \})
-                elseif type(value) == v:t_list
+                elseif type(Value) == v:t_list
                     echom pad . string(key) . ' =:'
-                    let child_idxs = range(0, len(value)-1)
+                    let child_idxs = range(0, len(Value)-1)
                     call add(stack, {
                                 \ 'type'    :'list',
-                                \ 'val'     :value,
+                                \ 'val'     :Value,
                                 \ 'children':child_idxs,
                                 \ 'idx'     :0,
                                 \ 'level'   :lvl+1
                                 \})
                 else
-                    echom pad . string(key) . ': ' . string(value)
+                    call s:print_value(key, Value, pad)
                 endif
             endif
 
@@ -117,7 +156,6 @@ function! vimio#debug#pretty_print(name, obj, indent_unit, ...) abort
         endif
     endwhile
 endfunction
-
 
 function! vimio#debug#diff_pretty_lcs(obj1, obj2, indent_unit) abort
     " Step 1: Pretty-print both objects
@@ -297,7 +335,8 @@ function! vimio#debug#log(fmt, ...) abort
     for i in range(1, a:0)
         call add(args, a:{i})
     endfor
-    let formatted = call('printf', [a:fmt] + args)
+    let arglist = [a:fmt] + args
+    let formatted = call('printf', arglist)
 
     let timestamp = vimio#debug#get_timestamp_ms()
 
@@ -343,5 +382,9 @@ function! vimio#debug#toggle() abort
         echom "⚪ Vimio debug mode is off"
     endif
     echohl None
+endfunction
+
+function! vimio#debug#time_ms(t_start, t_end) abort
+    return reltimefloat(reltime(a:t_start, a:t_end)) * 1000
 endfunction
 

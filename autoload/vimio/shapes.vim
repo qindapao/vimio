@@ -22,7 +22,7 @@ function! vimio#shapes#switch_lev1_index(direction)
     endif
 
     call vimio#shapes#update_lev2_info()
-    call vimio#popup#update_block()
+    call vimio#popup#update_cross_block()
 endfunction
 
 function! vimio#shapes#switch_lev2_index(direction)
@@ -51,7 +51,7 @@ function! vimio#shapes#switch_lev2_index(direction)
     endif
 
     call vimio#shapes#update_lev2_info()
-    call vimio#popup#update_block()
+    call vimio#popup#update_cross_block()
 endfunction
 
 function! vimio#shapes#get_default_graph_functions() abort
@@ -183,7 +183,7 @@ function! vimio#shapes#switch_define_graph_set(is_show)
 
     call vimio#shapes#update_lev2_info()
     if a:is_show
-        call vimio#popup#update_block()
+        call vimio#popup#update_cross_block()
     endif
 
     " " Record end time

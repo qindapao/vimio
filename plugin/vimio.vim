@@ -3,7 +3,7 @@
 " Entry point for the vimio plugin.
 " Initializes configuration, commands, mappings, and loads shape templates.
 
-let g:vimio_version = '1.0.0'
+let g:vimio_version = '1.0.1'
 
 if exists('g:vimio_loaded')
     finish
@@ -59,6 +59,16 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> sa :call vimio#arrows#auto_add_arrow()<CR>
     " draw a rectangle based on the current line.
     vnoremap <silent>sw <Esc>:call vimio#draw#traverse_rectangle()<cr>
+    " smart line draw start
+    nnoremap <silent> sms :call vimio#ui#smart_line_continue_draw()<cr>
+    nnoremap <silent> sme :call vimio#ui#smart_line_draw_end()<cr>
+    nnoremap <silent> smas :call vimio#ui#smart_line_start_arrow_show_flip()<cr>
+    nnoremap <silent> smae :call vimio#ui#smart_line_end_arrow_show_flip()<cr>
+    nnoremap <silent> smd :call vimio#ui#smart_line_diagonal_flip()<cr>
+    nnoremap <silent> smaf :call vimio#ui#smart_line_arrow_flip_start_end()<cr>
+    nnoremap <silent> smx :call vimio#ui#smart_line_flip_cross()<cr>
+    nnoremap <silent> smc :call vimio#ui#smart_line_cancel()<cr>
+    " smart line draw end
 
     " =========================free edit========================================
     " 'R' is fine in normal mode, no need for special mapping
@@ -82,6 +92,8 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> <C-M-Space> :call vimio#replace#paste_block_clip(1)<CR>
     " Paste the shape from the clip and cover the same area ignore spaces
     nnoremap <silent> <C-S-Space> :call vimio#replace#paste_block_clip(0)<CR>
+    " Paste Switch Cross Mode
+    nnoremap <silent> sxm :call vimio#ui#paste_flip_cross_mode()<CR>
 
     " ===============================cut========================================
     vnoremap xx "+ygvgr | " visual block cut(the space in the end cannot be missing.)
@@ -113,7 +125,7 @@ if g:vimio_enable_default_mappings
 
     " =============================Cross mode control===========================
     " Switch cross character category
-    nnoremap <silent> sx :call vimio#ui#switch_cross_style()<CR>
+    nnoremap <silent> sxs :call vimio#ui#switch_cross_style()<CR>
 
     " ===========================Preview control================================
     " Controls whether the preview window ignores spaces (transparent or opaque)
@@ -177,9 +189,9 @@ if g:vimio_enable_default_mappings
     " Disable highlighting
     nnoremap <silent> sd :call vimio#cursors#disable_cursor_mouse_move()<CR>
     " Copy all highlighted characters to a rectangle
-    nnoremap <silent> <C-x> :call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 0, ' ')<CR>
+    nnoremap <silent> <C-x> :call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 0, ' ', 1)<CR>
     " Cut all highlighted characters to a rectangle
-    nnoremap <silent> <C-S-X> :call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ')<CR>
+    nnoremap <silent> <C-S-X> :call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 1)<CR>
     " Replace all highlighted characters with character in the clip
     nnoremap <silent> <C-S-G> :call vimio#cursors#replace_highlight_group_to_clip()<CR>
     " Use the mouse to easily select a rectangle(noremap <M-LeftMouse> <C-S-V>)
@@ -229,6 +241,9 @@ if g:vimio_enable_default_mappings
     " select text only
     nnoremap <silent> <leader>t4 :call vimio#select#highlight_text(v:false)<CR>
     nnoremap <silent> <leader>t8 :call vimio#select#highlight_text(v:true)<CR>
+
+    " draw box
+    nnoremap <silent> <leader>db :call vimio#ui#box_suround()<CR>
 
     " =====================================mouse===============================
     " Quickly insert shape in clip

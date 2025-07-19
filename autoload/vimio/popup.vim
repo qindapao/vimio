@@ -11,7 +11,23 @@
 let s:popup_mask_dirty = v:false
 let s:popup_last_text = ''
 
-function! vimio#popup#update_block()
+function! vimio#popup#update_cross_block(...)
+    let opts = get(a:, 1, {})
+    let anchor = get(opts, 'anchor', 'topleft')
+
+    let preview_text = vimio#utils#get_current_paste_text(opts)
+
+    call vimio#popup#update_block({
+                \ 'new_text': preview_text,
+                \ 'anchor': anchor,
+                \}
+                \)
+endfunction
+
+
+" Support parameter specifies the starting point and text.
+" { 'new_text': 'xxxyy', 'pos_start': [row, virtcol] }
+function! vimio#popup#update_block(...)
 
     " Check if the highlighted group exists and has not been cleared
     let l:highlight_info = execute('highlight VimioVirtualText')
@@ -27,7 +43,9 @@ function! vimio#popup#update_block()
     " a concern later, consider using other registers. It's also possible that 
     " the pop-up cannot respond to requests too quickly, so the update is made 
     " slower here.
-    let regcontent = vimio#utils#get_reg('+')
+    let opts = get(a:, 1, {})
+    let regcontent = get(opts, 'new_text', vimio#utils#get_reg('+'))
+    let anchor = get(opts, 'anchor', 'topleft')
 
     let l:new_text = split(regcontent, "\n")
     if vimio#utils#is_single_char_text(l:new_text)
@@ -63,9 +81,10 @@ function! vimio#popup#update_block()
         call popup_settext(g:vimio_state_block_popup_id, l:new_text)
 
         " Update the position of the pop-up window
+        call popup_setoptions(g:vimio_state_block_popup_id, { 'pos': anchor })
         call popup_move(g:vimio_state_block_popup_id, {
             \ 'line': 'cursor',
-            \ 'col': 'cursor'
+            \ 'col': 'cursor',
             \ })
 
         " Update the transparency mask and other properties of the pop-up window
@@ -74,14 +93,16 @@ function! vimio#popup#update_block()
             call popup_setoptions(g:vimio_state_block_popup_id, {
                         \ 'highlight': 'VimioVirtualText',
                         \ 'moved': 'any',
-                        \ 'zindex': 100
+                        \ 'zindex': 100,
+                        \ 'pos': anchor,
                         \ })
         else
             call popup_setoptions(g:vimio_state_block_popup_id, {
                         \ 'mask': [],
                         \ 'highlight': 'VimioVirtualText',
                         \ 'moved': 'any',
-                        \ 'zindex': 100
+                        \ 'zindex': 100,
+                        \ 'pos': anchor,
                         \ })
         endif
     else
@@ -91,6 +112,7 @@ function! vimio#popup#update_block()
             \ 'zindex': 100,
             \ 'highlight': 'VimioVirtualText',
             \ 'moved': 'any',
+            \ 'pos': anchor,
             \ 'callback': function('vimio#popup#on_block_popup_close')
             \ })
     endif
@@ -184,7 +206,7 @@ function! vimio#popup#switch_visual_block_popup_type()
     let g:vimio_state_visual_block_popup_types_index = (g:vimio_state_visual_block_popup_types_index + 1) % len(g:vimio_config_visual_block_popup_types)
 
     " Update pop-up window
-    call vimio#popup#update_block()
+    call vimio#popup#update_cross_block()
 endfunction
 
 function! vimio#popup#on_block_popup_close(id, result) abort
@@ -217,4 +239,4 @@ endfunction
 " function! s:update_popup() dict
 "     echomsg 'Updating popup with ID: ' . self.id
 " endfunction
-
+"

@@ -10,12 +10,11 @@
 " - vimio#replace#visual_replace_to_space()
 " - vimio#replace#visual_replace_char()
 
-function! vimio#replace#paste_block_clip(is_space_replace)
+function! vimio#replace#paste_block_clip(is_space_replace, ...)
+    let opts = get(a:, 1, {})
     " Get data from the clip register
-    let regtype = getregtype('+')
-    let regcontent = getreg('+')
-    let blockwidth = str2nr(regtype[1:])
-    let blockheight = len(split(regcontent, "\n"))
+    let regcontent = vimio#utils#get_current_paste_text(opts)
+
     let reg_text = split(regcontent, "\n")
 
     " Empty elements are filled with a space
@@ -34,9 +33,9 @@ function! vimio#replace#paste_block_clip(is_space_replace)
     let reg_x_phy_lens = []
     let row_chars = []
     let row_phy_lens = []
-    let start_row = line('.')
-    let col = virtcol('.')
 
+    let start_row = get(opts, 'row', line('.'))
+    let col = get(opts, 'col', virtcol('.'))
 
     let [chars_arr, index] = vimio#utils#get_line_cells(start_row, col)
     if get(chars_arr, index, '') ==# ''

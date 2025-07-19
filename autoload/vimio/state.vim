@@ -26,6 +26,7 @@ let g:vimio_state_shapes_sub_funcs = []
 let g:vimio_state_vhl_match_id = -1
 let g:vimio_state_vhl_segments = []
 let g:vimio_state_multi_cursors = []
+let g:vimio_state_paste_preview_cross_mode = 1
 
 
 " global state: last_pos=[r,c]
