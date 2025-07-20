@@ -5,8 +5,9 @@
 " cursor movement.
 "
 " Contents:
-" - vimio#arrows#get_arrow_char(pre_char, direction)
-" - vimio#arrows#auto_add_arrow()
+" - vimio#utils#geometry#get_bounds(points)
+" - vimio#utils#geometry#is_rect(matrix,bounds)
+" - vimio#utils#geometry#points_to_matrix(points)
 
 function! vimio#arrows#get_arrow_char(pre_char, direction)
     return get(get(g:vimio_config_arrow_chars_map, a:direction, {}), a:pre_char, '')

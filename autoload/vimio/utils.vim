@@ -6,15 +6,45 @@
 "
 " Contents:
 " - vimio#utils#get_reg(reg_name)
-" - vimio#utils#get_doublewidth_cols(row,...)
-" - vimio#utils#get_doublewidth_cols_old(row,...)
+" - vimio#utils#get_current_paste_text(...)
 " - vimio#utils#get_doublewidth_cols_new(row,...)
+" - vimio#utils#get_doublewidth_cols_old(row,...)
+" - vimio#utils#get_doublewidth_cols(row,...)
 " - vimio#utils#get_line_cells(row,...)
+" - vimio#utils#get_line_cells_insert_double_char(row,...)
+" - vimio#utils#get_line_cells_common(row,...)
 " - vimio#utils#get_plugin_root()
 " - vimio#utils#set_line_str(line_list,line,jumpline,jumpcol)
 " - vimio#utils#hide_cursor()
 " - vimio#utils#restore_cursor()
 " - vimio#utils#is_single_char_text(textlist)
+" - vimio#utils#flat_list_equal(list1,list2)
+" - vimio#utils#get_char(r,c)
+" - vimio#utils#get_row_cells(row)
+" - vimio#utils#get_row_cells_normal(row)
+" - vimio#utils#get_row_cells_regex(row)
+" - vimio#utils#uniq_nested_lists(list)
+" - vimio#utils#resolve_coords(keys,coords)
+" - vimio#utils#resolve_coords_excluding(keys,coords)
+" - vimio#utils#build_graph(coords,keyfn)
+" - vimio#utils#build_select_graph(coords)
+" - vimio#utils#uniq_dicts_by_key(dicts)
+" - vimio#utils#uniq_select_dicts(dicts)
+" - vimio#utils#uniq_dicts_by(dicts,keyfn)
+" - vimio#utils#merge_dicts(...)
+" - vimio#utils#list_set_value_safe(list,index,value)
+" - vimio#utils#list_get_item_screen_len(list,index)
+" - vimio#utils#merge_sparse_values(dict1,dict2)
+" - vimio#utils#get_sparse_intersections(dict1,dict2)
+" - vimio#utils#build_preview_chars(text_lines,pos_start)
+" - vimio#utils#get_rect_txt_for_single_width_char(preview_text,cross_enable,pos)
+" - vimio#utils#get_editor_rect(pos,width,height,is_just_cross_char)
+" - vimio#utils#chars_all_not_in(dict,list)
+" - vimio#utils#chars_some_not_in(dict,list)
+" - vimio#utils#chars_any_in(dict,list)
+" - vimio#utils#cursor_jump(row,col)
+
+
 
 function! vimio#utils#get_reg(reg_name)
     let regcontent = getreg(a:reg_name)
@@ -36,7 +66,9 @@ function! vimio#utils#get_current_paste_text(...) abort
     let raw_lines = split(raw_str, "\n")
     if g:vimio_state_paste_preview_cross_mode
         let preview_chars = vimio#utils#build_preview_chars(raw_lines, pos)
-        return vimio#utils#get_rect_txt_for_single_width_char(preview_chars, v:true, pos)
+        let preview_chars_and_cross = vimio#utils#get_rect_txt_for_single_width_char(preview_chars, v:true, pos)
+        " echom "preview_chars_and_cross: " . preview_chars_and_cross 
+        return preview_chars_and_cross
     endif
     return raw_str
 endfunction
@@ -817,4 +849,11 @@ function! vimio#utils#chars_any_in(dict, list) abort
     endfor
     return 0
 endfunction
+
+function! vimio#utils#cursor_jump(row, col) abort
+    let [start_chars_arr, start_index] = vimio#utils#get_line_cells(a:row, a:col)
+    let col_byte_start = len(join(start_chars_arr[0:start_index], ''))
+    call cursor(a:row, col_byte_start)
+endfunction
+
 

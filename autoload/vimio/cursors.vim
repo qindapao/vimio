@@ -6,13 +6,26 @@
 " Also supports generating rectangular shapes from multi-cursor areas.
 "
 " Contents:
+" - vimio#cursors#vhl_apply()
+" - vimio#cursors#vhl_remove(...)
+" - vimio#cursors#vhl_remove_all()
+" - vimio#cursors#vrow_vcol_to_row_col(row,virtcol)
+" - vimio#cursors#vhl_add(...)
+" - vimio#cursors#vhl_add_screen_point(point)
+" - vimio#cursors#vhl_add_points(points)
+" - vimio#cursors#vhl_add_points_and_apply(points)
+" - vimio#cursors#vhl_add_and_move(direction,...)
+" - vimio#cursors#vhl_remove_and_move(direction,...)
+" - vimio#cursors#visual_block_highlight_cell(row,screenCol)
+" - vimio#cursors#visual_block_unhighlight_cell(row,screenCol)
 " - vimio#cursors#visual_block_add_cursor()
 " - vimio#cursors#visual_block_remove_cursor()
 " - vimio#cursors#add_cursor_mouse_move_start()
 " - vimio#cursors#remove_cursor_mouse_move_start()
 " - vimio#cursors#disable_cursor_mouse_move()
 " - vimio#cursors#clear_cursors()
-" - vimio#cursors#create_rectangle_string(data,is_delate_ori_data,replace_char)
+" - vimio#cursors#create_rectangle_string(points,delete_original,replace_char,is_update_clip)
+" - s:erase_original_batch(points,replace_char)
 " - vimio#cursors#replace_highlight_group_to_clip()
 
 function! vimio#cursors#vhl_apply() abort

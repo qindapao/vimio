@@ -1,6 +1,14 @@
 " autoload/vimio/debug.vim
 " ---------------
-
+" Contents:
+" - vimio#debug#diff_pretty_lcs(obj1,obj2,indent_unit)
+" - vimio#debug#get_logfile()
+" - vimio#debug#get_timestamp_ms()
+" - vimio#debug#log(fmt,...)
+" - vimio#debug#log_obj(name,obj,...)
+" - vimio#debug#pretty_print(name,obj,indent_unit,...)
+" - vimio#debug#time_ms(t_start,t_end)
+" - vimio#debug#toggle()
 
 " :scriptnames Command to print all script IDs
 function! s:describe_funcref(funcref) abort
@@ -38,6 +46,7 @@ function! s:print_value(key, value, pad) abort
 endfunction
 
 
+" :TODO: `echom` Unable to print original carriage return and line feed characters
 "==============================================================================
 " vimio#debug#pretty_print(name, obj, indent_unit [, title])
 "

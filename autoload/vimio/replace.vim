@@ -5,7 +5,7 @@
 " character replacement under the cursor.
 "
 " Contents:
-" - vimio#replace#paste_block_clip(is_space_replace)
+" - vimio#replace#paste_block_clip(is_space_replace,...)
 " - vimio#replace#replace_char_under_cursor_from_clip(direction)
 " - vimio#replace#visual_replace_to_space()
 " - vimio#replace#visual_replace_char()
@@ -278,9 +278,7 @@ function! vimio#replace#visual_replace_char() range
     else
         execute "normal! :s/\\%V /" . '\' . char . "/g\<CR>"
     endif
-    
-    let [start_chars_arr, start_index] = vimio#utils#get_line_cells(line_start, col_start)
-    let col_byte_start = len(join(start_chars_arr[0:start_index], ''))
-    call cursor(line_start, col_byte_start)
+
+    call vimio#utils#cursor_jump(line_start, col_start)
 endfunction
 

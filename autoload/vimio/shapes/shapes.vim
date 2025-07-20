@@ -6,20 +6,12 @@
 " https://github.com/nkh/P5-App-Asciio/blob/main/lib/App/Asciio/stripes/stripes.pm
 "
 " Contents:
-" - vimio#popup#update_block()
-" - vimio#popup#close_block()
-
-" :TODO: 变大变小的时候，顶点字符保持，每条边的字符保持。
-" 如果盒子有标题栏，那么标题栏的横线也要一起边长和变短
-" 支持收缩盒子功能，就是按照盒子内部的文字的矩形大小自动调整成最小盒子包裹。
-" 文字的位置不变。
-" 也可以支持盒子展开功能，比如，往外或者外内扩张或者收缩一个单位
-"
-" 但是需先支持删除后补齐交叉点字符的功能，因为重新调整一个图形的大小，相当于
-" 先把这个图形删除掉，然后再按照某个点作为起点重新生成一个。并且要指定是否有标题
-" 栏
+" - vimio#shapes#shapes#new(element_definition)
 
 let s:shapes_template = {
+            \ 'NAME': 'shape',
+            \ 'X': -1,
+            \ 'Y': -1,
             \ 'ANCHOR': 'topleft',
             \ 'EXTENTS': [-1, -1, -1, -1],
             \ 'WIDTH': 0,
@@ -56,6 +48,8 @@ function! vimio#shapes#shapes#new(element_definition) abort
 
     let shape = deepcopy(s:shapes_template)
     call extend(shape, {
+                \ 'X': a:element_definition['X'],
+                \ 'Y': a:element_definition['Y'],
                 \ 'EXTENTS': [min_x, max_x, min_y, max_y],
                 \ 'STRIPES': stripes,
                 \ 'WIDTH': total_width,

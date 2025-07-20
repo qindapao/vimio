@@ -5,7 +5,14 @@
 " masking, transparency, position updating, etc.
 "
 " Contents:
-" - vimio#popup#update_block()
+" - vimio#popup#update_cross_block(...)
+" - vimio#popup#update_block(...)
+" - vimio#popup#clear_overlay_timer()
+" - vimio#popup#schedule_overlay_mask(lines)
+" - s:build_mask(new_text)
+" - vimio#popup#update_overlay_mask(new_text)
+" - vimio#popup#switch_visual_block_popup_type()
+" - vimio#popup#on_block_popup_close(id,result)
 " - vimio#popup#close_block()
 
 let s:popup_mask_dirty = v:false

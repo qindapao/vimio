@@ -9,6 +9,9 @@
 " - vimio#scene#cross(up,down,left,right,char_category_indexs)
 " - vimio#scene#dot(up,down,left,right,char_category_indexs)
 " - vimio#scene#apostrophe(up,down,left,right,char_category_indexs)
+" - vimio#scene#get_cross_chars(cross_point,all_chars)
+" - vimio#scene#clear_cross_cache()
+
 
 let s:vimio_scene_cross_cache = {}
 

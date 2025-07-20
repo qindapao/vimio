@@ -14,8 +14,18 @@
 " - g:vimio_config_draw_index_map_down
 " - g:vimio_config_draw_normal_char_funcs_map
 " - g:vimio_config_draw_line_styles
+" - g:vimio_config_draw_diagonal_line_styles
+" - g:vimio_config_line_and_box_corner_chars
+" - g:vimio_config_diagonal_line_corner_chars
 " - g:vimio_config_draw_cross_styles
 " - g:vimio_config_arrow_chars_map
+" - g:vimio_config_border_chars
+" - g:vimio_config_line_chars
+" - g:vimio_config_non_text_borders
+" - g:vimio_config_shapes_box_type_default
+" - g:vimio_config_shapes_box_types
+" - g:vimio_config_shapes_box_types_switch
+" - g:shape_name_config_map
 
 let g:vimio_config_visual_block_popup_types = ['cover', 'overlay']
 let g:vimio_config_draw_cross_chars = {
@@ -97,6 +107,15 @@ let g:vimio_config_draw_index_map_down = {s:vimio_config_draw_index_down_thin: 1
 " 2. then are corner missing
 " 3. and finally are two corners missing.
 " Therefore, the order of functions in the array cannot be disrupted
+"
+" :TODO: BUG
+" ------.    ─────┐
+"       |         │
+"   A          B
+"   B cover A , but . is still . not become ┐
+"   This problem is because the cross-over priority of ASCII is higher than 
+"   that of Unicode, so the cross-over characters are selected as ASCII. 
+"   However, this scenario is extremely rare and will not be fixed for the time being.
 let g:vimio_config_draw_normal_char_funcs_map = [
     \ ['+',  "vimio#scene#cross",     []                                  ],
     \ ['.',  "vimio#scene#dot",       []                                  ],
@@ -389,4 +408,80 @@ let g:vimio_config_non_text_borders = {
     \ '△': 1, '▽': 1, '◁': 1, '▷': 1, '<': 1, '>': 1, '^': 1, 'v': 1, ' ': 1,
     \ '/': 1, '\': 1
     \ }
+
+let g:vimio_config_shapes_box_type_default = [
+            \ [1 , 'top'             , '.'  , '-' , '.']  ,
+            \ [0 , 'title separator' , '|'  , '-' , '|']  ,
+            \ [1 , 'body separator'  , '| ' , '|' , ' |'] ,
+            \ [1 , 'bottom'          , "'"  , '-' , "'"]  ,
+            \ [1 , 'fill-character'  , ''   , ' ' , '']   ,
+            \ ]
+
+let s:vimio_config_shapes_box_type_unicode = [
+            \ [1, 'top',             '┌', '─',   '┐', 1, ],
+            \ [0, 'title separator', '│', '─',   '│', 1, ],
+            \ [1, 'body separator',  '│ ', '│', ' │', 1, ], 
+            \ [1, 'bottom',          '└', '─',   '┘', 1, ],
+            \ [1, 'fill-character',  '',   ' ', '',   1, ],
+            \ ]
+
+let s:vimio_config_shapes_box_type_unicode_bold = [
+            \ [1, 'top',             '┏', '━',   '┓', 1, ],
+            \ [0, 'title separator', '┃', '━',   '┃', 1, ],
+            \ [1, 'body separator',  '┃ ', '┃', ' ┃', 1, ], 
+            \ [1, 'bottom',          '┗', '━',   '┛', 1, ],
+            \ [1, 'fill-character',  '',   ' ', '',   1, ],
+            \ ]
+
+let s:vimio_config_shapes_box_type_unicode_double = [
+            \ [1, 'top',             '╔', '═',   '╗', 1, ],
+            \ [0, 'title separator', '║', '═',   '║', 1, ],
+            \ [1, 'body separator',  '║ ', '║', ' ║', 1, ], 
+            \ [1, 'bottom',          '╚', '═',   '╝', 1, ],
+            \ [1, 'fill-character',  '',   ' ', '',   1, ],
+            \ ]
+
+let s:vimio_config_shapes_box_type_unicode_bold_imaginary = [
+            \ [1, 'top',             '┏', '┅',   '┓', 1, ],
+            \ [0, 'title separator', '┇', '┅',   '┇', 1, ],
+            \ [1, 'body separator',  '┇ ', '┇', ' ┇', 1, ], 
+            \ [1, 'bottom',          '┗', '┅',   '┛', 1, ],
+            \ [1, 'fill-character',  '',   ' ', '',   1, ],
+            \ ]
+
+let s:vimio_config_shapes_box_type_unicode_imaginary = [
+            \ [1, 'top',             '┌', '┄',   '┐', 1, ],
+            \ [0, 'title separator', '┆', '┄',   '┆', 1, ],
+            \ [1, 'body separator',  '┆ ', '┆', ' ┆', 1, ], 
+            \ [1, 'bottom',          '└', '┄',   '┘', 1, ],
+            \ [1, 'fill-character',  '',   ' ', '',   1, ],
+            \ ]
+
+
+" topleft corner char key
+" :TODO: The intersection situation may be more complicated, and the corner 
+"   characters may be mixed with multiple 
+"   formats. It is more verbose to determine the full character code
+let g:vimio_config_shapes_box_types = {
+            \ '.': g:vimio_config_shapes_box_type_default,
+            \ '┌': s:vimio_config_shapes_box_type_unicode,
+            \ '┏': s:vimio_config_shapes_box_type_unicode_bold,
+            \ '╔': s:vimio_config_shapes_box_type_unicode_double,
+            \ }
+
+" index same as vimio_config_draw_line_styles
+let g:vimio_config_shapes_box_types_switch = [
+            \ g:vimio_config_shapes_box_type_default,
+            \ s:vimio_config_shapes_box_type_unicode,
+            \ s:vimio_config_shapes_box_type_unicode_bold,
+            \ s:vimio_config_shapes_box_type_unicode_double,
+            \ s:vimio_config_shapes_box_type_unicode_bold_imaginary,
+            \ s:vimio_config_shapes_box_type_unicode_imaginary,
+            \ ]
+
+" key is obj 'NAME'
+let g:shape_name_config_map = {
+    \ 'box': g:vimio_config_shapes_box_types_switch,
+    \ }
+
 

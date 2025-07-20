@@ -5,29 +5,29 @@
 " graphic generation functions.
 "
 " Contents:
-" - vimio#shapes#switch_lev1_index(direction)
-" - vimio#shapes#switch_lev2_index(direction)
-" - vimio#shapes#update_lev2_info()
-" - vimio#shapes#load_and_use_custom_drawset_funcs(func_name,indexes,index,file_name)
-" - vimio#shapes#switch_define_graph_set(is_show)
-" - vimio#shapes#get_default_graph_functions()
-" - vimio#shapes#get_all_graph_functions()
-" - vimio#shapes#cleanup_shape_subfuncs()
+" - vimio#stencil#switch_lev1_index(direction)
+" - vimio#stencil#switch_lev2_index(direction)
+" - vimio#stencil#update_lev2_info()
+" - vimio#stencil#load_and_use_custom_drawset_funcs(func_name,indexes,index,file_name)
+" - vimio#stencil#switch_define_graph_set(is_show)
+" - vimio#stencil#get_default_graph_functions()
+" - vimio#stencil#get_all_graph_functions()
+" - vimio#stencil#cleanup_shape_subfuncs()
 
-function! vimio#shapes#switch_lev1_index(direction)
+function! vimio#stencil#switch_lev1_index(direction)
     if a:direction == 1
         let g:vimio_config_shapes['set_index'] = (g:vimio_config_shapes['set_index']+1) % len(g:vimio_config_shapes['value'])
     else
         let g:vimio_config_shapes['set_index'] = (g:vimio_config_shapes['set_index']-1 + len(g:vimio_config_shapes['value'])) % len(g:vimio_config_shapes['value'])
     endif
 
-    call vimio#shapes#update_lev2_info()
+    call vimio#stencil#update_lev2_info()
     call vimio#popup#update_cross_block()
 endfunction
 
-function! vimio#shapes#switch_lev2_index(direction)
+function! vimio#stencil#switch_lev2_index(direction)
     if !exists('g:vimio_config_shapes')
-       call vimio#shapes#switch_define_graph_set(0)
+       call vimio#stencil#switch_define_graph_set(0)
     endif
 
     let step = g:vimio_config_shapes['value'][g:vimio_config_shapes['set_index']]['step'][g:vimio_state_switch_lev2_step_index] * a:direction
@@ -50,11 +50,11 @@ function! vimio#shapes#switch_lev2_index(direction)
         endif
     endif
 
-    call vimio#shapes#update_lev2_info()
+    call vimio#stencil#update_lev2_info()
     call vimio#popup#update_cross_block()
 endfunction
 
-function! vimio#shapes#get_default_graph_functions() abort
+function! vimio#stencil#get_default_graph_functions() abort
   return [
         \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0], [60, 0], [600, 0], [600, 0], 0, 0, [600, 0], 0, [40, 0], 0, 0, 0], 0, 'basic.vim'],
         \ ['Vimio__DefineSmartDrawShapesFiglet', [0, 0, 0, 0, 0, 0], 0, 'figlet.vim'],
@@ -63,8 +63,8 @@ function! vimio#shapes#get_default_graph_functions() abort
         \ ]
 endfunction
 
-function! vimio#shapes#get_all_graph_functions() abort
-  let default = vimio#shapes#get_default_graph_functions()
+function! vimio#stencil#get_all_graph_functions() abort
+  let default = vimio#stencil#get_default_graph_functions()
   let user = get(g:, 'vimio_user_shapes_define_graph_functions', [])
   return default + user
 endfunction
@@ -79,7 +79,7 @@ endfunction
 " and we are worried about the startup speed, so it is set to the last group.
 let g:vimio_shapes_define_graph_functions = {
     \ 'index': 1,
-    \ 'value': vimio#shapes#get_all_graph_functions()
+    \ 'value': vimio#stencil#get_all_graph_functions()
     \ }
 
 " If lev2_index is an array [300, 124],Prove that the current graph is dynamically
@@ -90,7 +90,7 @@ let g:vimio_shapes_define_graph_functions = {
 " The logic of function parameters
 " If step is 1, then the function only needs one parameter.
 "            2, So the function needs two parameters (width and height).
-function! vimio#shapes#update_lev2_info()
+function! vimio#stencil#update_lev2_info()
     " Update the contents of clip register
     let lev2_index = g:vimio_config_shapes['value'][g:vimio_config_shapes['set_index']]['index']
     let step_arr = g:vimio_config_shapes['value'][g:vimio_config_shapes['set_index']]['step']
@@ -111,7 +111,7 @@ function! vimio#shapes#update_lev2_info()
 endfunction
 
 
-function! vimio#shapes#cleanup_shape_subfuncs() abort
+function! vimio#stencil#cleanup_shape_subfuncs() abort
     if exists('g:vimio_state_shapes_sub_funcs') && !empty(g:vimio_state_shapes_sub_funcs)
         for fname in g:vimio_state_shapes_sub_funcs
             " exists('g:var')     Check if global variable g:var exists
@@ -128,9 +128,9 @@ function! vimio#shapes#cleanup_shape_subfuncs() abort
 endfunction
 
 
-function! vimio#shapes#load_and_use_custom_drawset_funcs(func_name, indexes, index, file_name)
+function! vimio#stencil#load_and_use_custom_drawset_funcs(func_name, indexes, index, file_name)
     " First clear all sub-functions in the previous template to release memory
-    call vimio#shapes#cleanup_shape_subfuncs()
+    call vimio#stencil#cleanup_shape_subfuncs()
 
     " Get the plugin root directory (prefer vimio, fallback to $VIM if not found)
     let plugin_root = vimio#utils#get_plugin_root()
@@ -161,7 +161,7 @@ function! vimio#shapes#load_and_use_custom_drawset_funcs(func_name, indexes, ind
     execute 'delfunction!' a:func_name
 endfunction
 
-function! vimio#shapes#switch_define_graph_set(is_show)
+function! vimio#stencil#switch_define_graph_set(is_show)
     " " Record start time
     " let l:start_time = reltime()
 
@@ -179,9 +179,9 @@ function! vimio#shapes#switch_define_graph_set(is_show)
     let g:vimio_shapes_define_graph_functions['index'] = (g:vimio_shapes_define_graph_functions['index']+1) % len(g:vimio_shapes_define_graph_functions['value'])
     let index_value = g:vimio_shapes_define_graph_functions['index']
 
-    call vimio#shapes#load_and_use_custom_drawset_funcs(g:vimio_shapes_define_graph_functions['value'][index_value][0], g:vimio_shapes_define_graph_functions['value'][index_value][1], g:vimio_shapes_define_graph_functions['value'][index_value][2], g:vimio_shapes_define_graph_functions['value'][index_value][3])
+    call vimio#stencil#load_and_use_custom_drawset_funcs(g:vimio_shapes_define_graph_functions['value'][index_value][0], g:vimio_shapes_define_graph_functions['value'][index_value][1], g:vimio_shapes_define_graph_functions['value'][index_value][2], g:vimio_shapes_define_graph_functions['value'][index_value][3])
 
-    call vimio#shapes#update_lev2_info()
+    call vimio#stencil#update_lev2_info()
     if a:is_show
         call vimio#popup#update_cross_block()
     endif

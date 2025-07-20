@@ -1,5 +1,11 @@
 " autoload/vimio/todo.vim
 " ---------------
+" Contents:
+" - vimio#todo#apply_highlight()
+" - vimio#todo#clear_highlight()
+" - vimio#todo#clear_todo_matches()
+" - vimio#todo#collect_sorted_todo_items()
+" - vimio#todo#find_max_braced_number()
 
 highlight default VimioTodoBug     ctermfg=DarkRed    guifg=#aa0000
 highlight default VimioTodoUrgent  ctermfg=Red        guifg=#ff4444

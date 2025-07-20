@@ -5,16 +5,30 @@
 " switching, and character copy and paste.
 "
 " Contents:
-" - vimio#ui#switch_visual_block_popup_type()
 " - vimio#ui#visual_block_move(direction)
 " - vimio#ui#visual_block_mouse_move_start()
 " - vimio#ui#visual_block_mouse_move_cancel()
+" - vimio#ui#smart_line_continue_draw()
+" - vimio#ui#smart_line_draw_end()
+" - vimio#ui#smart_line_start_arrow_show_flip()
+" - vimio#ui#smart_line_end_arrow_show_flip()
+" - vimio#ui#smart_line_diagonal_flip()
+" - vimio#ui#smart_line_arrow_flip_start_end()
+" - vimio#ui#smart_line_flip_cross()
+" - vimio#ui#smart_line_cancel()
 " - vimio#ui#switch_cross_style()
 " - vimio#ui#switch_line_style(is_just_show)
+" - vimio#ui#paste_flip_cross_mode()
 " - vimio#ui#switch_line_style_by_char_under_cursor()
 " - vimio#ui#copy_char_under_cursor_to_clip()
+" - vimio#ui#box_suround()
+" - vimio#ui#shapes_change_type()
+" - vimio#ui#shapes_resize_start()
+" - vimio#ui#shapes_resize_move()
+" - vimio#ui#shapes_resize_end()
 
 
+let s:shape_obj = {}
 
 " vim enters visual mode and selects an area the same size as the x register
 " ctrl j k h l move this selection area
@@ -170,25 +184,19 @@ endfunction
 function! vimio#ui#box_suround()
     let [text_only, y, x] = vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 0)
 
-    let box_type = [
-            \ [1 , 'top'             , '.'  , '-' , '.']  ,
-            \ [0 , 'title separator' , '|'  , '-' , '|']  ,
-            \ [1 , 'body separator'  , '| ' , '|' , ' |'] ,
-            \ [1 , 'bottom'          , "'"  , '-' , "'"]  ,
-            \ [1 , 'fill-character'  , ''   , ' ' , '']   ,
-            \ ]
-
-    let box = vimio#shapes#box#new({
-                \ 'TEXT_ONLY': text_only,
-                \ 'TITLE': '',
-                \ 'BOX_TYPE': box_type,
-                \ 'END_X': 5,
-                \ 'END_Y': 5
-                \ })
-    
     if x == 0 && y == 0
         let [y, x] = [line('.'), virtcol('.')]
     endif
+
+    let box = vimio#shapes#box#new({
+                \ 'X': x,
+                \ 'Y': y,
+                \ 'TEXT_ONLY': text_only,
+                \ 'TITLE': '',
+                \ 'BOX_TYPE': deepcopy(g:vimio_config_shapes_box_types_switch[g:vimio_state_draw_line_index]),
+                \ 'END_X': 5,
+                \ 'END_Y': 5
+                \ })
 
     call vimio#replace#paste_block_clip(1, {
                 \ 'row': y - box.TEXT_BEGIN_Y,
@@ -196,6 +204,117 @@ function! vimio#ui#box_suround()
                 \ 'new_text': box.TEXT,
                 \ 'pos_start': [y, x]
                 \})
-    " :TODO: Should the highlight remain after insertion? It might be necessary to move or change the border type.
+    " :TODO: Should the highlight remain after insertion? It might be necessary
+    " to move or change the border type.
 endfunction
+
+function! vimio#ui#shapes_change_type() abort
+    let shape_obj = vimio#shapes#detect#from_points(g:vimio_state_multi_cursors, 0)
+    if empty(shape_obj)
+        return
+    endif
+
+    let shape_type = deepcopy(g:shape_name_config_map[shape_obj.NAME][g:vimio_state_draw_line_index])
+    call shape_obj.set_box_type(shape_type)
+
+    " delete original shape
+    call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 1)
+
+    call vimio#replace#paste_block_clip(1, {
+                \ 'row': shape_obj.Y,
+                \ 'col': shape_obj.X,
+                \ 'new_text': shape_obj.TEXT,
+                \ 'pos_start': [shape_obj.Y, shape_obj.X]
+                \})
+endfunction
+
+
+function! vimio#ui#shapes_resize_start() abort
+    let s:shape_obj = vimio#shapes#detect#from_points(g:vimio_state_multi_cursors, 1)
+    " call vimio#debug#log_obj('s:shape_obj', s:shape_obj, 4, '--s:shape_obj--')
+    " call vimio#debug#log("start_row: %d;start_col: %d;", s:shape_obj['Y'], s:shape_obj['X'])
+    if empty(s:shape_obj)
+        return
+    endif
+
+    " move the cursor to the botright, create a smallest shape
+    call vimio#utils#cursor_jump(s:shape_obj['Y']+s:shape_obj["HEIGH"]-1, s:shape_obj['X']+s:shape_obj['WIDTH']-1)
+
+    augroup VimioUiShapesResizeCursorMove
+        autocmd!
+        autocmd CursorMoved * call vimio#ui#shapes_resize_move()
+    augroup END
+
+    call vimio#ui#shapes_resize_move()
+endfunction
+
+function! vimio#ui#shapes_resize_move() abort
+    if empty(s:shape_obj)
+        augroup VimioUiShapesResizeCursorMove
+            autocmd!
+        augroup END
+        return
+    endif
+    let [ current_row, current_col ] = [ line('.'), virtcol('.') ]
+    " a b
+    " 1 3
+    " 3 - 1 + 1 = 3
+    let end_x = current_col - s:shape_obj['X'] + 1
+    let end_y = current_row - s:shape_obj['Y'] + 1
+
+    let end_x = max([end_x, s:shape_obj['MIN_WIDTH']])
+    let end_y = max([end_y, s:shape_obj['MIN_HEIGH']])
+
+    " echom "end_x: " . end_x . ";end_y:" . end_y . ";"
+
+    call s:shape_obj['resize'](end_x, end_y)
+
+    let [ current_y, current_x ] = [ line('.'), virtcol('.') ]
+    let need_cursor_jump = v:false
+    let jump_y = current_y
+    let jump_x = current_x
+    if current_y < s:shape_obj['Y'] + s:shape_obj['MIN_HEIGH'] - 1
+        let need_cursor_jump = v:true
+        let jump_y = s:shape_obj['Y'] + s:shape_obj['MIN_HEIGH'] -1
+    endif
+
+    if current_x < s:shape_obj['X'] + s:shape_obj['MIN_WIDTH'] - 1
+        let need_cursor_jump = v:true
+        let jump_x = s:shape_obj['X'] + s:shape_obj['MIN_WIDTH'] -1
+    endif
+
+    if need_cursor_jump
+        call vimio#utils#cursor_jump(jump_y, jump_x)
+    endif
+
+    " call vimio#debug#log("TEXT: %s;X: %s;Y: %s;col: %s;row: %s;", s:shape_obj['TEXT'], end_x, end_y, current_col, current_row)
+    call vimio#popup#update_cross_block({
+                \ 'new_text': s:shape_obj['TEXT'],
+                \ 'anchor': 'botright',
+                \ 'pos_start': [s:shape_obj['Y'], s:shape_obj['X']]
+                \ })
+endfunction
+
+
+function! vimio#ui#shapes_resize_end() abort
+    augroup VimioUiShapesResizeCursorMove
+        autocmd!
+    augroup END
+
+    if empty(s:shape_obj)
+        return
+    endif
+
+    " delete original shape
+    call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 1)
+
+    call vimio#replace#paste_block_clip(1, {
+                \ 'row': s:shape_obj['Y'],
+                \ 'col': s:shape_obj['X'],
+                \ 'new_text': s:shape_obj.TEXT,
+                \ 'pos_start': [s:shape_obj['Y'], s:shape_obj['X']]
+                \})
+    let s:shape_obj = {}
+endfunction
+
 

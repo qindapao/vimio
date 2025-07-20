@@ -3,17 +3,9 @@
 " Identify a box and adjust its size.
 " Develop based on the following code.
 "   https://github.com/nkh/P5-App-Asciio/blob/main/lib/App/Asciio/stripes/editable_box2.pm
+"
 " Contents:
-" - vimio#popup#update_block()
-" - vimio#popup#close_block()
-
-let s:default_box_type = [
-      \ [1 , 'top'             , '.'  , '-' , '.']  ,
-      \ [1 , 'title separator' , '|'  , '-' , '|']  ,
-      \ [1 , 'body separator'  , '| ' , '|' , ' |'] ,
-      \ [1 , 'bottom'          , "'"  , '-' , "'"]  ,
-      \ [1 , 'fill-character'  , ''   , ' ' , '']   ,
-      \ ]
+" - vimio#shapes#box#new(element_definition)
 
 let s:display = 0
 let s:name    = 1
@@ -33,14 +25,16 @@ function! vimio#shapes#box#new(element_definition)
     let box = vimio#shapes#shapes#new(a:element_definition)
 
     for method in ['setup', 'set_box_type', 'get_box_frame_size_overhead',
-                \ 'get_box_frame_elements'
+                \ 'get_box_frame_elements', 'resize'
                 \ ]
         let box[method] = function('s:' . method, box)
     endfor
 
-    let box_type = get(a:element_definition, 'BOX_TYPE', deepcopy(s:default_box_type))
+    let box_type = get(a:element_definition, 'BOX_TYPE', deepcopy(g:vimio_config_shapes_box_type_default))
 
     call box.setup(
+                \ a:element_definition.X,
+                \ a:element_definition.Y,
                 \ a:element_definition.TEXT_ONLY,
                 \ a:element_definition.TITLE,
                 \ box_type,
@@ -125,13 +119,16 @@ function! s:get_box_frame_elements(box_type, width)
 endfunction
 
 
-function! s:setup(text_only, title, box_type, end_x, end_y) dict abort
+function! s:setup(X, Y, text_only, title, box_type, end_x, end_y) dict abort
     let fill_char = ' '
     if a:box_type[s:fill_character][s:body] !=# ''
         let fill_char = a:box_type[s:fill_character][s:body]
     endif
     let text_width = 0
     let lines = []
+
+    " echom "test_only: " . a:text_only
+
     for line in split(a:text_only, "\n")
         let text_width = max([text_width, strdisplaywidth(line)])
         call add(lines, line)
@@ -150,8 +147,13 @@ function! s:setup(text_only, title, box_type, end_x, end_y) dict abort
 
     let text_width = max([text_width, title_width])
     
-    let end_x = max([a:end_x, text_width + extra_width, title_width + extra_width])
-    let end_y = max([a:end_y, len(lines) + extra_height + len(title_lines)])
+    let box_min_x = max([text_width + extra_width, title_width + extra_width])
+    let end_x = max([a:end_x, box_min_x])
+
+    " echom "end_x: " . a:end_x . ';text_width: ' . text_width . ";extra_width: " . extra_width . ";title_width: " . title_width . ';'
+
+    let box_min_y = len(lines) + extra_height + len(title_lines)
+    let end_y = max([a:end_y, box_min_y])
 
     let [box_top, box_left, box_right, box_bottom, title_separator, title_left, title_right] = self.get_box_frame_elements(a:box_type, end_x)
 
@@ -188,11 +190,17 @@ function! s:setup(text_only, title, box_type, end_x, end_y) dict abort
         let title_separator_exist = 1
     endif
     
+    " shape_name_config_map -> 'NAME'
     call self.set({
+                \ 'NAME': 'box',
+                \ 'X': a:X,
+                \ 'Y': a:Y,
                 \ 'TEXT': text,
                 \ 'TITLE': title_text,
                 \ 'WIDTH': end_x,
                 \ 'HEIGH': end_y,
+                \ 'MIN_WIDTH': box_min_x,
+                \ 'MIN_HEIGH': box_min_y,
                 \ 'TEXT_ONLY': a:text_only,
                 \ 'TEXT_BEGIN_X': text_begin_x,
                 \ 'TEXT_BEGIN_Y': text_begin_y,
@@ -209,6 +217,29 @@ function! s:setup(text_only, title, box_type, end_x, end_y) dict abort
                 \})
 endfunction
 
-function! s:set_box_type() dict abort
+function! s:set_box_type(box_type) dict abort
+    call self.setup(
+                \ self.X,
+                \ self.Y,
+                \ self.TEXT_ONLY,
+                \ self.TITLE,
+                \ a:box_type,
+                \ self.WIDTH,
+                \ self.HEIGH
+                \)
 endfunction
+
+function! s:resize(new_x, new_y) dict abort
+    call self.setup(
+                \ self.X,
+                \ self.Y,
+                \ self.TEXT_ONLY,
+                \ self.TITLE,
+                \ self.BOX_TYPE,
+                \ a:new_x,
+                \ a:new_y
+                \)
+    return [0, 0, self.WIDTH, self.HEIGH]
+endfunction
+
 

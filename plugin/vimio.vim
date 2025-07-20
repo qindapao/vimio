@@ -19,6 +19,8 @@ endif
 runtime autoload/vimio/config.vim
 runtime autoload/vimio/state.vim
 
+" :TODO: When switching themes, all highlight groups will be lost. We need to 
+"   find a way to restore them.
 highlight VimioVirtualText ctermfg=LightGray guifg=#D3D3D3 ctermbg=NONE guibg=NONE
 highlight VimioCursorsMultiCursor cterm=reverse gui=reverse guibg=Yellow guifg=Black
 
@@ -119,7 +121,7 @@ if g:vimio_enable_default_mappings
     " Cycle to change the current linetype
     nnoremap <silent> sl :call vimio#ui#switch_line_style(0)<CR>
     " Displays the current linetype
-    nnoremap <silent> ss :call vimio#ui#switch_line_style(1)<CR>
+    nnoremap <silent> ssl :call vimio#ui#switch_line_style(1)<CR>
     " Change line type based on the character under the current cursor
     nnoremap <silent> su :call vimio#ui#switch_line_style_by_char_under_cursor()<CR>
 
@@ -149,19 +151,19 @@ if g:vimio_enable_default_mappings
 
     " =======================Shape Template Library Operations==================
     " Switch template set type
-    nnoremap <silent> sg :call vimio#shapes#switch_define_graph_set(1)<CR>
+    nnoremap <silent> sg :call vimio#stencil#switch_define_graph_set(1)<CR>
     " Switch template set lev1 forward
-    nnoremap <silent> sf :call vimio#shapes#switch_lev1_index(1)<CR>
+    nnoremap <silent> sf :call vimio#stencil#switch_lev1_index(1)<CR>
     " Switch template set lev1 reverse
-    nnoremap <silent> sb :call vimio#shapes#switch_lev1_index(-1)<CR>
+    nnoremap <silent> sb :call vimio#stencil#switch_lev1_index(-1)<CR>
     " Switch template set lev2 forward(M-MouseScrollDown)
-    nnoremap <silent> <M-u> :call vimio#shapes#switch_lev2_index(1)<CR>
-    nnoremap <silent> <M-ScrollWheelDown> :call vimio#shapes#switch_lev2_index(1)<CR>
+    nnoremap <silent> <M-u> :call vimio#stencil#switch_lev2_index(1)<CR>
+    nnoremap <silent> <M-ScrollWheelDown> :call vimio#stencil#switch_lev2_index(1)<CR>
     " Switch template set lev2 reverse(M-MouseScrollUp)
-    nnoremap <silent> <M-y> :call vimio#shapes#switch_lev2_index(-1)<CR>
-    nnoremap <silent> <M-ScrollWheelUp> :call vimio#shapes#switch_lev2_index(-1)<CR>
+    nnoremap <silent> <M-y> :call vimio#stencil#switch_lev2_index(-1)<CR>
+    nnoremap <silent> <M-ScrollWheelUp> :call vimio#stencil#switch_lev2_index(-1)<CR>
     " Preview current template shape
-    nnoremap <silent> <M-t> :call vimio#shapes#switch_lev2_index(0)<CR>
+    nnoremap <silent> <M-t> :call vimio#stencil#switch_lev2_index(0)<CR>
     " Switch shape index (width and height switch)
     nnoremap <silent> sk :let g:vimio_state_switch_lev2_step_index = !g:vimio_state_switch_lev2_step_index<CR>
 
@@ -244,6 +246,12 @@ if g:vimio_enable_default_mappings
 
     " draw box
     nnoremap <silent> <leader>db :call vimio#ui#box_suround()<CR>
+    nnoremap <silent> <leader>ssr :call vimio#ui#shapes_resize_start()<CR>
+    nnoremap <silent> <leader>sse :call vimio#ui#shapes_resize_end()<CR>
+    
+    " change type
+    nnoremap <silent> <leader>sct :call vimio#ui#shapes_change_type()<CR>
+     
 
     " =====================================mouse===============================
     " Quickly insert shape in clip

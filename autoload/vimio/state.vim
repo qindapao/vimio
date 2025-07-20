@@ -12,6 +12,8 @@
 " - g:vimio_state_multi_cursors
 " - g:vimio_state_prev_cursor_pos
 " - g:vimio_state_current_cursor_pos
+" - g:vimio_state_paste_preview_cross_mode
+" - g:vimio_state_select_shape_state
 " - vimio#state#draw_line_record_pre_pos()
 " - vimio#state#draw_line_auto_group_record_pre_pos_set()
 " - vimio#state#draw_line_auto_group_record_pre_pos_clear()
