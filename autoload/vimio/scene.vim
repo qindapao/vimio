@@ -108,7 +108,7 @@ endfunction
 function! vimio#scene#get_cross_chars(cross_point, all_chars) abort
     let result = {}
 
-    for [key, val] in items(a:cross_point)
+    for [key, cross_chars] in items(a:cross_point)
         let [row, col] = map(split(key, ','), 'str2nr(v:val)')
 
         "     col
@@ -117,20 +117,24 @@ function! vimio#scene#get_cross_chars(cross_point, all_chars) abort
         let right  = get(a:all_chars, row. ',' . (col+1), [''])
         let up = (row>1) ? get(a:all_chars, (row-1) . ',' . col, ['']) : ['']
         let down = get(a:all_chars, (row+1) . ',' . col, [''])
-        let cache_key = join(up, '') . '=' . join(down, '') . '=' . join(left, '') . '=' . join(right, '')
+        let cache_key = join(up, '') . '=' . join(down, '') . '=' . join(left, '') . '=' . join(right, '') . '=' . join(cross_chars, '')
         if !has_key(s:vimio_scene_cross_cache, cache_key)
             let is_cross_not_found = v:true
-            for table_param in g:vimio_config_draw_normal_char_funcs_map
-                if call(table_param[1], [up, down, left, right, table_param[2]])
-                    let is_cross_not_found = v:false
-                    if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
-                        let s:vimio_scene_cross_cache[cache_key] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
-                    else
-                        let s:vimio_scene_cross_cache[cache_key] = table_param[0]
+
+            if s:is_cross_point_chars_unicode_ascii_not_mix(cross_chars)
+                for table_param in g:vimio_config_draw_normal_char_funcs_map
+                    if call(table_param[1], [up, down, left, right, table_param[2]])
+                        let is_cross_not_found = v:false
+                        if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
+                            let s:vimio_scene_cross_cache[cache_key] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
+                        else
+                            let s:vimio_scene_cross_cache[cache_key] = table_param[0]
+                        endif
+                        break
                     endif
-                    break
-                endif
-            endfor
+                endfor
+            endif
+
             if is_cross_not_found
                 let s:vimio_scene_cross_cache[cache_key] = ''
             endif
@@ -148,5 +152,23 @@ endfunction
 
 function! vimio#scene#clear_cross_cache() abort
     let s:vimio_scene_cross_cache = {}
+endfunction
+
+function! s:is_cross_point_chars_unicode_ascii_not_mix(cross_chars) abort
+    let has_ascii    = v:false
+    let has_unicode  = v:false
+    for ch in a:cross_chars
+        if has_key(g:vimio_config_draw_ascii_cross_chars, ch)
+            let has_ascii = v:true
+        else
+            let has_unicode = v:true
+        endif
+
+        if has_ascii && has_unicode
+            return v:false
+        endif
+    endfor
+
+    return v:true
 endfunction
 

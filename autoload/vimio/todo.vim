@@ -7,11 +7,17 @@
 " - vimio#todo#collect_sorted_todo_items()
 " - vimio#todo#find_max_braced_number()
 
-highlight default VimioTodoBug     ctermfg=DarkRed    guifg=#aa0000
-highlight default VimioTodoUrgent  ctermfg=Red        guifg=#ff4444
-highlight default VimioTodoLow     ctermfg=Green      guifg=#44aa44
-highlight default VimioTodoMedium  ctermfg=Blue       guifg=#005fff
-highlight default VimioTodoRegular ctermbg=Yellow     guibg=#999933
+" highlight default VimioTodoBug     ctermfg=DarkRed    guifg=#aa0000
+" highlight default VimioTodoUrgent  ctermfg=Red        guifg=#ff4444
+" highlight default VimioTodoLow     ctermfg=Green      guifg=#44aa44
+" highlight default VimioTodoMedium  ctermfg=Blue       guifg=#005fff
+" highlight default VimioTodoRegular ctermbg=Yellow     guibg=#999933
+" Synchronize updates when switching themes
+highlight default link VimioTodoBug     Error
+highlight default link VimioTodoUrgent  WarningMsg
+highlight default link VimioTodoLow     Identifier
+highlight default link VimioTodoMedium  Type
+highlight default link VimioTodoRegular Visual
 
 function! vimio#todo#clear_todo_matches() abort
     if exists('b:todo_matches')

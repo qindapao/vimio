@@ -201,7 +201,7 @@ Insert a cat from the shape library:
 ## Defining Your Own Shapes
 
 Create a file like `draw_shaps/animal.vim` and define your ASCII art.  
-Register it in `autoload/vimio/shapes.vim`. See `vimio.txt` section 12 for details.
+Register it in `autoload/vimio/shapes.vim`. See `vimio.txt` section 13 for details.
 
 ---
 

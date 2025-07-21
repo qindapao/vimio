@@ -15,7 +15,7 @@ function! vimio#utils#geometry#points_to_matrix(points) abort
         if !has_key(matrix, row)
             let matrix[row] = {}
         endif
-        if ch !=# '' && ch !=# ' '
+        if ch !=# ''
             let matrix[row][col] = ch
         endif
     endfor

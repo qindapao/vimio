@@ -34,8 +34,7 @@ function! vimio#replace#paste_block_clip(is_space_replace, ...)
     let row_chars = []
     let row_phy_lens = []
 
-    let start_row = get(opts, 'row', line('.'))
-    let col = get(opts, 'col', virtcol('.'))
+    let [start_row, col] = get(opts, 'pos_start', [line('.'), virtcol('.')])
 
     let [chars_arr, index] = vimio#utils#get_line_cells(start_row, col)
     if get(chars_arr, index, '') ==# ''

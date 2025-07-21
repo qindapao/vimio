@@ -19,6 +19,9 @@ CONTENTS                                                     *vimio-contents*
     4.5 Change the style of the cross points..............|vimio-cross-style|
     4.6 Draw diagonal line.........................|vimio-draw-diagonal-line|
     4.7 Automatically add arrows..........................|vimio-auto-arrows|
+    4.8 Smart line draw...............................|vimio-smart-line-draw|
+    4.9 Smart shape draw.............................|vimio-smart-shape-draw|
+      4.9.1 draw box.............................|vimio-smart-shape-draw-box|
   5. Eraser....................................................|vimio-eraser|
     5.1 Little Eraser...................................|vimio-little-eraser|
     5.2 Big eraser.........................................|vimio-big-eraser|
@@ -31,11 +34,12 @@ CONTENTS                                                     *vimio-contents*
     8.1 Default shape template..........................|vimio-default-shape|
     8.2 User-defined shape templates...............|vimio-user-defined-shape|
   9. Cursor marking and character operation....................|vimio-cursor|
- 10. Summary of all operations................................|vimio-summary| 
- 11. CJK supports.................................................|vimio-cjk|
- 12. Configuration Options.....................................|vimio-config|
- 13. Troubleshooting & FAQ........................................|vimio-faq|
- 14. License & Credits........................................|vimio-license|
+ 10. Algorithm-based smart selection..................|vimio-smart-selection|
+ 11. Summary of all operations................................|vimio-summary| 
+ 12. CJK supports.................................................|vimio-cjk|
+ 13. Configuration Options.....................................|vimio-config|
+ 14. Troubleshooting & FAQ........................................|vimio-faq|
+ 15. License & Credits........................................|vimio-license|
 
 ==============================================================================
 0. Inspiration and Background                             *vimio-inspiration*
@@ -298,7 +302,7 @@ replacement mode, which is what we call free mode.
     to other line types.
   4.Displays the current line type
 
-    `ss`                show current line type
+    `ssl`               show current line type
     (switch show)
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -379,7 +383,7 @@ replacement mode, which is what we call free mode.
 
 4.5.Change the style of the cross points.                 *vimio-cross-style*
 
-    `sx`                change cross style
+    `sxs`               change cross style
     (swith x style)
     
     ┌────────────────────────────────────────────────────────────┐
@@ -402,6 +406,13 @@ replacement mode, which is what we call free mode.
     crossing point has changed. The main purpose of this is that for certain 
     graphics, such as circuit diagrams, when a crossing occurs, you may want to
     use a symbol like '(' to represent the crossing point.
+
+    `sxm`               flip clip cross enable
+    
+    By default, when pasting from the clipboard, if the content contains 
+    cross characters, it will perform an cross operation with the characters in
+    the bottom editor. This switch can be turned on or off.
+
 
 4.6.Draw a diagonal line                           *vimio-draw-diagonal-line*
 
@@ -452,6 +463,281 @@ replacement mode, which is what we call free mode.
     │ 6│                                                         │
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+4.8.Smart line draw                                   *vimio-smart-line-draw*
+    `sms`               smart line draw start
+    (smart line start)
+    `sme`               smart line draw end
+    (smart line end)
+    `smas`              smart line toggle the on and off of the start arrow
+    (smart line arrow start flip)
+    `smae`              smart line toggle the on and off of the end arrow
+    (smart line arrow end flip)
+    `smd`               smart line flip diagonal allow
+    (smart line diagonal)
+    `smaf`              smart line arrow flip start end
+    (smart line arrow flip)
+    `smx`               smart line flip cross mode
+    (smart line x mode)
+    `smc`               smart line cancel draw
+    (smart line cancel)
+
+
+  1.At point A, press `sms` to start draw, then move the cursor to point B.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│            A-----------.                                │
+    │ 3│                        |                                │
+    │ 4│                        v                                │
+    │ 5│                        B                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+  2.Press `sme`, A straight arrow with a turning point will be drawn on the 
+    canvas.
+  3.If you don't want an arrow at the end position, press `smae` to toggle, and
+    press it again to bring the arrow back.
+    
+    `smas` is used to toggle start arrow show or hide.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│            A-----------.                                │
+    │ 3│                        |                                │
+    │ 4│                        |                                │
+    │ 5│                        B                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+  4.If you want to allow diagonal at the start and end points, use `smd` to 
+    toggle it.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│            A---------.                                  │
+    │ 3│                       \                                 │
+    │ 4│                        v                                │
+    │ 5│                        B                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+  5.If during the operation you wish to switch the starting point to the
+    endpoint and the endpoint to the starting point, then use `smaf` to make 
+    the switch.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│            A<--------.                                  │
+    │ 3│                       \                                 │
+    │ 4│                        \                                │
+    │ 5│                        B                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+  6.If non-space characters are encountered in the path of the line drawing, a
+    crossing may occur. A preview of the crossing character will be
+    automatically generated. If you do not want a crossing, use `smx` to toggle
+    it on or off.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                  |                                      │
+    │ 2│            A<----+---.                                  │
+    │ 3│                  |    \                                 │
+    │ 4│                  |     \                                │
+    │ 5│                  |     B                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    The plus sign in the diagram above is the automatically completed cross
+    character.
+  7.If you want to cancel during the drawing process, simply press `smc`, and
+    nothing will be drawn on the canvas.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│            A                                            │
+    │ 3│                                                         │
+    │ 4│                                                         │
+    │ 5│                        B                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+  8.The line type of the smart line is shared with the line type of the regular
+    line. Press `sl` to switch.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│            A───────────╮                                │
+    │ 3│                        │                                │
+    │ 4│                        v                                │
+    │ 5│                        B                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │ now line type:['─', '│']                                   │
+    └────────────────────────────────────────────────────────────┘
+
+4.9.Smart line draw                                  *vimio-smart-shape-draw*
+
+4.9.1.  draw box                                 *vimio-smart-shape-draw-box*
+
+    `<leader>db`        draw a box (draw box)
+    `<leader>ssr`       shape resize start
+    (shape switch resize)
+    `<leader>sse`       shape resize end
+    (shape switch resize end)
+    `<leader>sct`       shape change border type
+
+  1.Draw an empty box
+    
+    Press `<leader>db` in the blank area.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│             .---.                                       │
+    │ 4│             |   |                                       │
+    │ 5│             '---'                                       │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+  2.Draw an box with text in it.
+     
+    First, cursor highlight it(see |vimio-cursor|).
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│            text line 1                                  │
+    │ 4│            text line 2                                  │
+    │ 5│                                                         │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│            ░░░░░░░░░░░                                  │
+    │ 4│            ░░░░░░░░░░░                                  │
+    │ 5│                                                         │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    Step two, press `<leader>db`.You will notice that the text is enclosed
+    within a box border. The type of border is determined by the current
+    ordinary line style.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│          .-------------.                                │
+    │ 3│          | text line 1 |                                │
+    │ 4│          | text line 2 |                                │
+    │ 5│          '-------------'                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+  3.Resize Shapes
+    Cursor highlight the whole shape or just put cursor on it's border.Then
+    press `<leader>ssr`. 
+       
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│          █-------------.                                │
+    │ 3│          | text line 1 |                                │
+    │ 4│          | text line 2 |                                │
+    │ 5│          '-------------'                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    
+    As the cursor moves, a preview of the current shape dimensions will be
+    visible.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│          .-------------.-----.                          │
+    │ 3│          | text line 1 |     |                          │
+    │ 4│          | text line 2 |     |                          │
+    │ 5│          '-------------'     |                          │
+    │ 6│          '-------------------█                          │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    Once you reach the desired size, press `<leader>sse` to draw the box with
+    the new dimensions.  
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│          .-------------------.                          │
+    │ 3│          | text line 1       |                          │
+    │ 4│          | text line 2       |                          │
+    │ 5│          |                   |                          │
+    │ 6│          '-------------------█                          │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+  4.Change the shape of the border type
+
+    Cursor highlight the whole shape or just put cursor on it's border.Then
+    press `<leader>sct`. It will switch to the border type of the current
+    normal line style.
+   
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│          .--------█----------.                          │
+    │ 3│          | text line 1       |                          │
+    │ 4│          | text line 2       |                          │
+    │ 5│          |                   |                          │
+    │ 6│          '-------------------'                          │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │  now line type:['─', '│']                                  │
+    └────────────────────────────────────────────────────────────┘
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│          ┌───────────────────┐                          │
+    │ 3│          │ text line 1       │                          │
+    │ 4│          │ text line 2       │                          │
+    │ 5│          │                   │                          │
+    │ 6│          └───────────────────┘                          │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │  now line type:['─', '│']                                  │
     └────────────────────────────────────────────────────────────┘
 
 ==============================================================================
@@ -1034,9 +1320,464 @@ Let’s first talk about all the operation sets, and then give some examples.
     the highlighted characters are copied to the system clipboard. You can paste
     them again or perform other operations, which can be combined at will.
 
-
 ==============================================================================
-10. Summary of all operations                                 *vimio-summary*
+10. Algorithm-based smart selection                   *vimio-smart-selection*
+
+
+    `<leader>s4`        solid select 4 direction
+    `<leader>s8`        solid select 8 direction
+    `<leader>b4`        (Minimum Cycle)border select 4 direction
+    `<leader>bm4`       (Maximum Cycle)border select 4 direction
+    `<leader>b8`        (Minimum Cycle)border select 8 direction
+    `<leader>bm8`       (Maximum Cycle)border select 8 direction
+    `<leader>l4`        line selection but not penetration in 4 direction
+    `<leader>p4`        line selection but penetration in 4 direction
+    `<leader>l8`        line selection but not penetration in 8 direction 
+    `<leader>p8`        line selection but penetration in 8 direction     
+    `<leader>i4`        (Minimum Cycle)border inside select 4 direction 
+    `<leader>im4`       (Maximum Cycle)border inside select 4 direction 
+    `<leader>i8`        (Minimum Cycle)border inside select 8 direction 
+    `<leader>im8`       (Maximum Cycle)border inside select 8 direction 
+    `<leader>a4`        (Minimum Cycle)border and border inside select 4 
+                        direction  
+    `<leader>am4`       (Maximum Cycle)border and border inside select 4
+                        direction  
+    `<leader>a8`        (Minimum Cycle)border and border inside select 8
+                        direction  
+    `<leader>am8`       (Maximum Cycle)border and border inside select 8
+                        direction  
+    `<leader>lba`       box selection all based on penetration lines
+    `<leader>lbi`       box selection inside border based on penetration lines
+    `<leader>s`         extract outgoing spokes inside in 4 direction
+    `<leader>sm`        extract outgoing spokes inside in 8 direction
+    `<leader>r4`        select all related in 4 direction
+    `<leader>r8`        select all related in 8 direction
+    `<leader>t4`        text and no border select in 4 direction
+    `<leader>t8`        text and no border select in 8 direction
+
+    Perhaps there are too many operations above, so let's use an example to 
+    briefly illustrate. When the smart selection highlights characters, the
+    other operations remain the same as before. You can copy the highlighted
+    character or cut it to the system clipboard(see: |vimio-cursor|).
+   
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   .---.    .---.                        │
+    │ 3│               .---|   -----|   |                        │
+    │ 4│               |   '---'    '---'                        │
+    │ 5│               |    .--.     .--.                        │
+    │ 6│               .----|  ------|  |    .----------.        │
+    │ 7│       A       |    '--'     '--'    |          |        │
+    │ 8│       |       |    .------.         | text 1   |        │
+    │ 9│       v       |    |      .---------. text 2   |        │
+    │10│     ----------+----'      |         '----------'        │
+    │11│               |    '------'                             │
+    │12│               |                        .---------.  D   │
+    │13│   F---------->|    .---------.    .----.         |  |   │
+    │14│               |    | inner   |    |    |         |  |   │
+    │15│               .----'         '----.    '---------'  |   │
+    │16│               |    '---------'    |    E            v   │
+    │17│               |                   |    |.------.------. │
+    │18│               |                   |    v|      |small | │
+    │19│               |        __         '-----.big   |cycle | │
+    │20│               |       /  \  B           |cycle '------. │
+    │20│               '-------\__/  |           '             | │
+    │21│                             |           '-------------' │
+    │21│    textonly1                v                           │
+    │21│          |                 solid4    solid8             │
+    │21│          |                 solid4     ^    solid8       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+ 
+    We have the mind map above, and now let's see which parts are highlighted
+    when different selection modes are applied. 
+
+    1. `<leader>s4` and `<leader>s8`
+        At point B, you can select this solid block using `<leader>s4`.
+        However, at point C, only `<leader>s8` can be used to select this solid
+        block, because diagonal directions need to be considered. The same
+        logic applies to all selections regarding the 4 directions and the 8
+        directions, so it won't be explained again below.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   .---.    .---.                        │
+    │ 3│               .---|   -----|   |                        │
+    │ 4│               |   '---'    '---'                        │
+    │ 5│               |    .--.     .--.                        │
+    │ 6│               .----|  ------|  |    .----------.        │
+    │ 7│       A       |    '--'     '--'    |          |        │
+    │ 8│       |       |    .------.         | text 1   |        │
+    │ 9│       v       |    |      .---------. text 2   |        │
+    │10│     ----------+----'      |         '----------'        │
+    │11│               |    '------'                             │
+    │12│               |                        .---------.  D   │
+    │13│   F---------->|    .---------.    .----.         |  |   │
+    │14│               |    | inner   |    |    |         |  |   │
+    │15│               .----'         '----.    '---------'  |   │
+    │16│               |    '---------'    |    E            v   │
+    │17│               |                   |    |.------.------. │
+    │18│               |                   |    v|      |small | │
+    │19│               |        __         '-----.big   |cycle | │
+    │20│               |       /  \  B           |cycle '------. │
+    │20│               '-------\__/  |           '             | │
+    │21│                             |           '-------------' │
+    │21│    textonly1                v                           │
+    │21│          |                 ░░░░░░    ░░░░░░             │
+    │21│          |                 ░░░░░░     ^    ░░░░░░       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    2. `<leader>b4` It is based on the selection of the smallest cycle border.
+        the final selection effect for point D in the diagram is as follows.
+
+       `<leader>b8` No separate explanation will be provided; it is based on
+        the consideration of the diagonal loop.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   .---.    .---.                        │
+    │ 3│               .---|   -----|   |                        │
+    │ 4│               |   '---'    '---'                        │
+    │ 5│               |    .--.     .--.                        │
+    │ 6│               .----|  ------|  |    .----------.        │
+    │ 7│       A       |    '--'     '--'    |          |        │
+    │ 8│       |       |    .------.         | text 1   |        │
+    │ 9│       v       |    |      .---------. text 2   |        │
+    │10│     ----------+----'      |         '----------'        │
+    │11│               |    '------'                             │
+    │12│               |                        .---------.  D   │
+    │13│   F---------->|    .---------.    .----.         |  |   │
+    │14│               |    | inner   |    |    |         |  |   │
+    │15│               .----'         '----.    '---------'  |   │
+    │16│               |    '---------'    |    E            v   │
+    │17│               |                   |    |.------░░░░░░░░ │
+    │18│               |                   |    v|      ░small ░ │
+    │19│               |        __         '-----.big   ░cycle ░ │
+    │20│               |       /  \  B           |cycle ░░░░░░░░ │
+    │20│               '-------\__/  |           '             | │
+    │21│                             |           '-------------' │
+    │21│    textonly1                v                           │
+    │21│          |                 solid4    solid8             │
+    │21│          |                 solid4     ^    solid8       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    3. `<leader>bm4` The effect of selecting point D in the diagram based on
+        the maximum cycle.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   .---.    .---.                        │
+    │ 3│               .---|   -----|   |                        │
+    │ 4│               |   '---'    '---'                        │
+    │ 5│               |    .--.     .--.                        │
+    │ 6│               .----|  ------|  |    .----------.        │
+    │ 7│       A       |    '--'     '--'    |          |        │
+    │ 8│       |       |    .------.         | text 1   |        │
+    │ 9│       v       |    |      .---------. text 2   |        │
+    │10│     ----------+----'      |         '----------'        │
+    │11│               |    '------'                             │
+    │12│               |                        .---------.  D   │
+    │13│   F---------->|    .---------.    .----.         |  |   │
+    │14│               |    | inner   |    |    |         |  |   │
+    │15│               .----'         '----.    '---------'  |   │
+    │16│               |    '---------'    |   E             v   │
+    │17│               |                   |   | ░░░░░░░░░░░░░░░ │
+    │18│               |                   |   v ░      |small ░ │
+    │19│               |        __         '--- -░big   |cycle ░ │
+    │20│               |       /  \  B           ░cycle '------░ │
+    │20│               '-------\__/  |           ░             ░ │
+    │21│                             |           ░░░░░░░░░░░░░░░ │
+    │21│    textonly1                v                           │
+    │21│          |                 solid4    solid8             │
+    │21│          |                 solid4     ^    solid8       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    Notes: The algorithm for finding the largest cycle is the slowest among all
+        cycle-finding algorithms, so it may time out and fail to find the
+        largest cycle. Optimization is needed. If it is found that finding the
+        largest cycle has failed, consider temporarily disconnecting a 
+        connecting character outside the cycle. For example, point E in the 
+        diagram above.
+    4. `<leader>i4` Select the inside of the border.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   .---.    .---.                        │
+    │ 3│               .---|   -----|   |                        │
+    │ 4│               |   '---'    '---'                        │
+    │ 5│               |    .--.     .--.                        │
+    │ 6│               .----|  ------|  |    .----------.        │
+    │ 7│       A       |    '--'     '--'    |          |        │
+    │ 8│       |       |    .------.         | text 1   |        │
+    │ 9│       v       |    |      .---------. text 2   |        │
+    │10│     ----------+----'      |         '----------'        │
+    │11│               |    '------'                             │
+    │12│               |                  E     .---------.  D   │
+    │13│   F---------->|    .---------.   |.----.         |  |   │
+    │14│               |    | inner   |   v|    |         |  |   │
+    │15│               .----'         '----.    '---------'  |   │
+    │16│               |    '---------'    |                 v   │
+    │17│               |                   |     .------.------. │
+    │18│               |                   |     |      |░░░░░░| │
+    │19│               |        __         '-----.big   |░░░░░░| │
+    │20│               |       /  \  B           |cycle '------. │
+    │20│               '-------\__/  |           '             | │
+    │21│                             |           '-------------' │
+    │21│    textonly1                v                           │
+    │21│          |                 solid4    solid8             │
+    │21│          |                 solid4     ^    solid8       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    5. `<leader>a4` Both the border and its internal area are selected.   
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   .---.    .---.                        │
+    │ 3│               .---|   -----|   |                        │
+    │ 4│               |   '---'    '---'                        │
+    │ 5│               |    .--.     .--.                        │
+    │ 6│               .----|  ------|  |    .----------.        │
+    │ 7│       A       |    '--'     '--'    |          |        │
+    │ 8│       |       |    .------.         | text 1   |        │
+    │ 9│       v       |    |      .---------. text 2   |        │
+    │10│     ----------+----'      |         '----------'        │
+    │11│               |    '------'                             │
+    │12│               |                        .---------.  D   │
+    │13│   F---------->|    .---------.    .----.         |  |   │
+    │14│               |    | inner   |    |    |         |  |   │
+    │15│               .----'         '----.    '---------'  |   │
+    │16│               |    '---------'    |    E            v   │
+    │17│               |                   |    |.------░░░░░░░░ │
+    │18│               |                   |    v|      ░░░░░░░░ │
+    │19│               |        __         '-----.big   ░░░░░░░░ │
+    │20│               |       /  \  B           |cycle ░░░░░░░░ │
+    │20│               '-------\__/  |           '             | │
+    │21│                             |           '-------------' │
+    │21│    textonly1                v                           │
+    │21│          |                 solid4    solid8             │
+    │21│          |                 solid4     ^    solid8       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    6. `<leader>l4` Select a line, and if there is a turning point, do not
+        penetrate it. As shown at point F in the diagram below.
+    
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   .---.    .---.                        │
+    │ 3│               .---|   -----|   |                        │
+    │ 4│               |   '---'    '---'                        │
+    │ 5│               |    .--.     .--.                        │
+    │ 6│               .----|  ------|  |    .----------.        │
+    │ 7│       A       |    '--'     '--'    |          |        │
+    │ 8│       |       |    .------.         | text 1   |        │
+    │ 9│       v       |    |      .---------. text 2   |        │
+    │10│     ----------░----'      |         |          |        │
+    │11│               ░    '------'         '----------'        │
+    │12│               ░                        .---------.  D   │
+    │13│               ░    .---------.    .----.         |  |   │
+    │14│   F---------->░    | inner   |    |    |         |  |   │
+    │15│               ░----'         '----.    '---------'  |   │
+    │16│               |    '---------'    |    E            v   │
+    │17│               |                   |    |.------.------. │
+    │18│               |                   |    v|      |small | │
+    │19│               |        __         '-----.big   |cycle | │
+    │20│               |       /  \  B           |cycle '------. │
+    │20│               '-------\__/  |           '             | │
+    │21│                             |           '-------------' │
+    │21│    textonly1                v                           │
+    │21│          |                 solid4    solid8             │
+    │21│          |                 solid4     ^    solid8       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    7. `<leader>p4` Select a line, and if there is a turning point, penetrate
+        it. As shown at point F in the diagram below.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   .---.    .---.                        │
+    │ 3│               ░░░░░   -----|   |                        │
+    │ 4│               ░   '---'    '---'                        │
+    │ 5│               ░    .--.     .--.                        │
+    │ 6│               ░----|  ------|  |    .----------.        │
+    │ 7│       A       ░    '--'     '--'    |          |        │
+    │ 8│       |       ░    .------.         | text 1   |        │
+    │ 9│       v       ░    |      .---------. text 2   |        │
+    │10│     ----------░----'      |         '----------'        │
+    │11│               ░    '------'                             │
+    │12│               ░                        .---------.  D   │
+    │13│   F---------->░    .---------.    .----.         |  |   │
+    │14│               ░    | inner   |    |    |         |  |   │
+    │15│               ░----'         '----.    '---------'  |   │
+    │16│               ░    '---------'    |    E            v   │
+    │17│               ░                   |    |.------.------. │
+    │18│               ░                   |    v|      |small | │
+    │19│               ░        __         '-----.big   |cycle | │
+    │20│               ░       ░  \  B           |cycle '------. │
+    │20│               ░░░░░░░░░__/  |           '             | │
+    │21│                             |           '-------------' │
+    │21│    textonly1                v                           │
+    │21│          |                 solid4    solid8             │
+    │21│          |                 solid4     ^    solid8       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    8. `<leader>lba` Due to the low efficiency of finding the largest cycle,
+        this method can be used as an alternative to the maximum cycle
+        selection when the largest cycle is located at the outermost position.
+    9. `<leader>s` Select all line segments of the mind map or flowchart's
+        divergent lines corresponding to the current point. Similarly,
+        the selection effect based on point F is as follows.
+    
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   .---.    .---.                        │
+    │ 3│               ░░░░|   -----|   |                        │
+    │ 4│               ░   '---'    '---'                        │
+    │ 5│               ░    .--.     .--.                        │
+    │ 6│               ░░░░░|  ------|  |    .----------.        │
+    │ 7│       A       ░    '--'     '--'    |          |        │
+    │ 8│       |       ░    .------.         | text 1   |        │
+    │ 9│       v       ░    |      .---------. text 2   |        │
+    │10│     ░░░░░░░░░░░░░░░'      |         '----------'        │
+    │11│               ░    '------'                             │
+    │12│               ░                        .---------.  D   │
+    │13│   F---------->░    .---------.    .----.         |  |   │
+    │14│               ░    | inner   |    |    |         |  |   │
+    │15│               ░░░░░'         '----.    '---------'  |   │
+    │16│               ░    '---------'    |    E            v   │
+    │17│               ░                   |    |.------.------. │
+    │18│               ░                   |    v|      |small | │
+    │19│               ░        __         '-----.big   |cycle | │
+    │20│               ░       /  \  B           |cycle '------. │
+    │20│               ░░░░░░░░\__/  |           '             | │
+    │21│                             |           '-------------' │
+    │21│    textonly1                v                           │
+    │21│          |                 solid4    solid8             │
+    │21│          |                 solid4     ^    solid8       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    Notes: This feature is currently unstable! The current radial lines cannot
+        be within a closed cycle!
+  10.  `<leader>t4` Select plain text outside the border or line.
+        
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   .---.    .---.                        │
+    │ 3│               .---|   -----|   |                        │
+    │ 4│               |   '---'    '---'                        │
+    │ 5│               |    .--.     .--.                        │
+    │ 6│               .----|  ------|  |    .----------.        │
+    │ 7│       A       |    '--'     '--'    |          |        │
+    │ 8│       |       |    .------.         | text 1   |        │
+    │ 9│       v       |    |      .---------. text 2   |        │
+    │10│     ----------+----'      |         '----------'        │
+    │11│               |    '------'                             │
+    │12│               |                        .---------.  D   │
+    │13│   F---------->|    .---------.    .----.         |  |   │
+    │14│               |    | inner   |    |    |         |  |   │
+    │15│               .----'         '----.    '---------'  |   │
+    │16│               |    '---------'    |    E            v   │
+    │17│               |                   |    |.------.------. │
+    │18│               |                   |    v|      |small | │
+    │19│               |        __         '-----.big   |cycle | │
+    │20│               |       /  \  B           |cycle '------. │
+    │20│               '-------\__/  |           '             | │
+    │21│                             |           '-------------' │
+    │21│    ░░░░░░░░░                v                           │
+    │21│          |                 solid4    solid8             │
+    │21│          |                 solid4     ^    solid8       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+  11. `<leader>r4` Select all related items, including the content within the
+        borders.                                               
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                   ░░░░░    ░░░░░                        │
+    │ 3│               ░░░░░   ░░░░░░░░░░                        │
+    │ 4│               ░   ░░░░░    ░░░░░                        │
+    │ 5│               ░    ░░░░     ░░░░                        │
+    │ 6│               ░░░░░░░░░░░░░░░░░░    ░░░░░░░░░░░░        │
+    │ 7│       A       ░    ░░░░     ░░░░    ░░░░░░░░░░░░        │
+    │ 8│       |       ░    ░░░░░░░░         ░░░░░░░░░░░░        │
+    │ 9│       v       ░    ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░        │
+    │10│     ░░░░░░░░░░░░░░░░░░░░░░░         ░░░░░░░░░░░░        │
+    │11│               ░    ░░░░░░░░                             │
+    │12│               ░                        ░░░░░░░░░░░  D   │
+    │13│   F---------->░    ░░░░░░░░░░░    ░░░░░░░░░░░░░░░░  |   │
+    │14│               ░    ░░░░░░░░░░░    ░    ░░░░░░░░░░░  |   │
+    │15│               ░░░░░░░░░░░░░░░░░░░░░    ░░░░░░░░░░░  |   │
+    │16│               ░    ░░░░░░░░░░░    ░    E            v   │
+    │17│               ░                   ░    |░░░░░░░░░░░░░░░ │
+    │18│               ░                   ░    v░░░░░░░░░░░░░░░ │
+    │19│               ░        __         ░░░░░░░░░░░░░░░░░░░░░ │
+    │20│               ░       /  \  B           ░░░░░░░░░░░░░░░ │
+    │20│               ░░░░░░░░░░░░  |           ░░░░░░░░░░░░░░░ │
+    │21│                             |           ░░░░░░░░░░░░░░░ │
+    │21│    testonly1                v                           │
+    │21│          |                 solid4    solid8             │
+    │21│          |                 solid4     ^    solid8       │
+    │21│          '------testonly2             |                 │
+    │21│                                       C                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    
+==============================================================================
+11. Summary of all operations                                 *vimio-summary*
 
 .------------------------------------------------------------------------------.
 | Category     operate              Function                                   |
@@ -1055,8 +1796,21 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `sw`             (visual block)Draw rectangle                   |
 |              `sl`             Change line type                               |
 |              `su`             Change line type besed on cursor char          |
-|              `ss`             Show current line type                         |
-|              `sx`             change cross style                             |
+|              `ssl`            Show current line type                         |
+|              `sxs`            change cross style                             |
+|              `sxm`            flip clip cross enable                         |
+|              `sms`            smart line draw start                          |
+|              `sme`            smart line draw end                            |
+|              `smas`           smart line toggle the start arrow on or off    |
+|              `smae`           smart line toggle the end arrow on of off      |
+|              `smd`            smart line flip diagonal allow                 |
+|              `smaf`           smart line arrow flip start end                |
+|              `smx`            smart line flip cross mode                     |
+|              `smc`            smart line cancel draw                         |
+|              `<leader>db`     draw a box (draw box)                          |
+|              `<leader>ssr`    shape resize start                             |
+|              `<leader>sse`    shape resize end                               |
+|              `<leader>sct`    shape change border type                       |
 .------------------------------------------------------------------------------.
 | Eraser       `C-M-l/h/j/k`    Little eraser                                  |
 |              `S-R`            (visual block)global replace,Entering a space  |
@@ -1132,10 +1886,43 @@ Let’s first talk about all the operation sets, and then give some examples.
 |                               then save it to the clipboard                  |            
 |             `C-S-G`           Replace all highlighted characters with        |
 |                               character in the clip                          |                    
+.------------------------------------------------------------------------------.
+| Algorithm-based smart selection                                              |  
+|             `<leader>s4`      solid select 4 direction                       |
+|             `<leader>s8`      solid select 8 direction                       |
+|             `<leader>b4`      (Minimum Cycle)border select 4 direction       |
+|             `<leader>bm4`     (Maximum Cycle)border select 4 direction       |
+|             `<leader>b8`      (Minimum Cycle)border select 8 direction       |
+|             `<leader>bm8`     (Maximum Cycle)border select 8 direction       |
+|             `<leader>l4`      line selection but not penetration in 4        |
+|                               direction                                      |
+|             `<leader>p4`      line selection but penetration in 4 direction  |
+|             `<leader>l8`      line selection but not penetration in 8        |
+|                               direction                                      |
+|             `<leader>p8`      line selection but penetration in 8 direction  |
+|             `<leader>i4`      (Minimum Cycle)border inside select 4 direction|
+|             `<leader>im4`     (Maximum Cycle)border inside select 4 direction|
+|             `<leader>i8`      (Minimum Cycle)border inside select 8 direction|
+|             `<leader>im8`     (Maximum Cycle)border inside select 8 direction|
+|             `<leader>a4`      (Minimum Cycle)border and border inside select |
+|                               4 direction                                    |
+|             `<leader>am4`     (Maximum Cycle)border and border inside select |
+|                               4 direction                                    |
+|             `<leader>a8`      (Minimum Cycle)border and border inside select |
+|                               8 direction                                    |
+|             `<leader>am8`     (Maximum Cycle)border and border inside select |
+|                               8 direction                                    |
+|             `<leader>lb`      box selection based on penetration lines       |
+|             `<leader>s`       extract outgoing spokes inside in 4 direction  |
+|             `<leader>sm`      extract outgoing spokes inside in 8 direction  |
+|             `<leader>r4`      select all related in 4 direction              |
+|             `<leader>r8`      select all related in 8 direction              |
+|             `<leader>t4`      text and no border select in 4 direction       |
+|             `<leader>t8`      text and no border select in 8 direction       |
 '------------------------------------------------------------------------------'
 
 ==============================================================================
-11. CJK supports                                                  *vimio-cjk* 
+12. CJK supports                                                  *vimio-cjk* 
 
 
     ┌────────────────────────────────────────────────────────────┐
@@ -1159,7 +1946,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     Japanese and Korean text alignment and drawing
 
 ==============================================================================
-12. Configuration Options                                      *vimio-config*
+13. Configuration Options                                      *vimio-config*
 
 
 • To disable default mappings:
@@ -1199,7 +1986,7 @@ Use unique names like `my_animal.vim`, `custom_led.vim`, etc., to ensure
 compatibility.
 
 ==============================================================================
-13. Troubleshooting & FAQ                                         *vimio-faq*
+14. Troubleshooting & FAQ                                         *vimio-faq*
 
 Q: Misaligned blocks with tabs?  
 A: Convert tabs: `:set expandtab | :retab`.
@@ -1226,7 +2013,7 @@ A: Use the command:
    It will print the currently installed version (e.g. 1.0.0).
 
 ==============================================================================
-14. License & Credits                                         *vimio-license*
+15. License & Credits                                         *vimio-license*
 
 MIT License © 2025 qindapao
 Inspired by Asciio by Nadim Khemir.

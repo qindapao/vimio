@@ -28,6 +28,11 @@
 " - g:shape_name_config_map
 
 let g:vimio_config_visual_block_popup_types = ['cover', 'overlay']
+
+let g:vimio_config_draw_ascii_cross_chars = {
+            \ '-': 1, '|': 1, '+': 1, '.': 1, "'": 1, '^': 1, 'v': 1, '<': 1, '>': 1,
+            \ }
+
 let g:vimio_config_draw_cross_chars = {
     \ '-': 1, '|': 1, '+': 1, '.': 1, "'": 1, '^': 1, 'v': 1, '<': 1, '>': 1,
     \ '─': 1, '│': 1, '┼': 1, '┤': 1, '├': 1, '┬': 1, '┴': 1, '╭': 1, '╮': 1, '╯': 1, '╰': 1,

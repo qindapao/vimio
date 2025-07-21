@@ -40,7 +40,7 @@ function! s:detect_box(points, is_space_strip) abort
     for r in range(min_row + 1, max_row - 1)
         let line = ''
         for c in range(min_col + 1, max_col - 1)
-            let line .= get(matrix[r], c, ' ')
+            let line .= get(matrix[r], c, '')
         endfor
         let stripped = line
         if a:is_space_strip

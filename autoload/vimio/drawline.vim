@@ -1179,9 +1179,8 @@ endfunction
 " End and insert character
 function! vimio#drawline#end() dict abort
     call vimio#replace#paste_block_clip(0, { 
-                \ 'row': self.pop_up.pos[0],
-                \ 'col': self.pop_up.pos[1],
-                \ 'new_text': self.pop_up.txt
+                \ 'new_text': self.pop_up.txt,
+                \ 'pos_start': [self.pop_up.pos[0], self.pop_up.pos[1]]
                 \ })
     " Close the pop-up window here
     call vimio#popup#close_block()

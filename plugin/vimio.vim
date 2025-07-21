@@ -19,11 +19,20 @@ endif
 runtime autoload/vimio/config.vim
 runtime autoload/vimio/state.vim
 
-" :TODO: When switching themes, all highlight groups will be lost. We need to 
-"   find a way to restore them.
-highlight VimioVirtualText ctermfg=LightGray guifg=#D3D3D3 ctermbg=NONE guibg=NONE
-highlight VimioCursorsMultiCursor cterm=reverse gui=reverse guibg=Yellow guifg=Black
+" Apply the Comment style from the theme to the virtual text.
+highlight default link VimioVirtualText Comment
+" Enable the multi-cursor to use the Visual Inverse style from the theme.
+highlight default link VimioCursorsMultiCursor Visual
 
+" " Using an automatic command group for restoration is also possible, but the
+" " implementation above is simpler.
+"
+" highlight VimioVirtualText ctermfg=LightGray guifg=#D3D3D3 ctermbg=NONE guibg=NONE
+" highlight VimioCursorsMultiCursor cterm=reverse gui=reverse guibg=Yellow guifg=Black
+" augroup vimio_highlight
+"   autocmd!
+"   autocmd ColorScheme *  call vimio#restore_highlight()
+" augroup END
 
 command! VimioToggleDebug call vimio#debug#toggle()
 command! VimioTodoId call vimio#todo#find_max_braced_number()
@@ -231,7 +240,8 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> <leader>am8 :call vimio#select#highlight_inside_border(v:true, v:true, 'max')<CR>
 
     " Box selection based on penetration lines
-    nnoremap <silent> <leader>lb :call vimio#select#highlight_inside_line()<CR>
+    nnoremap <silent> <leader>lba :call vimio#select#highlight_inside_line()<CR>
+    nnoremap <silent> <leader>lbi :call vimio#select#highlight_inside_line_without_border()<CR>
 
     nnoremap <silent> <leader>s :call vimio#select#extract_outgoing_spokes(v:false)<CR>
     nnoremap <silent> <leader>sm :call vimio#select#extract_outgoing_spokes(v:true)<CR>

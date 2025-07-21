@@ -36,12 +36,12 @@ endfunction
 " { 'new_text': 'xxxyy', 'pos_start': [row, virtcol] }
 function! vimio#popup#update_block(...)
 
-    " Check if the highlighted group exists and has not been cleared
-    let l:highlight_info = execute('highlight VimioVirtualText')
-    if l:highlight_info =~ 'xxx cleared'
-        " Redefine Highlight Group
-        highlight VimioVirtualText ctermfg=LightGray guifg=#D3D3D3 ctermbg=NONE guibg=NONE
-    endif
+    " " Check if the highlighted group exists and has not been cleared
+    " let l:highlight_info = execute('highlight VimioVirtualText')
+    " if l:highlight_info =~ 'xxx cleared'
+    "     " Redefine Highlight Group
+    "     highlight VimioVirtualText ctermfg=LightGray guifg=#D3D3D3 ctermbg=NONE guibg=NONE
+    " endif
 
     " Obtain the content and type of the register. Since the system clipboard 
     " is currently being used, it may be slower, so a delay is added to 

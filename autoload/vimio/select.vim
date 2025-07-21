@@ -583,7 +583,7 @@ endfunction
 "==============================================================================
 function! vimio#select#extract_line(coords, use_diagonal, penetrate) abort
     if empty(a:coords)
-        return []
+        return {}
     endif
 
     " Start point = last cursor position
@@ -611,7 +611,7 @@ function! vimio#select#extract_line(coords, use_diagonal, penetrate) abort
     let nbrs = get(graph, skey, [])
     let deg  = len(nbrs)
     if deg < 2 || deg == 3
-        return [start]
+        return vimio#utils#resolve_coords([skey], a:coords)
     endif
 
     " Select two endpoints (if deg == 2), or choose a straight pair from 4-way junction
@@ -1084,7 +1084,10 @@ function! vimio#select#border_select(use_diagonal, mode) abort
 endfunction
 
 
-function! vimio#select#line_select(use_diagonal, is_penetrate) abort
+function! vimio#select#line_select(use_diagonal, is_penetrate, ...) abort
+    
+    let is_apply_highlight = get(a:, 1, v:true)
+
     call vimio#select#_clear_row_cache()
     let row = line('.')
     let sc  = virtcol('.')
@@ -1102,7 +1105,9 @@ function! vimio#select#line_select(use_diagonal, is_penetrate) abort
     let line = vimio#select#extract_line(coords, a:use_diagonal, a:is_penetrate)
 
     " 3) Highlight the entire line
-    call vimio#cursors#vhl_add_points_and_apply(line)
+    if is_apply_highlight
+        call vimio#cursors#vhl_add_points_and_apply(line)
+    endif
 
     return line
 endfunction
@@ -1120,7 +1125,7 @@ function! vimio#select#highlight_inside_border(use_diagonal, is_select_all, mode
     " 2) Extract the shortest closed loop
     let closed_border = vimio#select#extract_closed_loop(border_coords, a:use_diagonal, a:mode, v:false)
     if empty(closed_border)
-        echohl WarningMsg | echo "No closed loop found" | echohl None
+        " echohl WarningMsg | echo "No closed loop found" | echohl None
         return
     endif
 
@@ -1156,6 +1161,22 @@ function! vimio#select#highlight_inside_line() abort
     " 2) Highlight all internal cells at once
     call vimio#cursors#vhl_add_points_and_apply(interior)
 endfunction
+
+function! vimio#select#highlight_inside_line_without_border() abort
+    call vimio#select#_clear_row_cache()
+    let coords = vimio#select#line_select(v:false, v:true, v:false)
+
+    " 1) Calculate internal coordinates (supports irregular boundaries)
+    let interior = vimio#select#get_closed_loop_interior_coords(coords, v:false)
+    if empty(interior)
+        echohl WarningMsg | echo "No interior to highlight" | echohl None
+        return
+    endif
+
+    " 2) Highlight all internal cells at once
+    call vimio#cursors#vhl_add_points_and_apply(interior)
+endfunction
+
 
 function! vimio#select#extract_outgoing_spokes(use_diagonal) abort
     call vimio#select#_clear_row_cache()

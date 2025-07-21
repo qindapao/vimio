@@ -182,8 +182,12 @@ endfunction
 " Generate a box based on the currently highlighted content and remove 
 " the highlight.
 function! vimio#ui#box_suround()
-    let [text_only, y, x] = vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 0)
+    if len(g:vimio_state_multi_cursors) == 0
+        call vimio#select#solid_select(v:false)
+        call vimio#select#solid_select(v:true)
+    endif
 
+    let [text_only, y, x] = vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 0)
     if x == 0 && y == 0
         let [y, x] = [line('.'), virtcol('.')]
     endif
@@ -194,21 +198,24 @@ function! vimio#ui#box_suround()
                 \ 'TEXT_ONLY': text_only,
                 \ 'TITLE': '',
                 \ 'BOX_TYPE': deepcopy(g:vimio_config_shapes_box_types_switch[g:vimio_state_draw_line_index]),
-                \ 'END_X': 5,
-                \ 'END_Y': 5
+                \ 'END_X': 1,
+                \ 'END_Y': 1
                 \ })
+    let pos_y = max([1, y - box.TEXT_BEGIN_Y])
+    let pos_x = max([1, x - box.TEXT_BEGIN_X])
 
     call vimio#replace#paste_block_clip(1, {
-                \ 'row': y - box.TEXT_BEGIN_Y,
-                \ 'col': x - box.TEXT_BEGIN_X,
                 \ 'new_text': box.TEXT,
-                \ 'pos_start': [y, x]
+                \ 'pos_start': [pos_y, pos_x]
                 \})
-    " :TODO: Should the highlight remain after insertion? It might be necessary
-    " to move or change the border type.
 endfunction
 
 function! vimio#ui#shapes_change_type() abort
+    if len(g:vimio_state_multi_cursors) == 0
+        call vimio#select#highlight_inside_border(v:false, v:true, 'min')
+        call vimio#select#highlight_inside_border(v:true, v:true, 'min')
+    endif
+
     let shape_obj = vimio#shapes#detect#from_points(g:vimio_state_multi_cursors, 0)
     if empty(shape_obj)
         return
@@ -217,19 +224,46 @@ function! vimio#ui#shapes_change_type() abort
     let shape_type = deepcopy(g:shape_name_config_map[shape_obj.NAME][g:vimio_state_draw_line_index])
     call shape_obj.set_box_type(shape_type)
 
-    " delete original shape
-    call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 1)
+    " Direct overlay can preserve intersection points, but there is a bug below,
+    " so it is best to handle intersections manually for now.
+    " :TODO: BUG 
+    " ╭────────╮                 ┏━━━━━━━━┓        
+    " │        ├────────  to     ┃        ┠────────
+    " │        │                 ┃        ┃        
+    " ╰────────╯                 ┗━━━━━━━━┛        
+    " but change type if overlay we now get
+    " ┍━━━━━━━━┑        
+    " ┃        ┞────────
+    " ┃        ┃        
+    " ┕━━━━━━━━┙        
+    "
+    " first we delete, then we get
+    "
+    " ┏━━━━━━━━┓        
+    " ┃        ┃────────    The intersection point is missing                                  
+    " ┃        ┃            we need to manually complete it. 
+    " ┗━━━━━━━━┛        
+    " To fundamentally resolve this issue, it is necessary to update the 
+    " algorithm for determining intersection points and to establish which 
+    " intersecting character to prioritize when multiple characters meet the 
+    " intersection criteria. This involves complex logic and, given the limited 
+    " current application scenarios, will not be implemented for the time being.
 
+    call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 1)
     call vimio#replace#paste_block_clip(1, {
-                \ 'row': shape_obj.Y,
-                \ 'col': shape_obj.X,
                 \ 'new_text': shape_obj.TEXT,
                 \ 'pos_start': [shape_obj.Y, shape_obj.X]
                 \})
+    " " cancel highlight
+    " call vimio#cursors#clear_cursors()
 endfunction
 
 
 function! vimio#ui#shapes_resize_start() abort
+    if len(g:vimio_state_multi_cursors) == 0
+        call vimio#select#highlight_inside_border(v:false, v:true, 'min')
+        call vimio#select#highlight_inside_border(v:true, v:true, 'min')
+    endif
     let s:shape_obj = vimio#shapes#detect#from_points(g:vimio_state_multi_cursors, 1)
     " call vimio#debug#log_obj('s:shape_obj', s:shape_obj, 4, '--s:shape_obj--')
     " call vimio#debug#log("start_row: %d;start_col: %d;", s:shape_obj['Y'], s:shape_obj['X'])
@@ -309,8 +343,6 @@ function! vimio#ui#shapes_resize_end() abort
     call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 1)
 
     call vimio#replace#paste_block_clip(1, {
-                \ 'row': s:shape_obj['Y'],
-                \ 'col': s:shape_obj['X'],
                 \ 'new_text': s:shape_obj.TEXT,
                 \ 'pos_start': [s:shape_obj['Y'], s:shape_obj['X']]
                 \})
