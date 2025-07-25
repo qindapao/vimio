@@ -482,6 +482,8 @@ replacement mode, which is what we call free mode.
     (smart line x mode)
     `smc`               smart line cancel draw
     (smart line cancel)
+    `smf`               smart line flip direction
+    (smart line cancel)
 
 
   1.At point A, press `sms` to start draw, then move the cursor to point B.
@@ -591,6 +593,35 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │ now line type:['─', '│']                                   │
     └────────────────────────────────────────────────────────────┘
+    9.The function of `smf` is to switch the primary and secondary directions of 
+      the line.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│            A<----------.                                │
+    │ 3│                        |                                │
+    │ 4│                        |                                │
+    │ 5│                        B                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    change to:
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│            A^                                           │
+    │ 3│             |                                           │
+    │ 4│             '-----------                                │
+    │ 5│                        B                                │
+    │ 6│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
 
 4.9.Smart line draw                                  *vimio-smart-shape-draw*
 
@@ -1161,20 +1192,7 @@ an example:
         \ }
     endfunction
 
-    2. Register your shape template in `autoload/vimio/shapes.vim`
-
-    let g:vimio_shapes_define_graph_functions = {
-        \ 'index': 1,
-        \ 'value': [
-        \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0],
-        \   [60, 0], [600, 0], [600, 0], 0, 0, [600, 0], 0, [40, 0], 0, 0, 0],
-        \   0, 'basic.vim'],
-        \ ['Vimio__DefineSmartDrawShapesFiglet', [0, 0, 0, 0, 0, 0], 0,
-        \ 'figlet.vim'],
-        \ ['Vimio__DefineSmartDrawShapesLed', [0], 0, 'led.vim'],
-        \ ['Vimio__DefineSmartDrawShapesanimal', [0], 0, 'animal.vim'],
-        \ ]
-        \ }
+    2. Please see |vimio-config|.
 
 
 ==============================================================================
@@ -1807,6 +1825,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `smaf`           smart line arrow flip start end                |
 |              `smx`            smart line flip cross mode                     |
 |              `smc`            smart line cancel draw                         |
+|              `smf`            smart line flip direction                      |
 |              `<leader>db`     draw a box (draw box)                          |
 |              `<leader>ssr`    shape resize start                             |
 |              `<leader>sse`    shape resize end                               |

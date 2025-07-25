@@ -21,7 +21,7 @@
 
 let g:vimio_state_visual_block_popup_types_index = 0
 let g:vimio_state_draw_line_index = 0
-let g:vimio_state_cross_style_index = 0
+let g:vimio_state_cross_style_index = 2
 let g:vimio_state_switch_lev2_step_index = 0
 let g:vimio_state_shapes_sub_funcs = []
 
@@ -29,6 +29,9 @@ let g:vimio_state_vhl_match_id = -1
 let g:vimio_state_vhl_segments = []
 let g:vimio_state_multi_cursors = []
 let g:vimio_state_paste_preview_cross_mode = 1
+let g:vimio_drawline_multi_lines = []
+
+
 
 
 " global state: last_pos=[r,c]

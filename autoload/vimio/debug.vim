@@ -360,14 +360,20 @@ function! vimio#debug#log_obj(name, obj, ...) abort
     let logfile = vimio#debug#get_logfile()
 
     if a:0 >= 1
-        let title = a:1
+        let indent = a:1
+    else
+        let indent = 2
+    endif
+
+    if a:0 >= 2
+        let title = a:2
         call writefile([vimio#debug#get_timestamp_ms() . ' ' . title], logfile, 'a')
     endif
 
     if type(a:obj) == v:t_dict || type(a:obj) == v:t_list
         let out = ''
         redir => out
-        silent call vimio#debug#pretty_print(a:name, a:obj, 2)
+        silent call vimio#debug#pretty_print(a:name, a:obj, indent)
         redir END
         call writefile(split(out, "\n"), logfile, 'a')
     else

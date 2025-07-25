@@ -79,6 +79,8 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> smaf :call vimio#ui#smart_line_arrow_flip_start_end()<cr>
     nnoremap <silent> smx :call vimio#ui#smart_line_flip_cross()<cr>
     nnoremap <silent> smc :call vimio#ui#smart_line_cancel()<cr>
+    nnoremap <silent> smf :call vimio#ui#smart_line_flip_direction()<cr>
+    nnoremap <silent> smr :call vimio#ui#smart_lines_resize_start()<CR>
     " smart line draw end
 
     " =========================free edit========================================

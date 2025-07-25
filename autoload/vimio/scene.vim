@@ -76,34 +76,99 @@ endfunction
 " :TODO: Should the judgment regarding the use of "dot" and "apostrophe" be more lenient?
 function! vimio#scene#dot(up, down, left, right, char_category_indexs)
     " Check whether the parameters are defined and meet the conditions.
-    if (index(a:up, '|') >= 0 || index(a:up, ')') >= 0)
-        \ && (index(a:down, '|') >= 0 || index(a:down, ')') >= 0)
-        \ && index(a:left, '-') >= 0
-        \ && index(a:right, '-') >= 0
+    if (index(a:up, '|') >= 0 || index(a:up, ')') >= 0 || index(a:up, '^') >= 0)
+        \ && (index(a:down, '|') >= 0 || index(a:down, ')') >= 0 || index(a:down, 'v') >= 0)
+        \ && (index(a:left, '-') >= 0 || index(a:left, '<') >= 0)
+        \ && (index(a:right, '-') >= 0 || index(a:right, '>') >= 0)
         return 0
     endif
 
     " Check if the lower left or lower right satisfies the condition
-    return (index(a:left, '-') >= 0 && (index(a:down, '|') >= 0 || index(a:down, ')') >= 0)) ||
-            \ (index(a:right, '-') >= 0 && (index(a:down, '|') >= 0 || index(a:down, ')') >= 0))
+    return ((index(a:left, '-') >= 0 || index(a:left, '<') >= 0) && (index(a:down, '|') >= 0 || index(a:down, ')') >= 0 || index(a:down, 'v') >= 0)) ||
+            \ ((index(a:right, '-') >= 0 || index(a:right, '>') >= 0) && (index(a:down, '|') >= 0 || index(a:down, ')') >= 0 || index(a:down, 'v') >= 0))
 endfunction
 
 " Draw a scene with single quotes
 function! vimio#scene#apostrophe(up, down, left, right, char_category_indexs)
-    if (index(a:up, '|') >= 0 || index(a:up, ')') >= 0)
-        \ && index(a:right, '-') >= 0
-        \ && index(a:down, '|') < 0 && index(a:down, ')') < 0
+    if (index(a:up, '|') >= 0 || index(a:up, ')') >= 0 || index(a:up, '^') >= 0)
+        \ && (index(a:right, '-') >= 0 || index(a:right, '>') >= 0)
+        \ && index(a:down, '|') < 0 && index(a:down, ')') < 0 && index(a:down, 'v') < 0
         return 1
     endif
 
-    return (index(a:up, '|') >= 0 || index(a:up, ')') >= 0)
-        \ && index(a:left, '-') >= 0
+    return (index(a:up, '|') >= 0 || index(a:up, ')') >= 0 || index(a:up, '^') >= 0)
+        \ && (index(a:left, '-') >= 0 || index(a:left, '<') >= 0)
         \ && !(
-        \   (index(a:down, '|') >= 0 || index(a:down, ')') >= 0)
-        \   || (index(a:right, '|') >= 0 || index(a:right, ')') >= 0)
+        \   (index(a:down, '|') >= 0 || index(a:down, ')') >= 0 || index(a:down, 'v') >= 0)
+        \   || (index(a:right, '|') >= 0 || index(a:right, ')') >= 0 || index(a:right, '>') >= 0)
         \ )
 endfunction
 
+function! vimio#scene#horizontal_line(up, down, left, right,  char_category_indexs)
+    if index(a:left, '-') >= 0
+        return 1
+    endif
+    if index(a:right, '-') >= 0
+        return 1
+    endif
+
+    return 0
+endfunction
+
+function! vimio#scene#vertical_line(up, down, left, right,  char_category_indexs)
+    if index(a:up, '|') >= 0
+        return 1
+    endif
+    if index(a:down, '|') >= 0
+        return 1
+    endif
+
+    return 0
+endfunction
+
+function! vimio#scene#thin_horizontal_dashed_line(up, down, left, right,  char_category_indexs)
+    if index(a:left, '┄') >= 0
+        return 1
+    endif
+    if index(a:right, '┄') >= 0
+        return 1
+    endif
+
+    return 0
+endfunction
+
+function! vimio#scene#thin_vertical_dashed_line(up, down, left, right,  char_category_indexs)
+    if index(a:up, '┆') >= 0
+        return 1
+    endif
+    if index(a:down, '┆') >= 0
+        return 1
+    endif
+
+    return 0
+endfunction
+
+function! vimio#scene#bold_horizontal_dashed_line(up, down, left, right,  char_category_indexs)
+    if index(a:left, '┅') >= 0
+        return 1
+    endif
+    if index(a:right, '┅') >= 0
+        return 1
+    endif
+
+    return 0
+endfunction
+
+function! vimio#scene#bold_vertical_dashed_line(up, down, left, right,  char_category_indexs)
+    if index(a:up, '┇') >= 0
+        return 1
+    endif
+    if index(a:down, '┇') >= 0
+        return 1
+    endif
+
+    return 0
+endfunction
 
 function! vimio#scene#get_cross_chars(cross_point, all_chars) abort
     let result = {}
@@ -155,9 +220,17 @@ function! vimio#scene#clear_cross_cache() abort
 endfunction
 
 function! s:is_cross_point_chars_unicode_ascii_not_mix(cross_chars) abort
+    "This is somewhat special because the four ASCII arrow Unicode characters
+    "are also applicable, so they are not considered during the judgment. 
+    let ignored_chars = {'<': 1, '>': 1, '^': 1, 'v': 1}
+
+
     let has_ascii    = v:false
     let has_unicode  = v:false
     for ch in a:cross_chars
+        if has_key(ignored_chars, ch)
+            continue
+        endif
         if has_key(g:vimio_config_draw_ascii_cross_chars, ch)
             let has_ascii = v:true
         else
@@ -170,5 +243,69 @@ function! s:is_cross_point_chars_unicode_ascii_not_mix(cross_chars) abort
     endfor
 
     return v:true
+endfunction
+
+function! s:GetSafeCell(cache, row, col) abort
+    try
+        return a:cache[a:row][a:col]
+    catch
+        return ''
+    endtry
+endfunction
+
+function! vimio#scene#calculate_cross_points(points, cache_ref, cache_table, cross_style_table, cross_style_index, result_ref) abort
+    let row_chars_cache = {}
+
+    for point in a:points
+        " Skip non-crossing characters
+        if !has_key(g:vimio_config_draw_cross_chars, point[0])
+            continue
+        endif
+
+        " Cache line characters (current three lines above and below)
+        for delta in [-1, 0, 1]
+            let row_idx = point[1] + delta
+            if row_idx < 1 || row_idx > line('$')
+                continue
+            endif
+
+            if !has_key(row_chars_cache, row_idx)
+                let [row_chars_cache[row_idx], _] = vimio#utils#get_line_cells(row_idx, point[2])
+                call map(row_chars_cache[row_idx], {i, val -> has_key(g:vimio_config_draw_cross_chars, val) ? val : ''})
+            endif
+        endfor
+
+        " Retrieve characters from above, below, left, and right
+        let up    = [s:GetSafeCell(row_chars_cache, point[1]-1, point[2]-1)]
+        let down  = [s:GetSafeCell(row_chars_cache, point[1]+1, point[2]-1)]
+        let left  = [s:GetSafeCell(row_chars_cache, point[1],   point[2]-2)]
+        let right = [s:GetSafeCell(row_chars_cache, point[1],   point[2])]
+
+        let cache_key = up[0] . '=' . down[0] . '=' . left[0] . '=' . right[0]
+
+        " If it already exists in the cache, skip it.
+        if !has_key(a:cache_ref, cache_key)
+            let is_cross_not_found = v:true
+
+            for table_param in a:cache_table
+                if call(table_param[1], [up, down, left, right, table_param[2]])
+                    let is_cross_not_found = v:false
+                    let result = has_key(a:cross_style_table[a:cross_style_index], table_param[0]) ?
+                                \ a:cross_style_table[a:cross_style_index][table_param[0]] :
+                                \ table_param[0]
+                    let a:cache_ref[cache_key] = result
+                    break
+                endif
+            endfor
+
+            if is_cross_not_found
+                let a:cache_ref[cache_key] = ''
+            endif
+        endif
+
+        if a:cache_ref[cache_key] !=# ''
+            call add(a:result_ref, [a:cache_ref[cache_key], point[1], point[2]])
+        endif
+    endfor
 endfunction
 

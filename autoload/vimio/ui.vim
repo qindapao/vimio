@@ -77,71 +77,125 @@ function! vimio#ui#visual_block_mouse_move_cancel()
 endfunction
 
 function! vimio#ui#smart_line_continue_draw() abort
+    if len(g:vimio_drawline_multi_lines) > 1
+        if g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+            call vimio#drawline#draw_lines_end()
+        endif
+        let g:vimio_drawline_multi_lines = []
+    endif
+
     " record start point
     call vimio#drawline#init()
-    call g:vimio_drawline_smart_line['continue_draw']()
+    call g:vimio_drawline_multi_lines[0]['continue_draw']()
 
-    augroup VimioUiSmartLineCursorMove
+    augroup VimioUiSmartLinesCursorMove
         autocmd!
-        autocmd CursorMoved * call g:vimio_drawline_smart_line['draw']()
+        autocmd CursorMoved * call vimio#drawline#draw_lines()
+    augroup END
+endfunction
+
+function! vimio#ui#smart_lines_resize_start() abort
+    call vimio#drawline#catch_multiple_lines_start()
+    if len(g:vimio_drawline_multi_lines) == 0
+        return
+    endif
+
+    augroup VimioUiSmartLinesCursorMove
+        autocmd!
+        autocmd CursorMoved * call vimio#drawline#draw_lines()
     augroup END
 endfunction
 
 function! vimio#ui#smart_line_draw_end() abort
-    augroup VimioUiSmartLineCursorMove
+    augroup VimioUiSmartLinesCursorMove
         autocmd!
     augroup END
 
-    if exists('g:vimio_drawline_smart_line') && g:vimio_drawline_smart_line['in_draw_context'] == v:true
-        call g:vimio_drawline_smart_line['end']()
+    if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        call vimio#drawline#draw_lines_end()
     endif
 endfunction
 
 function! vimio#ui#smart_line_start_arrow_show_flip() abort
-    if exists('g:vimio_drawline_smart_line') && g:vimio_drawline_smart_line['in_draw_context'] == v:true
-        call g:vimio_drawline_smart_line['start_arrow_show_flip']()
+    if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        for line in g:vimio_drawline_multi_lines
+            call line['start_arrow_show_flip']()
+        endfor
     endif
 endfunction
 
 function! vimio#ui#smart_line_end_arrow_show_flip() abort
-    if exists('g:vimio_drawline_smart_line') && g:vimio_drawline_smart_line['in_draw_context'] == v:true
-        call g:vimio_drawline_smart_line['end_arrow_show_flip']()
+    if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        for line in g:vimio_drawline_multi_lines
+            call line['end_arrow_show_flip']()
+        endfor
     endif
 endfunction
 
 function! vimio#ui#smart_line_diagonal_flip() abort
-    if exists('g:vimio_drawline_smart_line') && g:vimio_drawline_smart_line['in_draw_context'] == v:true
-        call g:vimio_drawline_smart_line['diagonal_flip']()
+    if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        for line in g:vimio_drawline_multi_lines
+            call line['diagonal_flip']()
+        endfor
     endif
 endfunction
 
 function! vimio#ui#smart_line_arrow_flip_start_end() abort
-    if exists('g:vimio_drawline_smart_line') && g:vimio_drawline_smart_line['in_draw_context'] == v:true
-        call g:vimio_drawline_smart_line['flip_arrow_start_end']()
+    if len(g:vimio_drawline_multi_lines) > 1
+        return
+    endif
+
+    if len(g:vimio_drawline_multi_lines) == 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        call g:vimio_drawline_multi_lines[0]['flip_arrow_start_end']()
     endif
 endfunction
 
 function! vimio#ui#smart_line_flip_cross() abort
-    if exists('g:vimio_drawline_smart_line') && g:vimio_drawline_smart_line['in_draw_context'] == v:true
-        call g:vimio_drawline_smart_line['cross_flip']()
+    if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        for line in g:vimio_drawline_multi_lines
+            call line['cross_flip']()
+        endfor
     endif
 endfunction
 
+
+function! vimio#ui#smart_line_flip_direction() abort
+    if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        for line in g:vimio_drawline_multi_lines
+            call line['flip_direction']()
+        endfor
+    endif
+endfunction
+
+
+" If there is content within the highlight group but it is not in the drawing context.
 function! vimio#ui#smart_line_cancel() abort
-    augroup VimioUiSmartLineCursorMove
+    if len(g:vimio_state_multi_cursors) != 0
+        if len(g:vimio_drawline_multi_lines) == 0 || g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:false
+            call vimio#drawline#catch_multiple_lines_start()
+            call vimio#drawline#draw_lines()
+        endif
+    endif
+
+    augroup VimioUiSmartLinesCursorMove
         autocmd!
     augroup END
-
-    if exists('g:vimio_drawline_smart_line') && g:vimio_drawline_smart_line['in_draw_context'] == v:true
-        call g:vimio_drawline_smart_line['cancel']()
+    
+    if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        for line in g:vimio_drawline_multi_lines
+            call line['cancel']()
+        endfor
     endif
 endfunction
 
 function! vimio#ui#switch_cross_style()
     call vimio#scene#clear_cross_cache()
+    call vimio#cursors#clear_cursor_cross_cache()
     let g:vimio_state_cross_style_index = (g:vimio_state_cross_style_index + 1) % len(g:vimio_config_draw_cross_styles)
-    if exists('g:vimio_drawline_smart_line') && g:vimio_drawline_smart_line['in_draw_context'] == v:true
-        call g:vimio_drawline_smart_line['update_preview']()
+    if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        for line in g:vimio_drawline_multi_lines
+            call line['update_preview']()
+        endfor
     endif
     echo "now index: " . g:vimio_state_cross_style_index
 endfunction
@@ -151,8 +205,10 @@ function! vimio#ui#switch_line_style(is_just_show)
         let g:vimio_state_draw_line_index = (g:vimio_state_draw_line_index + 1) % len(g:vimio_config_draw_line_styles)
     endif
 
-    if exists('g:vimio_drawline_smart_line') && g:vimio_drawline_smart_line['in_draw_context'] == v:true
-        call g:vimio_drawline_smart_line['update_preview']()
+    if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        for line in g:vimio_drawline_multi_lines
+            call line['set_line_style_index'](g:vimio_state_draw_line_index)
+        endfor
     endif
     echo "now line type:" . string(g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index])
 endfunction
@@ -160,6 +216,7 @@ endfunction
 function! vimio#ui#paste_flip_cross_mode()
     let val = g:vimio_state_paste_preview_cross_mode
     let g:vimio_state_paste_preview_cross_mode = !val
+    echo "now paste cross mode: " . g:vimio_state_paste_preview_cross_mode
 endfunction
 
 " Get the line type under the current cursor and switch to it
@@ -348,5 +405,4 @@ function! vimio#ui#shapes_resize_end() abort
                 \})
     let s:shape_obj = {}
 endfunction
-
 

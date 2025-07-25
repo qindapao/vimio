@@ -218,6 +218,31 @@ let g:vimio_config_draw_normal_char_funcs_map = [
     \ ['╚' , "vimio#scene#unicode" , [s:vimio_config_draw_index_right_double , s:vimio_config_draw_index_up_double   ]]
     \ ]
 
+
+" Applicable only for filling in the crossed-out characters after deletion.
+let g:vimio_config_draw_delete_chars_funcs_map = [
+            \ ['-', "vimio#scene#horizontal_line", [] ],
+            \ ['|', "vimio#scene#vertical_line", [] ],
+            \ ['─', "vimio#scene#unicode", [s:vimio_config_draw_index_right_thin]],
+            \ ['─', "vimio#scene#unicode", [s:vimio_config_draw_index_left_thin]],
+            \ ['│', "vimio#scene#unicode", [s:vimio_config_draw_index_up_thin]],
+            \ ['│', "vimio#scene#unicode", [s:vimio_config_draw_index_down_thin]],
+            \ ['━', "vimio#scene#unicode", [s:vimio_config_draw_index_left_bold]],
+            \ ['━', "vimio#scene#unicode", [s:vimio_config_draw_index_right_bold]],
+            \ ['┃', "vimio#scene#unicode", [s:vimio_config_draw_index_up_bold]],
+            \ ['┃', "vimio#scene#unicode", [s:vimio_config_draw_index_down_bold]],
+            \ ['═', "vimio#scene#unicode", [s:vimio_config_draw_index_left_double]],
+            \ ['═', "vimio#scene#unicode", [s:vimio_config_draw_index_right_double]],
+            \ ['║', "vimio#scene#unicode", [s:vimio_config_draw_index_up_double]],
+            \ ['║', "vimio#scene#unicode", [s:vimio_config_draw_index_down_double]],
+            \ ['┄', "vimio#scene#thin_horizontal_dashed_line", [] ],
+            \ ['┆', "vimio#scene#thin_vertical_dashed_line", [] ],
+            \ ['┅', "vimio#scene#bold_horizontal_dashed_line", [] ],
+            \ ['┇', "vimio#scene#bold_vertical_dashed_line", [] ],
+            \ ]
+
+
+
 let g:vimio_config_draw_line_styles = [['-', '|'], ['─', '│'], ['━', '┃'], ['═', '║'], ['┅', '┇'], ['┄', '┆']]
 let g:vimio_config_draw_diagonal_line_styles = [['/', '\'], ['/', '\'], ['/', '\'], ['/', '\'], ['/', '\'], ['/', '\']]
 " The index here correspond one-to-one with those above.
@@ -286,6 +311,14 @@ let g:vimio_config_draw_cross_styles = [
     \ '╮' : '┐'
     \ }
     \ ]
+
+let g:vimio_config_all_arrow_chars = { 
+            \ '^': 1, '▲': 1, '△': 1,
+            \ '>': 1, '▶': 1, '▷': 1,
+            \ 'v': 1, '▼': 1, '▽': 1,
+            \ '<': 1, '◀': 1, '◁': 1,
+            \ }
+
 
 let g:vimio_config_arrow_chars_map = {
     \ 'up': {

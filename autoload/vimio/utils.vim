@@ -64,7 +64,7 @@ function! vimio#utils#get_current_paste_text(...) abort
     let pos = get(opts, 'pos_start', [line('.'), virtcol('.')])
 
     let raw_lines = split(raw_str, "\n")
-    if g:vimio_state_paste_preview_cross_mode
+    if exists('g:vimio_state_paste_preview_cross_mode') && g:vimio_state_paste_preview_cross_mode
         let preview_chars = vimio#utils#build_preview_chars(raw_lines, pos)
         let preview_chars_and_cross = vimio#utils#get_rect_txt_for_single_width_char(preview_chars, v:true, pos)
         " echom "preview_chars_and_cross: " . preview_chars_and_cross 

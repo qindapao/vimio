@@ -28,6 +28,9 @@
 " - s:erase_original_batch(points,replace_char)
 " - vimio#cursors#replace_highlight_group_to_clip()
 
+let s:cursor_cross_cache = {}
+let s:cursor_delete_cross_cache = {}
+
 function! vimio#cursors#vhl_apply() abort
     if g:vimio_state_vhl_match_id !=# -1
         call matchdelete(g:vimio_state_vhl_match_id)
@@ -386,7 +389,14 @@ endfunction
 " copy it to the clipboard, and optionally erase the originals in batch.
 "==============================================================================
 
-function! vimio#cursors#create_rectangle_string(points, delete_original, replace_char, is_update_clip) abort
+
+function! vimio#cursors#clear_cursor_cross_cache() abort
+    let s:cursor_cross_cache = {}
+    let s:cursor_delete_cross_cache = {}
+endfunction
+
+" Generate a rectangular text through several points.
+function! vimio#cursors#create_rectangle_string_only(points) abort
     " 1) Compute bounding box
     let rows    = map(copy(a:points), 'v:val[1]')
     let cols    = map(copy(a:points), 'v:val[2]')
@@ -429,6 +439,14 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
         call add(lines, line)
     endfor
 
+    return [ lines, min_row, min_col ]
+endfunction
+
+
+function! vimio#cursors#create_rectangle_string(points, delete_original, replace_char, is_update_clip) abort
+
+    let [lines, min_row, min_col] = vimio#cursors#create_rectangle_string_only(a:points)
+
     " 5) Yank to system clipboard
     let lines_str = join(lines, "\n")
     if a:is_update_clip
@@ -437,7 +455,56 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
 
     " 6) Batch‐erase the original points if requested
     if a:delete_original
+        " If it is in cross-replacement mode, then the intersection situation
+        " for each point needs to be calculated.
+        let cross_points = []
+        if g:vimio_state_paste_preview_cross_mode
+            call vimio#scene#calculate_cross_points(
+                        \ a:points,
+                        \ s:cursor_cross_cache,
+                        \ g:vimio_config_draw_normal_char_funcs_map,
+                        \ g:vimio_config_draw_cross_styles,
+                        \ g:vimio_state_cross_style_index,
+                        \ cross_points
+                        \ )
+        endif
+
+        " call vimio#debug#log_obj('cross_points', cross_points, 4, '-cross_points-')
+
+        " If the cursor is different before and after deletion, 
+        " then a jump to locate is required.
+        let cursor_before = [ line('.'), virtcol('.') ]
         call s:erase_original_batch(a:points, a:replace_char)
+        
+        " 
+        if g:vimio_state_paste_preview_cross_mode
+            let cross_points_after = []
+            let combined_table = g:vimio_config_draw_normal_char_funcs_map + g:vimio_config_draw_delete_chars_funcs_map
+            call vimio#scene#calculate_cross_points(
+                        \ cross_points,
+                        \ s:cursor_delete_cross_cache,
+                        \ combined_table,
+                        \ g:vimio_config_draw_cross_styles,
+                        \ g:vimio_state_cross_style_index,
+                        \ cross_points_after
+                        \ )
+
+            " call vimio#debug#log_obj('cross_points_after', cross_points_after, 4, '-cross_points_after-')
+
+            if len(cross_points_after) != 0
+                " The new crossover character is pasted back in place.
+                let [lines_cross, min_row_cross, min_col_cross] = vimio#cursors#create_rectangle_string_only(cross_points_after)
+                call vimio#replace#paste_block_clip(0, {
+                            \ 'new_text': join(lines_cross, "\n"),
+                            \ 'pos_start': [min_row_cross, min_col_cross]
+                            \})
+            endif
+        endif
+
+        let cursor_after = [ line('.'), virtcol('.') ]
+        if !vimio#utils#flat_list_equal(cursor_before, cursor_after)
+            call vimio#utils#cursor_jump(cursor_before[0], cursor_before[1])
+        endif
     endif
 
     " 7) Clear any temporary cursors
@@ -496,7 +563,7 @@ function! s:erase_original_batch(points, replace_char) abort
             " if it was a double-width char, clear its trailing slot
             if old_w ==# 2
                 let tail = idx + 1
-                if tail < cell_cnt && cells[tail].char ==# ''
+                if tail < cell_cnt
                     let cells[tail].char = ''
                 endif
             endif

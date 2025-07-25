@@ -15,6 +15,8 @@
 " - vimio#popup#on_block_popup_close(id,result)
 " - vimio#popup#close_block()
 
+
+" ======================Global pop-up for uniqueness===========================
 let s:popup_mask_dirty = v:false
 let s:popup_last_text = ''
 
@@ -31,6 +33,9 @@ function! vimio#popup#update_cross_block(...)
                 \)
 endfunction
 
+function! vimio#popup#switch_popup_type() abort
+    let g:vimio_state_visual_block_popup_types_index = (g:vimio_state_visual_block_popup_types_index + 1) % len(g:vimio_config_visual_block_popup_types)
+endfunction
 
 " Support parameter specifies the starting point and text.
 " { 'new_text': 'xxxyy', 'pos_start': [row, virtcol] }
@@ -105,7 +110,7 @@ function! vimio#popup#update_block(...)
                         \ })
         else
             call popup_setoptions(g:vimio_state_block_popup_id, {
-                        \ 'mask': [],
+\ 'mask': [],
                         \ 'highlight': 'VimioVirtualText',
                         \ 'moved': 'any',
                         \ 'zindex': 100,
@@ -210,7 +215,7 @@ endfunction
 
 function! vimio#popup#switch_visual_block_popup_type()
     call vimio#popup#clear_overlay_timer()
-    let g:vimio_state_visual_block_popup_types_index = (g:vimio_state_visual_block_popup_types_index + 1) % len(g:vimio_config_visual_block_popup_types)
+    call vimio#popup#switch_popup_type()
 
     " Update pop-up window
     call vimio#popup#update_cross_block()
@@ -232,18 +237,128 @@ function vimio#popup#close_block()
     endif
 endfunction
 
+" ==============Multiple pop-up windows support object management==============     
 
-" " :TODO: class refac
-" let popup = {
-"             \ 'id': 0,
-"             \ 'text': [],
-"             \ 'mask': [],
-"             \ 'update': function('s:update_popup'),
-"             \ 'close': function('s:close_popup')
-"             \ }
+function! vimio#popup#new(popup_definition)
+    let popup_obj = {}
+    let popup_obj.TEXT = ''
+    let popup_obj.ANCHOR = 'topleft'
+    let popup_obj.MASK_DIRTY = v:true
+    let popup_obj.MASK = []
+    let popup_obj.TYPE = g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index]
+    let popup_obj.ID = 0
+    let popup_obj.OVERLAY_TIMER_ID = -1
 
-" " update self
-" function! s:update_popup() dict
-"     echomsg 'Updating popup with ID: ' . self.id
-" endfunction
-"
+    for method in ['update', 'schedule_overlay_mask', 'clear_overlay_timer',
+                \ 'update_popup_type', 'popup_close_self'
+                \]
+        let popup_obj[method] = function('s:' . method, popup_obj)
+    endfor
+    call popup_obj.update(a:popup_definition)
+    return popup_obj
+endfunction
+
+function! s:update(popup_definition) dict abort
+    let new_text = get(a:popup_definition, 'new_text', self.TEXT)
+    let self.ANCHOR = get(a:popup_definition, 'anchor', self.ANCHOR) 
+    call self.update_popup_type()
+
+    if self.ID != 0
+        if self.TEXT ==# new_text
+            let self.MASK_DIRTY = v:false
+        else
+            let self.MASK_DIRTY = v:true
+        endif
+
+        let self.TEXT = new_text
+        call popup_settext(self.ID, split(self.TEXT, "\n"))
+        call popup_setoptions(self.ID, { 'pos': self.ANCHOR })
+        call popup_move(self.ID, {
+                    \ 'line': 'cursor',
+                    \ 'col': 'cursor',
+                    \ })
+        if self.TYPE ==# 'overlay'
+            call popup_setoptions(self.ID, {
+                        \ 'highlight': 'VimioVirtualText',
+                        \ 'moved': 'any',
+                        \ 'zindex': 100,
+                        \ 'pos': self.ANCHOR,
+                        \ })
+        else
+            call popup_setoptions(self.ID, {
+                        \ 'mask': [],
+                        \ 'highlight': 'VimioVirtualText',
+                        \ 'moved': 'any',
+                        \ 'zindex': 100,
+                        \ 'pos': self.ANCHOR,
+                        \ })
+        endif
+    else
+        let self.TEXT = new_text
+        let self.ID = popup_create(split(self.TEXT, "\n"), {
+            \ 'line': 'cursor',
+            \ 'col': 'cursor',
+            \ 'zindex': 100,
+            \ 'highlight': 'VimioVirtualText',
+            \ 'moved': 'any',
+            \ 'pos': self.ANCHOR,
+            \ 'callback': {-> s:on_popup_close(self)}
+            \ })
+    endif
+
+    call self.schedule_overlay_mask()
+endfunction
+
+function! s:on_popup_close(obj) abort
+    call a:obj.clear_overlay_timer()
+    let a:obj.ID = 0
+    let a:obj.MASK = []
+    let a:obj.MASK_DIRTY = v:true
+    let a:obj.TEXT = ''
+    let a:obj.OVERLAY_TIMER_ID = -1
+endfunction
+
+function! s:schedule_overlay_mask() dict abort
+    if self.TYPE !=# 'overlay'
+        return
+    endif
+    call self.clear_overlay_timer()
+    let self.OVERLAY_TIMER_ID = timer_start(5, {-> s:update_overlay_mask(self)}) 
+endfunction
+
+function! s:clear_overlay_timer() dict abort
+    if self.OVERLAY_TIMER_ID != -1
+        call timer_stop(self.OVERLAY_TIMER_ID)
+        let self.OVERLAY_TIMER_ID = -1
+    endif
+endfunction
+
+function! s:update_overlay_mask(obj) abort
+    if a:obj.TYPE !=# 'overlay'
+        return
+    endif
+
+    if len(a:obj.MASK) == 0
+        let a:obj.MASK = s:build_mask(split(a:obj.TEXT, "\n"))
+    else
+        if a:obj.MASK_DIRTY
+            let a:obj.MASK = s:build_mask(split(a:obj.TEXT, "\n"))
+        endif
+    endif
+
+    if a:obj.ID != 0
+        call popup_setoptions(a:obj.ID, { 'mask': a:obj.MASK })
+    endif
+endfunction
+
+function! s:update_popup_type() dict abort
+    let self.TYPE = g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index]
+endfunction
+
+function s:popup_close_self() dict abort
+    if self.ID != 0
+        call popup_close(self.ID)
+        call s:on_popup_close(self)
+    endif
+endfunction
+
