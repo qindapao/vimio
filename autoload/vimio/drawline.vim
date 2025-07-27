@@ -1260,12 +1260,6 @@ function! vimio#drawline#end() dict abort
     call self.reset()
 endfunction
 
-function! vimio#drawline#cancel() dict abort
-    " Close the pop-up window here
-    call self.pop_up.obj.popup_close_self()
-    call self.reset()
-endfunction
-
 function! vimio#drawline#continue_draw() dict abort
     if get(self, 'in_draw_context', v:false)
         call self.end()
@@ -1293,7 +1287,7 @@ endfunction
 "       'pos':      [0, 0, 'X'],                " startpoint（row, col, char）  
 "       'dir':      {'primary':'down',          " startpoint -> cursor main direction
 "                     'secondary':'right'},     " (If there is a corner, then there is secondary)
-"       'diagonal': 1                           " is diagonal line（0 or 1）
+"       'diagonal': 1                           " is diagonal line(0 or 1)
 "       'style_idx': 2,
 "     },
 "     {
@@ -1337,7 +1331,6 @@ function! vimio#drawline#catch_multiple_lines_start() abort
         " call line_obj.draw()
     endfor
 
-    " :TODO: 交叉模式下的智能删除
     call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 1)
 endfunction
 
@@ -1346,14 +1339,29 @@ function! vimio#drawline#draw_lines() abort
         return
     endif
  
-    for line_obj in g:vimio_drawline_multi_lines
-        call line_obj['draw']()
-    endfor  
+    " Execute task queues using an asynchronous approach
+    if len(g:vimio_drawline_multi_lines) > g:vimio_task_smart_line_draws_map['draw_queue_lower_limit']
+        call vimio#task#run_draw_queue(g:vimio_drawline_multi_lines, g:vimio_task_smart_line_draws_map['draw_queue_sleep_time'])
+    else
+        for line_obj in g:vimio_drawline_multi_lines
+            call line_obj['draw']()
+        endfor  
+    endif
 endfunction
 
 function! vimio#drawline#draw_lines_end() abort
+    if len(g:vimio_drawline_multi_lines) > g:vimio_task_smart_line_draws_map['draw_queue_lower_limit']
+        call vimio#task#run_draw_queue(g:vimio_drawline_multi_lines, g:vimio_task_smart_line_draws_map['draw_queue_sleep_time'], 'sync')
+    endif
+
     for line_obj in g:vimio_drawline_multi_lines
         call line_obj['end']()
     endfor
+endfunction
+
+function! vimio#drawline#cancel() dict abort
+    " Close the pop-up window here
+    call self.pop_up.obj.popup_close_self()
+    call self.reset()
 endfunction
 

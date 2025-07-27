@@ -104,22 +104,24 @@ function! vimio#scene#apostrophe(up, down, left, right, char_category_indexs)
         \ )
 endfunction
 
+" :TODO: chars ' and . is need to be considered ?
 function! vimio#scene#horizontal_line(up, down, left, right,  char_category_indexs)
-    if index(a:left, '-') >= 0
+    if (index(a:left, '-') >= 0 || index(a:left, '<') >=0 || index(a:left, '+') >= 0)
         return 1
     endif
-    if index(a:right, '-') >= 0
+    if (index(a:right, '-') >= 0 || index(a:right, '>') >= 0 || index(a:right, '+') >= 0)
         return 1
     endif
 
     return 0
 endfunction
 
+" :TODO: chars ' and . is need to be considered ?
 function! vimio#scene#vertical_line(up, down, left, right,  char_category_indexs)
-    if index(a:up, '|') >= 0
+    if (index(a:up, '|') >= 0 || index(a:up, '^') >= 0 || index(a:up, '+') >= 0)
         return 1
     endif
-    if index(a:down, '|') >= 0
+    if (index(a:down, '|') >= 0 || index(a:down, 'v') >= 0 || index(a:down, '+') >= 0)
         return 1
     endif
 
@@ -169,6 +171,27 @@ function! vimio#scene#bold_vertical_dashed_line(up, down, left, right,  char_cat
 
     return 0
 endfunction
+
+function! s:ConvertPointsToMap(raw) abort
+    let result = {}
+    for entry in a:raw
+        let val = entry[0]
+        let row = entry[1]
+        let col = entry[2]
+
+        if !has_key(g:vimio_config_draw_cross_chars, val)
+            continue
+        endif
+
+        if !has_key(result, row)
+            let result[row] = {}
+        endif
+
+        let result[row][col] = val
+    endfor
+    return result
+endfunction
+
 
 function! vimio#scene#get_cross_chars(cross_point, all_chars) abort
     let result = {}
@@ -253,8 +276,14 @@ function! s:GetSafeCell(cache, row, col) abort
     endtry
 endfunction
 
-function! vimio#scene#calculate_cross_points(points, cache_ref, cache_table, cross_style_table, cross_style_index, result_ref) abort
-    let row_chars_cache = {}
+function! vimio#scene#calculate_cross_points(points, cache_ref, cache_table, cross_style_table, cross_style_index, result_ref, ...) abort
+    let is_row_cache_already = v:false
+    if a:0 >= 1
+        let is_row_cache_already = v:true
+        let row_chars_cache = s:ConvertPointsToMap(a:1)
+    else
+        let row_chars_cache = {}
+    endif
 
     for point in a:points
         " Skip non-crossing characters
@@ -269,17 +298,22 @@ function! vimio#scene#calculate_cross_points(points, cache_ref, cache_table, cro
                 continue
             endif
 
-            if !has_key(row_chars_cache, row_idx)
-                let [row_chars_cache[row_idx], _] = vimio#utils#get_line_cells(row_idx, point[2])
-                call map(row_chars_cache[row_idx], {i, val -> has_key(g:vimio_config_draw_cross_chars, val) ? val : ''})
+            if !is_row_cache_already
+                if !has_key(row_chars_cache, row_idx)
+                    let [row_chars_cache[row_idx], _] = vimio#utils#get_line_cells(row_idx, point[2])
+                    call map(row_chars_cache[row_idx], {i, val -> has_key(g:vimio_config_draw_cross_chars, val) ? val : ''})
+                    let tmp_dict = {}
+                    call map(copy(row_chars_cache[row_idx]), {i, val -> extend(tmp_dict, {i + 1: val})})
+                    let row_chars_cache[row_idx] = tmp_dict
+                endif
             endif
         endfor
 
         " Retrieve characters from above, below, left, and right
-        let up    = [s:GetSafeCell(row_chars_cache, point[1]-1, point[2]-1)]
-        let down  = [s:GetSafeCell(row_chars_cache, point[1]+1, point[2]-1)]
-        let left  = [s:GetSafeCell(row_chars_cache, point[1],   point[2]-2)]
-        let right = [s:GetSafeCell(row_chars_cache, point[1],   point[2])]
+        let up    = [s:GetSafeCell(row_chars_cache, point[1]-1, point[2])]
+        let down  = [s:GetSafeCell(row_chars_cache, point[1]+1, point[2])]
+        let left  = [s:GetSafeCell(row_chars_cache, point[1],   point[2]-1)]
+        let right = [s:GetSafeCell(row_chars_cache, point[1],   point[2]+1)]
 
         let cache_key = up[0] . '=' . down[0] . '=' . left[0] . '=' . right[0]
 

@@ -413,6 +413,117 @@ replacement mode, which is what we call free mode.
     cross characters, it will perform an cross operation with the characters in
     the bottom editor. This switch can be turned on or off.
 
+    When this mode is activated, when copying or cutting, characters will be
+    re-rendered according to the cross-rendering rule.
+
+    If you only want to copy and cut the original characters, please turn off
+    this mode.
+
+    Let me give you an example to illustrate:
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│             │                                           │
+    │ 3│      ┌──────┼──┐                                        │
+    │ 4│      │      │  │                                        │
+    │ 5│      │      │  │                                        │
+    │ 6│      │      └──┼──────                                  │
+    │ 7│      └─────────┘                                        │
+    │ 8│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │now index: 1                                                │
+    └────────────────────────────────────────────────────────────┘
+
+    1. First, we highlight the rectangular box.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│             │                                           │
+    │ 3│      ░░░░░░░░░░░                                        │
+    │ 4│      ░      │  ░                                        │
+    │ 5│      ░      │  ░                                        │
+    │ 6│      ░      └──░──────                                  │
+    │ 7│      ░░░░░░░░░░░                                        │
+    │ 8│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │now index: 1                                                │
+    └────────────────────────────────────────────────────────────┘
+    
+    2. Then we cut the highlighted block. Press `C-S-X`.
+        1.) If in cross mode, we obtain the following graph.
+        ┌────────────────────────────────────────────────────────────┐
+        │                        VIM - main.c                        │
+        ├──┬─────────────────────────────────────────────────────────┤
+        │ 1│                                                         │
+        │ 2│             │                                           │
+        │ 3│             │                                           │
+        │ 4│             │                                           │
+        │ 5│             │                                           │
+        │ 6│             └─────────                                  │
+        │ 7│                                                         │
+        │ 8│                                                         │
+        ├──┴─────────────────────────────────────────────────────────┤
+        │now index: 1                                                │
+        └────────────────────────────────────────────────────────────┘
+        2.) If not in cross mode, we obtain the following graph.
+        ┌────────────────────────────────────────────────────────────┐
+        │                        VIM - main.c                        │
+        ├──┬─────────────────────────────────────────────────────────┤
+        │ 1│                                                         │
+        │ 2│             │                                           │
+        │ 3│                                                         │
+        │ 4│             │                                           │
+        │ 5│             │                                           │
+        │ 6│             └── ──────                                  │
+        │ 7│                                                         │
+        │ 8│                                                         │
+        ├──┴─────────────────────────────────────────────────────────┤
+        │now index: 1                                                │
+        └────────────────────────────────────────────────────────────┘
+        You can see that in cross mode, the gaps left after deletion have been
+        automatically filled.
+        3.) Similarly, in cross mode, the characters in the preview will also
+            be automatically adjusted, whereas in non-cross mode, they remain
+            unchanged.
+        ┌────────────────────────────────────────────────────────────┐
+        │                        VIM - main.c                        │
+        ├──┬─────────────────────────────────────────────────────────┤
+        │ 1│                                                         │
+        │ 2│             │                                           │
+        │ 3│      ┌──────┼──┐          ┌─────────┐                   │
+        │ 4│      |      │  │          │         │                   │
+        │ 5│      │      │  │          │         │                   │
+        │ 6│      │      └──┼──────    │         │                   │
+        │ 7│      └─────────┘          └─────────┘                   │
+        │ 8│                                                         │
+        ├──┴─────────────────────────────────────────────────────────┤
+        │now index: 1                                                │
+        └────────────────────────────────────────────────────────────┘
+
+        ┌────────────────────────────────────────────────────────────┐
+        │                        VIM - main.c                        │
+        ├──┬─────────────────────────────────────────────────────────┤
+        │ 1│                                                         │
+        │ 2│             │                                           │
+        │ 3│      ┌──────┼──┐          ┌──────┼──┐                   │
+        │ 4│      │      │  │          │         │                   │
+        │ 5│      │      │  │          │         │                   │
+        │ 6│      │      └──┼──────    │         ┼                   │
+        │ 7│      └─────────┘          └─────────┘                   │
+        │ 8│                                                         │
+        ├──┴─────────────────────────────────────────────────────────┤
+        │now index: 1                                                │
+        └────────────────────────────────────────────────────────────┘
+        The shape on the right is the one in the preview. You can see that in
+        cross mode, the graphic in the preview is corrected into a rectangle,
+        whereas in non-cross mode, it is the original graphic that has been cut
+        out, with no additional processing.
+
+    3. The copy operation is also a similar case.. Press `C-X`.
+
 
 4.6.Draw a diagonal line                           *vimio-draw-diagonal-line*
 
@@ -484,7 +595,9 @@ replacement mode, which is what we call free mode.
     (smart line cancel)
     `smf`               smart line flip direction
     (smart line cancel)
-
+    `smr`               smart line resize
+    (smart line resize)
+    `s.`                execute the macro in register `a` once.
 
   1.At point A, press `sms` to start draw, then move the cursor to point B.
 
@@ -585,7 +698,7 @@ replacement mode, which is what we call free mode.
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
     │ 1│                                                         │
-    │ 2│            A───────────╮                                │
+    │ 2│            A───────────┐                                │
     │ 3│                        │                                │
     │ 4│                        v                                │
     │ 5│                        B                                │
@@ -622,6 +735,100 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
+ 10.The function of `smr` is to adjust the dimensions of the existing lines.
+    1). First, we need to highlight and select the existing lines.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│             <----------.                                │
+    │ 3│                        |                                │
+    │ 4│                        |                                │
+    │ 5│                        |                                │
+    │ 6│                        '------------>                   │
+    │ 7│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│             ░░░░░░░░░░░░                                │
+    │ 3│                        ░                                │
+    │ 4│                        █                                │
+    │ 5│                        ░                                │
+    │ 6│                        ░░░░░░░░░░░░░░                   │
+    │ 7│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    2). We can press `smr` to readjust the position of the line, and press 
+        `sme` to finish once it reaches the target position.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│             <-------------------.                       │
+    │ 3│                                 |                       │
+    │ 4│                                 |                       │
+    │ 5│                                 |                       │
+    │ 6│                                 '--->                   │
+    │ 7│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    3). If you only want to manipulate a single line and then position your 
+        cursor at one of its endpoints.
+    4). The situation with more than two lines is also supported.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│             <----------.-------------->                 │
+    │ 3│                        |                                │
+    │ 4│                        |                                │
+    │ 5│                        v                                │
+    │ 6│                                                         │
+    │ 7│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│             ░░░░░░░░░░░░░░░░░░░░░░░░░░░                 │
+    │ 3│                        ░                                │
+    │ 4│                        ░                                │
+    │ 5│                        ░                                │
+    │ 6│                                                         │
+    │ 7│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│             <-------------------.----->                 │
+    │ 3│                                 |                       │
+    │ 4│                                 |                       │
+    │ 5│                                 |                       │
+    │ 6│                                 |                       │
+    │ 7│                                 v                       │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    The method for highlighting selection can be done through regular selection,
+    smart selection(See |vimio-smart-selection|), or a combination of both.
+
+ 11.`s.` It's just a convenient operation to play the macro in the `a` register
+    once. Because some repetitive operations can be recorded as macros and
+    saved to registers for quick execution.
 
 4.9.Smart line draw                                  *vimio-smart-shape-draw*
 
@@ -1826,6 +2033,8 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `smx`            smart line flip cross mode                     |
 |              `smc`            smart line cancel draw                         |
 |              `smf`            smart line flip direction                      |
+|              `smr`            smart line resize                              |
+|              `s.`             execute the macro in register `a` once.        |
 |              `<leader>db`     draw a box (draw box)                          |
 |              `<leader>ssr`    shape resize start                             |
 |              `<leader>sse`    shape resize end                               |
@@ -2030,6 +2239,19 @@ A: Use the command:
    :VimioVersion
    <
    It will print the currently installed version (e.g. 1.0.0).
+
+Q: The cursor is moving too slowly; how can I quickly navigate the drawing?
+A: Using Vim's quick movement plugins, such as `vim9-stargate` or 
+    `vim-easymotion`.
+
+    `vim9-stargate`: https://github.com/monkoose/vim9-stargate
+    `vim-easymotion`: https://github.com/easymotion/vim-easymotion
+
+    If you are using the `vim9-stargate` plugin, you can set up the following
+    quick jump characters to assist with rapid navigation. 
+    noremap <C-;> <Cmd>call stargate#OKvim("[\\+\\.\\'\\^v<>┼┤├╭╮╯╰┣┳┻┏"
+        \ "┗╬╣╠╔╗╝╚╨╧╥╤╟╞╜╛╙╘╖╕╓╒┍┎┑┒┕┖┙┚┝┞┟┠┡┢┥┦┧┨┩┪┭┮┯┰┱┲┵" .
+        \ "┶┷┸┹┺┽┾┿╀╁╂╃╄╅╆╇╈╉╊┌┐└┘┛\\)❫⟫▲▼◀▶△▽◁▷┬┴╋┫┓╦╩╫╪╢╡]")<CR>
 
 ==============================================================================
 15. License & Credits                                         *vimio-license*

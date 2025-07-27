@@ -190,7 +190,7 @@ function! s:setup(X, Y, text_only, title, box_type, end_x, end_y) dict abort
         let title_separator_exist = 1
     endif
     
-    " shape_name_config_map -> 'NAME'
+    " g:vimio_shape_name_config_map -> 'NAME'
     call self.set({
                 \ 'NAME': 'box',
                 \ 'X': a:X,

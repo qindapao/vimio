@@ -442,44 +442,64 @@ function! vimio#cursors#create_rectangle_string_only(points) abort
     return [ lines, min_row, min_col ]
 endfunction
 
+" Update the characters in list1 based on the coordinates in list2.
+" let list1 = [['a', 5, 19], ['b', 4, 1]]
+" let list2 = [['x', 5, 19], ['b', 6, 9]]
+" let result = UpdateListWithOverlay(list1, list2)
+" result:
+"   [['x', 5, 19], ['b', 4, 1]]
+function! s:UpdateListWithOverlay(list1, list2)
+    for item2 in a:list2
+        let char2 = item2[0]
+        let x2 = item2[1]
+        let y2 = item2[2]
+
+        for i in range(len(a:list1))
+            let item1 = a:list1[i]
+            if item1[1] == x2 && item1[2] == y2
+                let a:list1[i][0] = char2
+            endif
+        endfor
+    endfor
+    return a:list1
+endfunction
+
 
 function! vimio#cursors#create_rectangle_string(points, delete_original, replace_char, is_update_clip) abort
 
     let [lines, min_row, min_col] = vimio#cursors#create_rectangle_string_only(a:points)
 
-    " 5) Yank to system clipboard
     let lines_str = join(lines, "\n")
     if a:is_update_clip
         let @+ = lines_str
     endif
 
-    " 6) Batch‐erase the original points if requested
+    " If it is in cross-replacement mode, then the intersection situation
+    " for each point needs to be calculated.
+    let cross_points = []
+    if g:vimio_state_paste_preview_cross_mode
+        call vimio#scene#calculate_cross_points(
+                    \ a:points,
+                    \ s:cursor_cross_cache,
+                    \ g:vimio_config_draw_normal_char_funcs_map,
+                    \ g:vimio_config_draw_cross_styles,
+                    \ g:vimio_state_cross_style_index,
+                    \ cross_points
+                    \ )
+    endif
+
+    " If the cursor is different before and after deletion, 
+    " then a jump to locate is required.
+    let cursor_before = [ line('.'), virtcol('.') ]
     if a:delete_original
-        " If it is in cross-replacement mode, then the intersection situation
-        " for each point needs to be calculated.
-        let cross_points = []
-        if g:vimio_state_paste_preview_cross_mode
-            call vimio#scene#calculate_cross_points(
-                        \ a:points,
-                        \ s:cursor_cross_cache,
-                        \ g:vimio_config_draw_normal_char_funcs_map,
-                        \ g:vimio_config_draw_cross_styles,
-                        \ g:vimio_state_cross_style_index,
-                        \ cross_points
-                        \ )
-        endif
-
-        " call vimio#debug#log_obj('cross_points', cross_points, 4, '-cross_points-')
-
-        " If the cursor is different before and after deletion, 
-        " then a jump to locate is required.
-        let cursor_before = [ line('.'), virtcol('.') ]
         call s:erase_original_batch(a:points, a:replace_char)
-        
-        " 
-        if g:vimio_state_paste_preview_cross_mode
-            let cross_points_after = []
-            let combined_table = g:vimio_config_draw_normal_char_funcs_map + g:vimio_config_draw_delete_chars_funcs_map
+    endif
+
+    if g:vimio_state_paste_preview_cross_mode
+
+        let cross_points_after = []
+        let combined_table = g:vimio_config_draw_normal_char_funcs_map + g:vimio_config_draw_delete_chars_funcs_map
+        if a:delete_original
             call vimio#scene#calculate_cross_points(
                         \ cross_points,
                         \ s:cursor_delete_cross_cache,
@@ -489,8 +509,6 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
                         \ cross_points_after
                         \ )
 
-            " call vimio#debug#log_obj('cross_points_after', cross_points_after, 4, '-cross_points_after-')
-
             if len(cross_points_after) != 0
                 " The new crossover character is pasted back in place.
                 let [lines_cross, min_row_cross, min_col_cross] = vimio#cursors#create_rectangle_string_only(cross_points_after)
@@ -499,6 +517,26 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
                             \ 'pos_start': [min_row_cross, min_col_cross]
                             \})
             endif
+        endif
+
+        " The points in the clipboard also need to be updated.
+        let cross_preview = []
+        call vimio#scene#calculate_cross_points(
+                    \ cross_points,
+                    \ s:cursor_delete_cross_cache,
+                    \ combined_table,
+                    \ g:vimio_config_draw_cross_styles,
+                    \ g:vimio_state_cross_style_index,
+                    \ cross_preview,
+                    \ a:points,
+                    \ )
+
+        let cross_preview_after = s:UpdateListWithOverlay(a:points, cross_preview)
+        let [lines, min_row, min_col] = vimio#cursors#create_rectangle_string_only(cross_preview_after)
+
+        let lines_str = join(lines, "\n")
+        if a:is_update_clip
+            let @+ = lines_str
         endif
 
         let cursor_after = [ line('.'), virtcol('.') ]

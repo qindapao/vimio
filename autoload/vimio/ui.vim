@@ -182,6 +182,10 @@ function! vimio#ui#smart_line_cancel() abort
     augroup END
     
     if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
+        if len(g:vimio_drawline_multi_lines) > g:vimio_task_smart_line_draws_map['draw_queue_lower_limit']
+            call vimio#task#run_draw_queue(g:vimio_drawline_multi_lines, g:vimio_task_smart_line_draws_map['draw_queue_sleep_time'], 'sync')
+        endif
+
         for line in g:vimio_drawline_multi_lines
             call line['cancel']()
         endfor
@@ -278,7 +282,7 @@ function! vimio#ui#shapes_change_type() abort
         return
     endif
 
-    let shape_type = deepcopy(g:shape_name_config_map[shape_obj.NAME][g:vimio_state_draw_line_index])
+    let shape_type = deepcopy(g:vimio_shape_name_config_map[shape_obj.NAME][g:vimio_state_draw_line_index])
     call shape_obj.set_box_type(shape_type)
 
     " Direct overlay can preserve intersection points, but there is a bug below,

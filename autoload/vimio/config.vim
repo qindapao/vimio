@@ -25,7 +25,7 @@
 " - g:vimio_config_shapes_box_type_default
 " - g:vimio_config_shapes_box_types
 " - g:vimio_config_shapes_box_types_switch
-" - g:shape_name_config_map
+" - g:vimio_shape_name_config_map
 
 let g:vimio_config_visual_block_popup_types = ['cover', 'overlay']
 
@@ -518,8 +518,12 @@ let g:vimio_config_shapes_box_types_switch = [
             \ ]
 
 " key is obj 'NAME'
-let g:shape_name_config_map = {
+let g:vimio_shape_name_config_map = {
     \ 'box': g:vimio_config_shapes_box_types_switch,
     \ }
 
+let g:vimio_task_smart_line_draws_map = {
+            \ 'draw_queue_lower_limit': 3,
+            \ 'draw_queue_sleep_time': 30,
+            \ }
 
