@@ -1251,12 +1251,14 @@ EOF
 /_/    
 EOF
 
-
-
-
-
-
-
+let l:snapshot =<< EOF
+   (0)     (1)   (2)  (3)     (4)   (5)
+            _     _           ___    ___ 
+   __ _    / \   / |  ____ _ /   |  <  / 
+  / _` |  / _ \  | | / __ `// /| |  / /  
+ | (_| | / ___ \ | |/ /_/ // ___ | / /   
+  \__,_|/_/   \_\|_|\__,_//_/  |_|/_/    
+EOF
 
 " In fact, you can also use the second index to switch categories in the 
 " subcategory, so you can quickly switch with the mouse
@@ -1265,10 +1267,32 @@ EOF
 " 2.Category
 " 3.Small category line
 " 4.Columns per row of subclasses
-let g:vimio_config_shapes = {'set_index': a:index, 'value': [
+
+    let l:snapshot_lowercase =<< EOF
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
+a b c d e f g h i j k  l  m  n  o  p  q  r  s  t
+20 21 22 23 24 25 26 27 28 29
+u  v  w  x  y  z  ,  '  "  @
+EOF
+    let l:snapshot_uppercase =<< EOF
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19
+A B C D E F G H I J K  L  M  N  O  P  Q  R  S  T
+20 21 22 23 24 25 26 27 28 29
+U  V  W  X  Y  Z  #  $  %  ^
+EOF
+    let l:snapshot_marks =<< EOF
+0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19                   
+1 2 3 4 5 6 7 8 9 0 &  *  (  )  .  !  +  :  ;  -                    
+20 21 22 23 24 25 26 27 28 29      
+>  <  |  \  /  ?  {  }  [  ]       
+EOF
+
+let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'figlet', 'snapshot': join(l:snapshot, "\n"), 'value': [
     \ {
     \ 'index': a:indexes[0],
-    \ 'step': [1, 5],
+    \ 'step': [1, 1],
+    \ 'name': 'standard_lowercase',
+    \ 'snapshot': join(l:snapshot_lowercase, "\n"),
     \ 'value': [ standard_a, standard_b, standard_c, standard_d, standard_e,
     \            standard_f, standard_g, standard_h, standard_i, standard_j,
     \            standard_k, standard_l, standard_m, standard_n, standard_o,
@@ -1278,7 +1302,9 @@ let g:vimio_config_shapes = {'set_index': a:index, 'value': [
     \ },
     \ {
     \ 'index': a:indexes[1],
-    \ 'step': [1, 5],
+    \ 'step': [1, 1],
+    \ 'name': 'standard_uppercase',
+    \ 'snapshot': join(l:snapshot_uppercase, "\n"),
     \ 'value': [ standard_A, standard_B, standard_C, standard_D, standard_E,
     \            standard_F, standard_G, standard_H, standard_I, standard_J,
     \            standard_K, standard_L, standard_M, standard_N, standard_O,
@@ -1288,7 +1314,9 @@ let g:vimio_config_shapes = {'set_index': a:index, 'value': [
     \ },
     \ {
     \ 'index': a:indexes[2],
-    \ 'step': [1, 5],
+    \ 'step': [1, 1],
+    \ 'name': 'standard_marks',
+    \ 'snapshot': join(l:snapshot_marks, "\n"),
     \ 'value': [ standard_1, standard_2, standard_3, standard_4, standard_5,
     \            standard_6, standard_7, standard_8, standard_9, standard_0,
     \            standard_mark9, standard_mark10, standard_mark11, standard_mark12, standard_mark13,
@@ -1299,7 +1327,9 @@ let g:vimio_config_shapes = {'set_index': a:index, 'value': [
     \ },
     \ {
     \ 'index': a:indexes[3],
-    \ 'step': [1, 5],
+    \ 'step': [1, 1],
+    \ 'name': 'italic_lowercase',
+    \ 'snapshot': join(l:snapshot_lowercase, "\n"),
     \ 'value': [ italic_a, italic_b, italic_c, italic_d, italic_e,
     \            italic_f, italic_g, italic_h, italic_i, italic_j,
     \            italic_k, italic_l, italic_m, italic_n, italic_o,
@@ -1309,7 +1339,9 @@ let g:vimio_config_shapes = {'set_index': a:index, 'value': [
     \ },
     \ {
     \ 'index': a:indexes[4],
-    \ 'step': [1, 5],
+    \ 'step': [1, 1],
+    \ 'name': 'italic_uppercase',
+    \ 'snapshot': join(l:snapshot_uppercase, "\n"),
     \ 'value': [ italic_A, italic_B, italic_C, italic_D, italic_E,
     \            italic_F, italic_G, italic_H, italic_I, italic_J,
     \            italic_K, italic_L, italic_M, italic_N, italic_O,
@@ -1319,7 +1351,9 @@ let g:vimio_config_shapes = {'set_index': a:index, 'value': [
     \ },
     \ {
     \ 'index': a:indexes[5],
-    \ 'step': [1, 5],
+    \ 'step': [1, 1],
+    \ 'name': 'italic_marks',
+    \ 'snapshot': join(l:snapshot_marks, "\n"),
     \ 'value': [ italic_1, italic_2, italic_3, italic_4, italic_5,
     \            italic_6, italic_7, italic_8, italic_9, italic_0,
     \            italic_mark9, italic_mark10, italic_mark11, italic_mark12, italic_mark13,

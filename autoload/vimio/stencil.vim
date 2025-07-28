@@ -14,6 +14,101 @@
 " - vimio#stencil#get_all_graph_functions()
 " - vimio#stencil#cleanup_shape_subfuncs()
 
+let s:vimio_stencil_graph_set_popup = v:null
+let s:vimio_stencil_key_buffer = ''
+
+
+
+function! vimio#stencil#popup_filter(winid, key) abort
+    if a:key !~# '^\d$'
+        " Non-numeric keys are handled by other processes.
+        let s:vimio_stencil_key_buffer = ''
+        return 0
+    endif
+
+    let s:vimio_stencil_key_buffer .= a:key
+
+    if strlen(s:vimio_stencil_key_buffer) == 3
+        " execute opration
+        if stridx(s:vimio_stencil_key_buffer, '1') == 0
+            let lev1_num = str2nr(strpart(s:vimio_stencil_key_buffer, 1))
+            if lev1_num < len(g:vimio_config_shapes['value'])
+                let g:vimio_config_shapes['set_index'] = lev1_num
+            endif
+        elseif stridx(s:vimio_stencil_key_buffer, '2') == 0
+            let lev2_num = str2nr(strpart(s:vimio_stencil_key_buffer, 1))
+            if type(g:vimio_config_shapes['value'][g:vimio_config_shapes['set_index']]['index']) != type([])
+                if lev2_num < len(g:vimio_config_shapes['value'][g:vimio_config_shapes['set_index']]['value'])
+                    let g:vimio_config_shapes['value'][g:vimio_config_shapes['set_index']]['index'] = lev2_num
+                endif
+            endif
+        endif
+
+        call vimio#stencil#update_lev2_info()
+        call vimio#popup#update_cross_block()
+        " Update the text in the template pop-up window.
+        let lines_str = vimio#stencil#show_graph_set_text()
+        call g:vimio_popup_all_popups[a:winid].update({
+                    \ 'new_text': lines_str,
+                    \ })
+
+        let s:vimio_stencil_key_buffer = ''
+    endif
+
+    " Indicates that the key event has been processed.
+    return 1
+endfunction
+
+
+function! vimio#stencil#show_graph_set_text()
+    let set_index = g:vimio_config_shapes['set_index']
+    let shapes_lev1s = g:vimio_config_shapes['value']
+    let shape_set = shapes_lev1s[set_index]
+    let stencil_name = g:vimio_config_shapes['stencil_set_name']
+    let snapshot = get(g:vimio_config_shapes, 'snapshot', '')
+    let sub_snapshot = get(shape_set, 'snapshot', '')
+    let step = shape_set['step'][g:vimio_state_switch_lev2_step_index]
+    let step1 = shape_set['step'][1]
+    let lev2_index = shape_set['index']
+    if type(lev2_index) == type([])
+        let all_cnt = lev2_index[0]
+        let now_cnt = lev2_index[1]
+        let now_row = now_cnt / step1
+        let now_col = now_cnt % step1
+        let all_row = all_cnt / step1
+
+        let step_str = 'step: ' . step . '(' . now_row . '/' . all_row . ',' . now_col . '/' . step1 . ') '
+    else
+        let step_str = 'step: ' . step . '(' . lev2_index . '/' . len(shape_set['value']) . ') '
+    endif
+
+    let lines = [
+                \ 'stencil set name: ' . stencil_name . ' ',
+                \ 'stencil index: ' . set_index . '/' . len(shapes_lev1s) . ' ',
+                \ 'snapshot: ' . "\n" . snapshot ,
+                \ 'stencil sub set name: ' . shape_set['name'] . ' ',
+                \ 'sub snapshot: ' . "\n" . sub_snapshot ,
+                \ step_str,
+                \ ]
+    return join(lines, "\n")
+endfunction
+
+
+function! vimio#stencil#show_graph_set_info()
+    let lines_str = vimio#stencil#show_graph_set_text()
+    let popup_def = { 
+                \ 'new_text': lines_str, 
+                \ 'anchor': 'botright',
+                \ 'filter': function('vimio#stencil#popup_filter')
+                \ }
+    if type(s:vimio_stencil_graph_set_popup) == type({})
+        call s:vimio_stencil_graph_set_popup.update(popup_def)
+    else
+        let s:vimio_stencil_graph_set_popup = vimio#popup#new(popup_def)
+    endif
+endfunction
+
+
 function! vimio#stencil#switch_lev1_index(direction)
     if a:direction == 1
         let g:vimio_config_shapes['set_index'] = (g:vimio_config_shapes['set_index']+1) % len(g:vimio_config_shapes['value'])
@@ -23,6 +118,7 @@ function! vimio#stencil#switch_lev1_index(direction)
 
     call vimio#stencil#update_lev2_info()
     call vimio#popup#update_cross_block()
+    call vimio#stencil#show_graph_set_info()
 endfunction
 
 function! vimio#stencil#switch_lev2_index(direction)
@@ -52,11 +148,17 @@ function! vimio#stencil#switch_lev2_index(direction)
 
     call vimio#stencil#update_lev2_info()
     call vimio#popup#update_cross_block()
+    call vimio#stencil#show_graph_set_info()
+endfunction
+
+function! vimio#stencil#switch_sub_step() abort
+    let g:vimio_state_switch_lev2_step_index = !g:vimio_state_switch_lev2_step_index
+    call vimio#stencil#switch_lev2_index(0)
 endfunction
 
 function! vimio#stencil#get_default_graph_functions() abort
   return [
-        \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0], [60, 0], [600, 0], [600, 0], 0, 0, [600, 0], 0, [40, 0], 0, 0, 0], 0, 'basic.vim'],
+        \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0], [60, 0], [600, 0], [600, 0], [20, 0], [20, 0], [600, 0], 0, [40, 0], 0, 0, 0], 0, 'basic.vim'],
         \ ['Vimio__DefineSmartDrawShapesFiglet', [0, 0, 0, 0, 0, 0], 0, 'figlet.vim'],
         \ ['Vimio__DefineSmartDrawShapesLed', [0], 0, 'led.vim'],
         \ ['Vimio__DefineSmartDrawShapesanimal', [0], 0, 'animal.vim'],
@@ -184,6 +286,7 @@ function! vimio#stencil#switch_define_graph_set(is_show)
     call vimio#stencil#update_lev2_info()
     if a:is_show
         call vimio#popup#update_cross_block()
+        call vimio#stencil#show_graph_set_info()
     endif
 
     " " Record end time

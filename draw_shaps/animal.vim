@@ -1,4 +1,3 @@
-
 function! Vimio__DefineSmartDrawShapesanimal(indexes, index)
     let cat =<< EOF
    /\_/\ 
@@ -16,13 +15,21 @@ o_/6 /#\
   C/ ,--___/
 EOF
 
-let g:vimio_config_shapes = {'set_index': a:index, 'value': [
-    \ {
-    \ 'index': a:indexes[0],
-    \ 'step': [1, 1],
-    \ 'value': [ cat, dog ]
-    \ }
-    \ ],
-    \ }
+    
+    let l:snapshot =<< EOF
+0   1
+cat dog
+EOF
+
+    let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'animals', 'value': [
+        \ {
+        \ 'index': a:indexes[0],
+        \ 'name': 'animals',
+        \ 'snapshot': join(l:snapshot, "\n"),
+        \ 'step': [1, 1],
+        \ 'value': [ cat, dog ]
+        \ }
+        \ ],
+        \ }
 endfunction
 

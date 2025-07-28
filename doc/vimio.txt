@@ -594,7 +594,7 @@ replacement mode, which is what we call free mode.
     `smc`               smart line cancel draw
     (smart line cancel)
     `smf`               smart line flip direction
-    (smart line cancel)
+    (smart line flip)
     `smr`               smart line resize
     (smart line resize)
     `s.`                execute the macro in register `a` once.
@@ -706,7 +706,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │ now line type:['─', '│']                                   │
     └────────────────────────────────────────────────────────────┘
-    9.The function of `smf` is to switch the primary and secondary directions of 
+  9.The function of `smf` is to switch the primary and secondary directions of 
       the line.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1365,6 +1365,90 @@ A text template can have up to 3 levels of dimensions.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
+    The enumeration template can be filtered using numeric keys. `1xx` indicates
+    filtering level 1, and `2xx` indicates filtering level 2. Here, `xx`
+    represents a two-digit number; if it is a single-digit number, a 0 is added
+    in front.
+    
+    For example, if you see the following preview image in the preview window.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│                                                    ▎    │
+    │ 4│                                                         │
+    │ 5│       stencil set name: basic                           │
+    │ 6│       stencil index: 13/15                              │
+    │ 7│       snapshot:                                         │
+    │ 8│         0   1   2   3   4   5    6   7                  │
+    │ 9│        .-..---. .  .'.  __ __    __  /\                 │
+    │10│       (   )\ / / \:   :/  \\ \  / / /  \                │
+    │11│        '-'  ' '---''.' \__/ ) )( ( | /\ |               │
+    │12│                            /_/  \_\|/  \|               │
+    │13│                                    '    '               │
+    │14│         8      9    10  11  12 13  14                   │
+    │15│       .    .  .-.  ┌───┐.    ●  █  ◥                    │
+    │16│       |\  /| /   \ │ █ │|\                              │
+    │17│       | \/ |(     )└───┘'-'                             │
+    │18│        \  /  \   /                                      │
+    │19│         \/    '-'                                       │
+    │20│       stencil sub set name: sqare_symbol                │
+    │21│       sub snapshot:                                     │
+    │22│       0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15   │
+    │23│       ▀  ▁  ▂  ▃  ▄  ▅  ▆  ▇  █  ▉  ▊  ▋  ▌  ▍  ▎  ▏    │
+    │24│                                                         │
+    │25│       16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31   │
+    │26│       ▐  ░  ▒  ▓  ▔  ▕  ▖  ▗  ▘  ▙  ▚  ▛  ▜  ▝  ▞  ▟    │
+    │27│       step: 1(14/32)                                    │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    When you press `231`, the preview character at the cursor will change to
+    `▟`.
+
+    When you press `107`, both the cursor preview and the preview template will
+    be updated.
+    
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│                                                         │
+    │ 4│                                                 /\      │
+    │ 5│                                                /  \     │
+    │ 6│  stencil set name: basic                      | /\ |    │
+    │ 7│  stencilsindex: 7/15                          |/  \|    │
+    │ 8│  snapshot:                                    '    '    │
+    │ 9│    0   1   2   3   4   5    6   7                       │
+    │10│   .-..---. .  .'.  __ __    __  /\                      │
+    │11│  (   )\ / / \:   :/  \\ \  / / /  \                     │
+    │12│   '-'  ' '---''.' \__/ ) )( ( | /\ |                    │
+    │13│                       /_/  \_\|/  \|                    │
+    │14│                               '    '                    │
+    │15│    8      9    10  11  12 13  14                        │
+    │16│  .    .  .-.  ┌───┐.    ●  █  ◥                         │
+    │17│  |\  /| /   \ │ █ │|\                                   │
+    │18│  | \/ |(     )└───┘'-'                                  │
+    │19│   \  /  \   /                                           │
+    │20│    \/    '-'                                            │
+    │21│  stencil sub set name: process_up                       │
+    │22│  sub snapshot:                                          │
+    │23│                                                         │
+    │24│  step: 0(0/10,0/2)                                      │
+    │25│                                                         │
+    │26│                                                         │
+    │27│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+    Non-enum templates cannot use this method to switch the second
+    layer; they can only switch the first layer.
+
 8.2. User-defined shape templates                  *vimio-user-defined-shape*
 
 Users can define their own shape templates in the draw_shaps directory. Here is
@@ -1389,14 +1473,21 @@ an example:
       C/ ,--___/
     EOF
 
-    let g:vimio_config_shapes = {'set_index': a:index, 'value': [
-        \ {
-        \ 'index': a:indexes[0],
-        \ 'step': [1, 1],
-        \ 'value': [ cat, dog ]
-        \ }
-        \ ],
-        \ }
+        let l:snapshot =<< EOF
+    0   1
+    cat dog
+    EOF
+    
+        let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'animals', 'value': [
+            \ {
+            \ 'index': a:indexes[0],
+            \ 'name': 'animals',
+            \ 'snapshot': join(l:snapshot, "\n"),
+            \ 'step': [1, 1],
+            \ 'value': [ cat, dog ]
+            \ }
+            \ ],
+            \ }
     endfunction
 
     2. Please see |vimio-config|.
@@ -2212,6 +2303,8 @@ templates, as they are reserved by the plugin and may cause conflicts:
 
 Use unique names like `my_animal.vim`, `custom_led.vim`, etc., to ensure
 compatibility.
+
+See |vimio-user-defined-shape|.
 
 ==============================================================================
 14. Troubleshooting & FAQ                                         *vimio-faq*

@@ -177,7 +177,7 @@ if g:vimio_enable_default_mappings
     " Preview current template shape
     nnoremap <silent> <M-t> :call vimio#stencil#switch_lev2_index(0)<CR>
     " Switch shape index (width and height switch)
-    nnoremap <silent> sk :let g:vimio_state_switch_lev2_step_index = !g:vimio_state_switch_lev2_step_index<CR>
+    nnoremap <silent> sk :call vimio#stencil#switch_sub_step()<CR>
 
     " =======Smart selection and multi-cursor control with highlighting=========
     " Highlights the character under the cursor without moving

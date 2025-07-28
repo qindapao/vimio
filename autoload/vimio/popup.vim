@@ -239,6 +239,12 @@ endfunction
 
 " ==============Multiple pop-up windows support object management==============     
 
+function! vimio#popup#null_filter(winid, key) abort
+    " 0 stand for do not close popup
+    return 0
+endfunction
+
+
 function! vimio#popup#new(popup_definition)
     let popup_obj = {}
     let popup_obj.TEXT = ''
@@ -248,6 +254,7 @@ function! vimio#popup#new(popup_definition)
     let popup_obj.TYPE = g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index]
     let popup_obj.ID = 0
     let popup_obj.OVERLAY_TIMER_ID = -1
+    let popup_obj.FILTER = function('vimio#popup#null_filter')
 
     for method in ['update', 'schedule_overlay_mask', 'clear_overlay_timer',
                 \ 'update_popup_type', 'popup_close_self'
@@ -261,6 +268,7 @@ endfunction
 function! s:update(popup_definition) dict abort
     let new_text = get(a:popup_definition, 'new_text', self.TEXT)
     let self.ANCHOR = get(a:popup_definition, 'anchor', self.ANCHOR) 
+    let self.FILTER = get(a:popup_definition, 'filter', self.FILTER)
     call self.update_popup_type()
 
     if self.ID != 0
@@ -272,7 +280,9 @@ function! s:update(popup_definition) dict abort
 
         let self.TEXT = new_text
         call popup_settext(self.ID, split(self.TEXT, "\n"))
-        call popup_setoptions(self.ID, { 'pos': self.ANCHOR })
+        call popup_setoptions(self.ID, { 
+                    \ 'pos': self.ANCHOR,
+                    \ })
         call popup_move(self.ID, {
                     \ 'line': 'cursor',
                     \ 'col': 'cursor',
@@ -302,8 +312,11 @@ function! s:update(popup_definition) dict abort
             \ 'highlight': 'VimioVirtualText',
             \ 'moved': 'any',
             \ 'pos': self.ANCHOR,
-            \ 'callback': {-> s:on_popup_close(self)}
+            \ 'filter': self.FILTER,
+            \ 'callback': {-> s:on_popup_close(self)},
+            \ 'filtermode': 'n',
             \ })
+        let g:vimio_popup_all_popups[self.ID] = self
     endif
 
     call self.schedule_overlay_mask()
@@ -311,11 +324,14 @@ endfunction
 
 function! s:on_popup_close(obj) abort
     call a:obj.clear_overlay_timer()
-    let a:obj.ID = 0
     let a:obj.MASK = []
     let a:obj.MASK_DIRTY = v:true
     let a:obj.TEXT = ''
     let a:obj.OVERLAY_TIMER_ID = -1
+    if a:obj.ID != 0
+        call remove(g:vimio_popup_all_popups, a:obj.ID)
+    endif
+    let a:obj.ID = 0
 endfunction
 
 function! s:schedule_overlay_mask() dict abort

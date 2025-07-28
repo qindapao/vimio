@@ -47,10 +47,11 @@ EOF
  '-'\'
 EOF
 
-let g:vimio_config_shapes = {'set_index': a:index, 'value': [
+let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'leds', 'snapshot': '', 'value': [
     \ {
     \ 'index': a:indexes[0],
     \ 'step': [1, 1],
+    \ 'name': 'leds',
     \ 'value': [ l:led1, l:led1, l:led3, l:led4, l:led5, l:led6, l:led7, l:led8 ]
     \ }
     \ ],

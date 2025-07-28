@@ -264,132 +264,7 @@ function! Vimio__GenerateRhombus(radius)
     return rhombus
 endfunction
 
-
-
-function! Vimio__DefineSmartDrawShapesBasic(indexes, index)
-    let l:circle_3x3 =<< EOF
- _
-( )
- '
-EOF
-
-    let l:circle_3x5 =<< EOF
- .-.
-(   )
- '-'
-EOF
-
-    let l:circle_3x7 =<< EOF
- .---.
-(     )
- '---'
-EOF
-    let l:circle_7x9 =<< EOF
-  .---.
- /     \
-:       :
-|       |
-:       :
- \     /
-  '---'
-EOF
-    let l:circle_7x15 =<< EOF
-    _.---._
- .''       ''.
-:             :
-|             |
-:             :
- '..       ..'
-    '-...-'
-EOF
-    let l:circle_9x11 =<< EOF
-   .---.
-  /     \
- /       \
-:         :
-|         |
-:         :
- \       /
-  \     /
-   '---'
-EOF
-    let l:circle_9x15 =<< EOF
-    _.---._
-  .'       '.
- /           \
-:             :
-|             |
-:             :
- \           /
-  '.       .'
-    '-...-'
-EOF
-
-    let l:circle_9x17 =<< EOF
-     _.---._
-  .''       ''.
- /             \
-:               :
-|               |
-:               :
- \             /
-  '..       ..'
-     '-...-'
-EOF
-    let l:circle_11x21 =<< EOF
-      _..---.._
-   .''         ''.
-  /               \
- /                 \
-:                   :
-|                   |
-:                   :
- \                 /
-  \               /
-   '..         ..'
-      '--...--'
-EOF
-
-    let l:circle_11x25 =<< EOF
-       _...---..._
-    .''           ''.
-  .'                 '.
- /                     \
-:                       :
-|                       |
-:                       :
- \                     /
-  '.                 .'
-    '..           ..'
-       '---...---'
-EOF
-    let l:circle_13x25 =<< EOF
-        _..---.._
-     .''         ''.
-   .'               '.
-  /                   \
- /                     \
-:                       :
-|                       |
-:                       :
- \                     /
-  \                   /
-   '.               .'
-     '..         ..'
-        '--...--'
-EOF
-    let l:fill_box_1 =<< EOF
-╭─────────────────────╮
-│ ███████████████████ │
-│ ███████████████████ │
-│ ███████████████████ │
-│ ███████████████████ │
-│ ███████████████████ │
-│ ███████████████████ │
-│ ███████████████████ │
-│ ███████████████████ │
-╰─────────────────────╯
-EOF
+function! Vimio__GenerateProcessUp(row_index, col_index)
     let l:process_up1 =<< EOF
   /\
  /  \
@@ -631,7 +506,22 @@ EOF
 |/   \|
 '     '
 EOF
+    let l:process_ups = [
+               \ [ l:process_up1, l:process_up_1_1 ],
+               \ [ l:process_up2, l:process_up_1_2 ],
+               \ [ l:process_up3, l:process_up_1_3 ],
+               \ [ l:process_up4, l:process_up_1_4 ],
+               \ [ l:process_up5, l:process_up_1_5 ],
+               \ [ l:process_up6, l:process_up_1_6 ],
+               \ [ l:process_up7, l:process_up_1_7 ],
+               \ [ l:process_up8, l:process_up_1_8 ],
+               \ [ l:process_up9, l:process_up_1_9 ],
+               \ [ l:process_up10, l:process_up_1_10 ],
+               \ ]
+    return l:process_ups[a:row_index-1][a:col_index]
+endfunction
 
+function! Vimio__GenerateProcessDown(row_index, col_index) abort
     let l:process_down1 =<< EOF
 .    .
 |\  /|
@@ -873,6 +763,181 @@ EOF
   \ /  
    '   
 EOF
+    let process_downs = [
+                \   [ l:process_down1, l:process_down_1_1 ],
+                \   [ l:process_down2, l:process_down_1_2 ],
+                \   [ l:process_down3, l:process_down_1_3 ],
+                \   [ l:process_down4, l:process_down_1_4 ],
+                \   [ l:process_down5, l:process_down_1_5 ],
+                \   [ l:process_down6, l:process_down_1_6 ],
+                \   [ l:process_down7, l:process_down_1_7 ],
+                \   [ l:process_down8, l:process_down_1_8 ],
+                \   [ l:process_down9, l:process_down_1_9 ],
+                \   [ l:process_down10, l:process_down_1_10 ],
+                \   [],
+                \ ]
+    return process_downs[a:row_index-1][a:col_index]
+endfunction
+
+
+function! Vimio__DefineSmartDrawShapesBasic(indexes, index)
+    let l:circle_3x3 =<< EOF
+ _
+( )
+ '
+EOF
+
+    let l:circle_3x5 =<< EOF
+ .-.
+(   )
+ '-'
+EOF
+
+    let l:circle_3x7 =<< EOF
+ .---.
+(     )
+ '---'
+EOF
+    let l:circle_7x9 =<< EOF
+  .---.
+ /     \
+:       :
+|       |
+:       :
+ \     /
+  '---'
+EOF
+    let l:circle_7x15 =<< EOF
+    _.---._
+ .''       ''.
+:             :
+|             |
+:             :
+ '..       ..'
+    '-...-'
+EOF
+    let l:circle_9x11 =<< EOF
+   .---.
+  /     \
+ /       \
+:         :
+|         |
+:         :
+ \       /
+  \     /
+   '---'
+EOF
+    let l:circle_9x15 =<< EOF
+    _.---._
+  .'       '.
+ /           \
+:             :
+|             |
+:             :
+ \           /
+  '.       .'
+    '-...-'
+EOF
+
+    let l:circle_9x17 =<< EOF
+     _.---._
+  .''       ''.
+ /             \
+:               :
+|               |
+:               :
+ \             /
+  '..       ..'
+     '-...-'
+EOF
+    let l:circle_11x21 =<< EOF
+      _..---.._
+   .''         ''.
+  /               \
+ /                 \
+:                   :
+|                   |
+:                   :
+ \                 /
+  \               /
+   '..         ..'
+      '--...--'
+EOF
+
+    let l:circle_11x25 =<< EOF
+       _...---..._
+    .''           ''.
+  .'                 '.
+ /                     \
+:                       :
+|                       |
+:                       :
+ \                     /
+  '.                 .'
+    '..           ..'
+       '---...---'
+EOF
+    let l:circle_13x25 =<< EOF
+        _..---.._
+     .''         ''.
+   .'               '.
+  /                   \
+ /                     \
+:                       :
+|                       |
+:                       :
+ \                     /
+  \                   /
+   '.               .'
+     '..         ..'
+        '--...--'
+EOF
+    let l:fill_box_1 =<< EOF
+╭─────────────────────╮
+│ ███████████████████ │
+│ ███████████████████ │
+│ ███████████████████ │
+│ ███████████████████ │
+│ ███████████████████ │
+│ ███████████████████ │
+│ ███████████████████ │
+│ ███████████████████ │
+╰─────────────────────╯
+EOF
+
+    let l:snapshot =<< EOF
+  0   1   2   3   4   5    6   7
+ .-..---. .  .'.  __ __    __  /\  
+(   )\ / / \:   :/  \\ \  / / /  \ 
+ '-'  ' '---''.' \__/ ) )( ( | /\ |
+                     /_/  \_\|/  \|
+                             '    '
+  8      9    10  11  12 13  14
+.    .  .-.  ╭───┐.    ●  █  ◥
+|\  /| /   \ │ █ │|\ 
+| \/ |(     )└───┘'-'
+ \  /  \   / 
+  \/    '-'  
+EOF
+
+
+    let l:snapshot_bullet_points =<< EOF
+0 1 2 3 4 5 6 7 8 9 10 11
+✓ ✔ ✗ ✘ ☐ ☑ ☒ □ ■ ○ ●  ∨
+EOF
+
+    let l:snapshot_square_symbol =<< EOF
+0  1  2  3  4  5  6  7  8  9  10 11 12 13 14 15
+▀  ▁  ▂  ▃  ▄  ▅  ▆  ▇  █  ▉  ▊  ▋  ▌  ▍  ▎  ▏ 
+
+16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+▐  ░  ▒  ▓  ▔  ▕  ▖  ▗  ▘  ▙  ▚  ▛  ▜  ▝  ▞  ▟
+EOF
+
+    let l:snapshot_marks =<< EOF
+0 1 2 3 4 5 6 7
+▫ ◖ ◗ ▪ ◤ ◥ ◢ ◣
+EOF
 
 
 let g:vimio_state_shapes_sub_funcs = [
@@ -885,12 +950,16 @@ let g:vimio_state_shapes_sub_funcs = [
     \ 'Vimio__GenerateProcessLeft',
     \ 'Vimio__GenerateIfBox',
     \ 'Vimio__GenerateRhombus',
+    \ 'Vimio__GenerateProcessUp',
+    \ 'Vimio__GenerateProcessDown',
     \ ]
 
-let g:vimio_config_shapes = {'set_index': a:index, 'value': [
+let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'basic', 'snapshot': join(l:snapshot, "\n"), 'value': 
+    \ [
     \ {
     \ 'index': a:indexes[0],
     \ 'step': [1, 1],
+    \ 'name': 'ellipse',
     \ 'value': [ l:circle_3x3   , l:circle_3x5   , l:circle_3x7   ,
     \            l:circle_7x9   , l:circle_7x15  ,
     \            l:circle_9x11  , l:circle_9x15  , l:circle_9x17  ,
@@ -900,83 +969,90 @@ let g:vimio_config_shapes = {'set_index': a:index, 'value': [
     \ {
     \ 'index': a:indexes[1],
     \ 'step': [1, 1],
+    \ 'name': 'down_triangle',
     \ 'value': 'Vimio__GenerateDownTriangle'
     \ },
     \ {
     \ 'index': a:indexes[2],
     \ 'step': [1, 1],
+    \ 'name': 'up_triangle',
     \ 'value': 'Vimio__GenerateUpTriangle'
     \ },
     \ {
     \ 'index': a:indexes[3],
     \ 'step': [1, 1],
+    \ 'name': 'rhombus',
     \ 'value': 'Vimio__GenerateRhombus'
     \ },
     \ {
     \ 'index': a:indexes[4],
     \ 'step': [1, 1],
+    \ 'name': 'hexagon',
     \ 'value': 'Vimio__GenerateHexagon'
     \ },
     \ {
     \ 'index': a:indexes[5],
     \ 'step': [1, 30],
+    \ 'name': 'process_right',
     \ 'value': 'Vimio__GenerateProcessRight'
     \ },
     \ {
     \ 'index': a:indexes[6],
     \ 'step': [1, 30],
+    \ 'name': 'process_left',
     \ 'value': 'Vimio__GenerateProcessLeft'
     \ },
     \ {
     \ 'index': a:indexes[7],
-    \ 'step': [1, 10],
-    \ 'value': [ l:process_up1, l:process_up2, l:process_up3, l:process_up4,
-               \ l:process_up5, l:process_up6, l:process_up7, l:process_up8,
-               \ l:process_up9, l:process_up10,
-               \ l:process_up_1_1, l:process_up_1_2, l:process_up_1_3, l:process_up_1_4,
-               \ l:process_up_1_5, l:process_up_1_6, l:process_up_1_7, l:process_up_1_8,
-               \ l:process_up_1_9, l:process_up_1_10]
+    \ 'step': [1, 2],
+    \ 'name': 'process_up',
+    \ 'value': 'Vimio__GenerateProcessUp'
     \ },
     \ {
     \ 'index': a:indexes[8],
-    \ 'step': [1, 10],
-    \ 'value': [ l:process_down1, l:process_down2, l:process_down3, l:process_down4,
-               \ l:process_down5, l:process_down6, l:process_down7, l:process_down8,
-               \ l:process_down9, l:process_down10,
-               \ l:process_down_1_1, l:process_down_1_2, l:process_down_1_3, l:process_down_1_4,
-               \ l:process_down_1_5, l:process_down_1_6, l:process_down_1_7, l:process_down_1_8,
-               \ l:process_down_1_9, l:process_down_1_10]
+    \ 'step': [1, 2],
+    \ 'name': 'process_down',
+    \ 'value': 'Vimio__GenerateProcessDown'
     \ },
     \ {
     \ 'index': a:indexes[9],
     \ 'step': [1, 30],
+    \ 'name': 'ifbox',
     \ 'value': 'Vimio__GenerateIfBox'
     \ },
     \ {
     \ 'index': a:indexes[10],
     \ 'step': [1, 1],
+    \ 'name': 'fill_box',
     \ 'value':  [l:fill_box_1]
     \ },
     \ {
     \ 'index': a:indexes[11],
     \ 'step': [1, 1],
+    \ 'name': 'left_right_triangle',
     \ 'value': 'Vimio__GenerateLeftRightTriangle'
     \ },
     \ {
     \ 'index': a:indexes[12],
     \ 'step': [1, 1],
-    \ 'value': [ ['✓'], ['✔'], ['✗'], ['✘'], ['☐'], ['☑'], ['☒'], ['□'], ['■'], ['○'], ['●'], ['∨'] ]
+    \ 'name': 'bullet_points',
+    \ 'value': [ ['✓'], ['✔'], ['✗'], ['✘'], ['☐'], ['☑'], ['☒'], ['□'], ['■'], ['○'], ['●'], ['∨'] ],
+    \ 'snapshot': join(l:snapshot_bullet_points, "\n"),
     \ },
     \ {
     \ 'index': a:indexes[13],
     \ 'step': [1, 1],
+    \ 'name': 'square_symbol',
     \ 'value': [ ['▀'], ['▁'], ['▂'], ['▃'], ['▄'], ['▅'], ['▆'], ['▇'], ['█'], ['▉'], ['▊'], ['▋'], ['▌'], ['▍'], ['▎'], ['▏'],
-    \            ['▐'], ['░'], ['▒'], ['▓'], ['▔'], ['▕'], ['▖'], ['▗'], ['▘'], ['▙'], ['▚'], ['▛'], ['▜'], ['▝'], ['▞'], ['▟'] ] 
+    \            ['▐'], ['░'], ['▒'], ['▓'], ['▔'], ['▕'], ['▖'], ['▗'], ['▘'], ['▙'], ['▚'], ['▛'], ['▜'], ['▝'], ['▞'], ['▟'] ],
+    \ 'snapshot': join(l:snapshot_square_symbol, "\n"),
     \ },
     \ {
     \ 'index': a:indexes[14],
     \ 'step': [1, 1],
-    \ 'value': [ ['▫'], ['◖'], ['◗'], ['▪'], ['◤'], ['◥'], ['◢'], ['◣'] ]
+    \ 'name': 'marks',
+    \ 'value': [ ['▫'], ['◖'], ['◗'], ['▪'], ['◤'], ['◥'], ['◢'], ['◣'] ],
+    \ 'snapshot': join(l:snapshot_marks, "\n"),
     \ },
     \ ],
     \ }
