@@ -954,7 +954,7 @@ let g:vimio_state_shapes_sub_funcs = [
     \ 'Vimio__GenerateProcessDown',
     \ ]
 
-let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'basic', 'snapshot': join(l:snapshot, "\n"), 'value': 
+let vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'basic', 'snapshot': join(l:snapshot, "\n"), 'value': 
     \ [
     \ {
     \ 'index': a:indexes[0],
@@ -1056,5 +1056,7 @@ let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'basic', 
     \ },
     \ ],
     \ }
+    
+    return vimio_config_shapes
 endfunction
 

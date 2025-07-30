@@ -169,10 +169,10 @@ It is strongly recommended to stay in virtual text mode while using vimio.
 
 3.2. Highlight current col                              *vimio-highlight-col*
 
-  • `<leader>scsc`  Its function is to provide a vertical reference line 
+  • `<leader>scc`   Its function is to provide a vertical reference line 
     when we draw. If you don't like it, you can ignore this operation.
 
-  • `<leader>sncsc` Unhighlight the current column
+  • `<leader>scn`   Unhighlight the current column
 
 3.3. Free input                                           *vimio-free-input*
 
@@ -835,9 +835,9 @@ replacement mode, which is what we call free mode.
 4.9.1.  draw box                                 *vimio-smart-shape-draw-box*
 
     `<leader>db`        draw a box (draw box)
-    `<leader>ssr`       shape resize start
+    `<leader>sr`        shape resize start
     (shape switch resize)
-    `<leader>sse`       shape resize end
+    `<leader>se`        shape resize end
     (shape switch resize end)
     `<leader>sct`       shape change border type
 
@@ -903,7 +903,7 @@ replacement mode, which is what we call free mode.
     └────────────────────────────────────────────────────────────┘
   3.Resize Shapes
     Cursor highlight the whole shape or just put cursor on it's border.Then
-    press `<leader>ssr`. 
+    press `<leader>sr`. 
        
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -932,7 +932,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    Once you reach the desired size, press `<leader>sse` to draw the box with
+    Once you reach the desired size, press `<leader>se` to draw the box with
     the new dimensions.  
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1345,6 +1345,9 @@ A text template can have up to 3 levels of dimensions.
                         step of lev2, which is often used to set the length 
                         or width of the switching graphics.
 
+    `ss`                Search for a template by entering a keyword within the
+                        template set.
+
     When using the above operations to display or switch graphics sets, you 
     can see real-time feedback in the preview window.
 
@@ -1449,6 +1452,58 @@ A text template can have up to 3 levels of dimensions.
     Non-enum templates cannot use this method to switch the second
     layer; they can only switch the first layer.
 
+    `ss` Enter the search keyword in the command line, and after finding the
+    content, use `N` or `n` to navigate through the search results.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│                                                         │
+    │ 4│                                                         │
+    │24│                                                         │
+    │25│                                                         │
+    │26│                                                         │
+    │27│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │stencils search pattern: box                                │
+    └────────────────────────────────────────────────────────────┘
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│                                                         │
+    │ 4│                                               █ .-.     │
+    │ 5│                                                /   \    │
+    │ 6│  stencil set name: basic                      (     )   │
+    │ 7│  stencilsindex: 9/15                           \   /    │
+    │ 8│  snapshot:                                      '-'     │
+    │ 9│    0   1   2   3   4   5    6   7                       │
+    │10│   .-..---. .  .'.  __ __    __  /\                      │
+    │11│  (   )\ / / \:   :/  \\ \  / / /  \                     │
+    │12│   '-'  ' '---''.' \__/ ) )( ( | /\ |                    │
+    │13│                       /_/  \_\|/  \|                    │
+    │14│                               '    '                    │
+    │15│    8      9    10  11  12 13  14                        │
+    │16│  .    .  .-.  ┌───┐.    ●  █  ◥                         │
+    │17│  |\  /| /   \ │ █ │|\                                   │
+    │18│  | \/ |(     )└───┘'-'                                  │
+    │19│   \  /  \   /                                           │
+    │20│    \/    '-'                                            │
+    │21│  stencil sub set name: ifbox                            │
+    │22│  sub snapshot:                                          │
+    │23│                                                         │
+    │24│  step: 1(0/10,0/30)                                     │
+    │25│                                                         │
+    │26│                                                         │
+    │27│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │found (1/2)                                                 │
+    └────────────────────────────────────────────────────────────┘
+    
 8.2. User-defined shape templates                  *vimio-user-defined-shape*
 
 Users can define their own shape templates in the draw_shaps directory. Here is
@@ -1478,7 +1533,7 @@ an example:
     cat dog
     EOF
     
-        let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'animals', 'value': [
+        let vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'animals', 'value': [
             \ {
             \ 'index': a:indexes[0],
             \ 'name': 'animals',
@@ -1488,6 +1543,8 @@ an example:
             \ }
             \ ],
             \ }
+        
+        return vimio_config_shapes
     endfunction
 
     2. Please see |vimio-config|.
@@ -1664,8 +1721,8 @@ Let’s first talk about all the operation sets, and then give some examples.
                         direction  
     `<leader>lba`       box selection all based on penetration lines
     `<leader>lbi`       box selection inside border based on penetration lines
-    `<leader>s`         extract outgoing spokes inside in 4 direction
-    `<leader>sm`        extract outgoing spokes inside in 8 direction
+    `<leader>sos`       extract outgoing spokes inside in 4 direction
+    `<leader>sod`       extract outgoing spokes inside in 8 direction
     `<leader>r4`        select all related in 4 direction
     `<leader>r8`        select all related in 8 direction
     `<leader>t4`        text and no border select in 4 direction
@@ -1979,7 +2036,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     8. `<leader>lba` Due to the low efficiency of finding the largest cycle,
         this method can be used as an alternative to the maximum cycle
         selection when the largest cycle is located at the outermost position.
-    9. `<leader>s` Select all line segments of the mind map or flowchart's
+    9. `<leader>sos` Select all line segments of the mind map or flowchart's
         divergent lines corresponding to the current point. Similarly,
         the selection effect based on point F is as follows.
     
@@ -2101,8 +2158,8 @@ Let’s first talk about all the operation sets, and then give some examples.
 | Prepare      `<Leader>vea`    Enter virtual text mode so that vim becomes    |
 |                               a canvas                                       |
 |              `<Leader>ven`    Exit virtual text mode                         |
-|              `<leader>scsc`   Highlight the current col                      |
-|              `<leader>sncsn`  Unhighlight the current col                    |
+|              `<leader>scc`    Highlight the current col                      |
+|              `<leader>scn`    Unhighlight the current col                    |
 .------------------------------------------------------------------------------.
 | FreeInput    `S-R`            global replacement mode                        |
 .------------------------------------------------------------------------------.
@@ -2127,8 +2184,8 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `smr`            smart line resize                              |
 |              `s.`             execute the macro in register `a` once.        |
 |              `<leader>db`     draw a box (draw box)                          |
-|              `<leader>ssr`    shape resize start                             |
-|              `<leader>sse`    shape resize end                               |
+|              `<leader>sr`     shape resize start                             |
+|              `<leader>se`     shape resize end                               |
 |              `<leader>sct`    shape change border type                       |
 .------------------------------------------------------------------------------.
 | Eraser       `C-M-l/h/j/k`    Little eraser                                  |
@@ -2180,7 +2237,9 @@ Let’s first talk about all the operation sets, and then give some examples.
 |                               is immediately restored.                       |
 |             `sk`              For some templates, this operation means the   |
 |                               update step of lev2, which is often used to set|
-|                               the length or width of the switching graphics. |      
+|                               the length or width of the switching graphics. |
+|             `ss`              Search for a template by entering a keyword    |
+|                               within the template set.                       |     
 .------------------------------------------------------------------------------.
 | Cursor highlight marking                                                     |  
 |             `C-S-N`           Highlight the character under the cursor       |
@@ -2232,8 +2291,8 @@ Let’s first talk about all the operation sets, and then give some examples.
 |             `<leader>am8`     (Maximum Cycle)border and border inside select |
 |                               8 direction                                    |
 |             `<leader>lb`      box selection based on penetration lines       |
-|             `<leader>s`       extract outgoing spokes inside in 4 direction  |
-|             `<leader>sm`      extract outgoing spokes inside in 8 direction  |
+|             `<leader>sos`     extract outgoing spokes inside in 4 direction  |
+|             `<leader>sod`     extract outgoing spokes inside in 8 direction  |
 |             `<leader>r4`      select all related in 4 direction              |
 |             `<leader>r8`      select all related in 8 direction              |
 |             `<leader>t4`      text and no border select in 4 direction       |

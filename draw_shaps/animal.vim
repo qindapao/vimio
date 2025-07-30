@@ -21,7 +21,7 @@ EOF
 cat dog
 EOF
 
-    let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'animals', 'value': [
+    let vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'animals', 'value': [
         \ {
         \ 'index': a:indexes[0],
         \ 'name': 'animals',
@@ -31,5 +31,6 @@ EOF
         \ }
         \ ],
         \ }
+    return vimio_config_shapes
 endfunction
 

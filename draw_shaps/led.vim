@@ -47,7 +47,7 @@ EOF
  '-'\'
 EOF
 
-let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'leds', 'snapshot': '', 'value': [
+    let vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'leds', 'snapshot': '', 'value': [
     \ {
     \ 'index': a:indexes[0],
     \ 'step': [1, 1],
@@ -56,5 +56,7 @@ let g:vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'leds', '
     \ }
     \ ],
     \ }
+
+    return vimio_config_shapes
 endfunction
 

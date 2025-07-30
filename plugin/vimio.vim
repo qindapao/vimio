@@ -44,9 +44,9 @@ if g:vimio_enable_default_mappings
     nnoremap <Leader>ven :set ve=<CR>| " Close virtual text editing mode
 
     " Highlight current col
-    nnoremap <silent> <leader>scsc :set cursorcolumn<cr>
+    nnoremap <silent> <leader>scc :set cursorcolumn<cr>
     " Cancel highlight current col
-    nnoremap <silent> <leader>sncsc :set nocursorcolumn<cr>
+    nnoremap <silent> <leader>scn :set nocursorcolumn<cr>
 
 
     " ===============================draw line and rectangle====================
@@ -178,6 +178,8 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> <M-t> :call vimio#stencil#switch_lev2_index(0)<CR>
     " Switch shape index (width and height switch)
     nnoremap <silent> sk :call vimio#stencil#switch_sub_step()<CR>
+    " search stencils by pattern
+    nnoremap <silent> ss :call vimio#stencil#search_stencils()<CR>
 
     " =======Smart selection and multi-cursor control with highlighting=========
     " Highlights the character under the cursor without moving
@@ -246,8 +248,8 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> <leader>lba :call vimio#select#highlight_inside_line()<CR>
     nnoremap <silent> <leader>lbi :call vimio#select#highlight_inside_line_without_border()<CR>
 
-    nnoremap <silent> <leader>s :call vimio#select#extract_outgoing_spokes(v:false)<CR>
-    nnoremap <silent> <leader>sm :call vimio#select#extract_outgoing_spokes(v:true)<CR>
+    nnoremap <silent> <leader>sos :call vimio#select#extract_outgoing_spokes(v:false)<CR>
+    nnoremap <silent> <leader>sod :call vimio#select#extract_outgoing_spokes(v:true)<CR>
 
     " select all related
     nnoremap <silent> <leader>r4 :call vimio#select#highlight_all_related(v:false)<CR>
@@ -259,8 +261,8 @@ if g:vimio_enable_default_mappings
 
     " draw box
     nnoremap <silent> <leader>db :call vimio#ui#box_suround()<CR>
-    nnoremap <silent> <leader>ssr :call vimio#ui#shapes_resize_start()<CR>
-    nnoremap <silent> <leader>sse :call vimio#ui#shapes_resize_end()<CR>
+    nnoremap <silent> <leader>sr :call vimio#ui#shapes_resize_start()<CR>
+    nnoremap <silent> <leader>se :call vimio#ui#shapes_resize_end()<CR>
     
     " change type
     nnoremap <silent> <leader>sct :call vimio#ui#shapes_change_type()<CR>

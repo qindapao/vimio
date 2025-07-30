@@ -16,10 +16,27 @@
 
 let s:vimio_stencil_graph_set_popup = v:null
 let s:vimio_stencil_key_buffer = ''
+let s:vimio_stencil_search_results = {'index': 0, 'value': []}
 
-
+function! s:init_search_results() abort
+    let s:vimio_stencil_search_results = {'index': 0, 'value': []}
+endfunction
 
 function! vimio#stencil#popup_filter(winid, key) abort
+    " If it is n or N, toggle the search results before and after.
+    let len_list = len(s:vimio_stencil_search_results.value)
+    if len_list != 0 && (a:key ==# 'n' || a:key ==# 'N')
+        let key_to_step = (a:key ==# 'n') ? 1 : -1
+        let s:vimio_stencil_search_results.index = (s:vimio_stencil_search_results.index + key_to_step + len_list) % len_list
+
+        let now_index = s:vimio_stencil_search_results.index
+        call vimio#stencil#switch_define_graph_set(0, s:vimio_stencil_search_results.value[now_index]['stencil_index'])
+        call vimio#stencil#switch_lev1_index(0, s:vimio_stencil_search_results.value[now_index]['lev1_index'])
+        redraw
+        echom "found (" . (s:vimio_stencil_search_results.index + 1) . '/' . len_list . ")"
+        return 1
+    endif
+
     if a:key !~# '^\d$'
         " Non-numeric keys are handled by other processes.
         let s:vimio_stencil_key_buffer = ''
@@ -109,11 +126,15 @@ function! vimio#stencil#show_graph_set_info()
 endfunction
 
 
-function! vimio#stencil#switch_lev1_index(direction)
+function! vimio#stencil#switch_lev1_index(direction, ...)
     if a:direction == 1
         let g:vimio_config_shapes['set_index'] = (g:vimio_config_shapes['set_index']+1) % len(g:vimio_config_shapes['value'])
     else
         let g:vimio_config_shapes['set_index'] = (g:vimio_config_shapes['set_index']-1 + len(g:vimio_config_shapes['value'])) % len(g:vimio_config_shapes['value'])
+    endif
+
+    if a:0 >= 1
+        let g:vimio_config_shapes['set_index'] = a:1
     endif
 
     call vimio#stencil#update_lev2_info()
@@ -254,16 +275,66 @@ function! vimio#stencil#load_and_use_custom_drawset_funcs(func_name, indexes, in
     execute 'source' fnameescape(file_path)
 
     " Call function
-    let result = call(a:func_name, [a:indexes, a:index])
+    let vimio_config_shapes = call(a:func_name, [a:indexes, a:index])
 
     " Delete function definition after global variables are loaded
     " The purpose of deleting the function here is to save memory (because the 
     " local variables in the function initialization may contain a large number
     " of strings).
     execute 'delfunction!' a:func_name
+
+    return vimio_config_shapes
 endfunction
 
-function! vimio#stencil#switch_define_graph_set(is_show)
+
+function! vimio#stencil#search_stencils() abort
+    call s:init_search_results()
+    let pattern = input('stencils search pattern: ')
+    if empty(pattern)
+        echohl WarningMsg | echo 'You did not enter any content, so the search has been canceled.' | echohl None
+        return
+    endif
+
+    let old_index = g:vimio_shapes_define_graph_functions['index']
+
+    let idx = 0
+    for graph_set in g:vimio_shapes_define_graph_functions['value']
+        let vimio_config_shapes_tmp = vimio#stencil#load_and_use_custom_drawset_funcs(
+                \ graph_set[0], 
+                \ graph_set[1], 
+                \ graph_set[2], 
+                \ graph_set[3])
+        if vimio_config_shapes_tmp.stencil_set_name =~? pattern
+            call add(s:vimio_stencil_search_results.value, {'stencil_index': idx, 'lev1_index': 0, 'lev2_index': 0})
+        endif
+
+        let lev1_idx = 0
+        for lev1 in vimio_config_shapes_tmp.value
+            if lev1.name =~? pattern
+                call add(s:vimio_stencil_search_results.value, {'stencil_index': idx, 'lev1_index': lev1_idx, 'lev2_index': 0})
+            endif
+            
+            let lev1_idx += 1
+        endfor
+
+        let idx += 1
+    endfor
+
+    " If content is found, automatically switch to the first match.
+    let search_results_len = len(s:vimio_stencil_search_results.value)
+    if search_results_len != 0
+        redraw
+        echom "found (" . (s:vimio_stencil_search_results.index + 1) . '/' . search_results_len . ")"
+        call vimio#stencil#switch_define_graph_set(0, s:vimio_stencil_search_results.value[0]['stencil_index'])
+        call vimio#stencil#switch_lev1_index(0, s:vimio_stencil_search_results.value[0]['lev1_index'])
+    else
+        call vimio#stencil#switch_define_graph_set(0, old_index)
+    endif
+    return
+endfunction
+
+
+function! vimio#stencil#switch_define_graph_set(is_show, ...)
     " " Record start time
     " let l:start_time = reltime()
 
@@ -278,10 +349,18 @@ function! vimio#stencil#switch_define_graph_set(is_show)
         let g:vimio_shapes_define_graph_functions['value'][old_index][2] = g:vimio_config_shapes['set_index']
     endif
 
-    let g:vimio_shapes_define_graph_functions['index'] = (g:vimio_shapes_define_graph_functions['index']+1) % len(g:vimio_shapes_define_graph_functions['value'])
+    if a:0 >= 1
+        let g:vimio_shapes_define_graph_functions['index'] = a:1
+    else
+        let g:vimio_shapes_define_graph_functions['index'] = (g:vimio_shapes_define_graph_functions['index']+1) % len(g:vimio_shapes_define_graph_functions['value'])
+    endif
     let index_value = g:vimio_shapes_define_graph_functions['index']
 
-    call vimio#stencil#load_and_use_custom_drawset_funcs(g:vimio_shapes_define_graph_functions['value'][index_value][0], g:vimio_shapes_define_graph_functions['value'][index_value][1], g:vimio_shapes_define_graph_functions['value'][index_value][2], g:vimio_shapes_define_graph_functions['value'][index_value][3])
+    let g:vimio_config_shapes = vimio#stencil#load_and_use_custom_drawset_funcs(
+                \ g:vimio_shapes_define_graph_functions['value'][index_value][0], 
+                \ g:vimio_shapes_define_graph_functions['value'][index_value][1], 
+                \ g:vimio_shapes_define_graph_functions['value'][index_value][2], 
+                \ g:vimio_shapes_define_graph_functions['value'][index_value][3])
 
     call vimio#stencil#update_lev2_info()
     if a:is_show
