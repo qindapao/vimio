@@ -82,6 +82,7 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> smf :call vimio#ui#smart_line_flip_direction()<cr>
     nnoremap <silent> smr :call vimio#ui#smart_lines_resize_start()<CR>
     nnoremap <silent> s. @a
+    
     " smart line draw end
 
     " =========================free edit========================================
@@ -131,9 +132,9 @@ if g:vimio_enable_default_mappings
 
     " =============================draw line style control======================
     " Cycle to change the current linetype
-    nnoremap <silent> sl :call vimio#ui#switch_line_style(0)<CR>
+    nnoremap <silent> slc :call vimio#ui#switch_line_style(0)<CR>
     " Displays the current linetype
-    nnoremap <silent> ssl :call vimio#ui#switch_line_style(1)<CR>
+    nnoremap <silent> sls :call vimio#ui#switch_line_style(1)<CR>
     " Change line type based on the character under the current cursor
     nnoremap <silent> su :call vimio#ui#switch_line_style_by_char_under_cursor()<CR>
 
@@ -179,7 +180,8 @@ if g:vimio_enable_default_mappings
     " Switch shape index (width and height switch)
     nnoremap <silent> sk :call vimio#stencil#switch_sub_step()<CR>
     " search stencils by pattern
-    nnoremap <silent> ss :call vimio#stencil#search_stencils()<CR>
+    nnoremap <silent> sss :call vimio#stencil#search_stencils()<CR>
+
 
     " =======Smart selection and multi-cursor control with highlighting=========
     " Highlights the character under the cursor without moving
@@ -232,6 +234,9 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> <leader>l8 :call vimio#select#line_select(v:true, v:false)<CR>
     nnoremap <silent> <leader>p8 :call vimio#select#line_select(v:true, v:true)<CR>
 
+
+
+
     " border inner selection
     nnoremap <silent> <leader>i4 :call vimio#select#highlight_inside_border(v:false, v:false, 'min')<CR>
     nnoremap <silent> <leader>im4 :call vimio#select#highlight_inside_border(v:false, v:false, 'max')<CR>
@@ -260,12 +265,11 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> <leader>t8 :call vimio#select#highlight_text(v:true)<CR>
 
     " draw box
-    nnoremap <silent> <leader>db :call vimio#ui#box_suround()<CR>
-    nnoremap <silent> <leader>sr :call vimio#ui#shapes_resize_start()<CR>
-    nnoremap <silent> <leader>se :call vimio#ui#shapes_resize_end()<CR>
-    
+    nnoremap <silent> ssb :call vimio#ui#box_suround()<CR>
+    nnoremap <silent> ssr :call vimio#ui#shapes_resize_start()<CR>
+    nnoremap <silent> sse :call vimio#ui#shapes_resize_end()<CR>
     " change type
-    nnoremap <silent> <leader>sct :call vimio#ui#shapes_change_type()<CR>
+    nnoremap <silent> sst :call vimio#ui#shapes_change_type()<CR>
      
 
     " =====================================mouse===============================

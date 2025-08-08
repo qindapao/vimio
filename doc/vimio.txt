@@ -259,7 +259,7 @@ replacement mode, which is what we call free mode.
 
 4.2.Change the type of straight line                 *vimio-change-line-type*
 
-  1. `sl`               Change line type
+  1. `scl`              Change line type
      (switch line)
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -276,7 +276,7 @@ replacement mode, which is what we call free mode.
     │now line type:['─', '│']                                    │
     └────────────────────────────────────────────────────────────┘
   2.This time we drew a unicode rectangle instead of an ascii rectangle, and 
-    when you press `sl`, the line type changes in a cycle.
+    when you press `scl`, the line type changes in a cycle.
   3.Switch line type based on the line type of the character under the current 
     cursor
 
@@ -302,7 +302,7 @@ replacement mode, which is what we call free mode.
     to other line types.
   4.Displays the current line type
 
-    `ssl`               show current line type
+    `sls`               show current line type
     (switch show)
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -693,7 +693,7 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
   8.The line type of the smart line is shared with the line type of the regular
-    line. Press `sl` to switch.
+    line. Press `scl` to switch.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -834,16 +834,16 @@ replacement mode, which is what we call free mode.
 
 4.9.1.  draw box                                 *vimio-smart-shape-draw-box*
 
-    `<leader>db`        draw a box (draw box)
-    `<leader>sr`        shape resize start
+    `ssb`               draw a box (draw box)
+    `ssr`               shape resize start
     (shape switch resize)
-    `<leader>se`        shape resize end
+    `sse`               shape resize end
     (shape switch resize end)
-    `<leader>sct`       shape change border type
+    `sst`               shape change border type
 
   1.Draw an empty box
     
-    Press `<leader>db` in the blank area.
+    Press `ssb` in the blank area.
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -886,7 +886,7 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    Step two, press `<leader>db`.You will notice that the text is enclosed
+    Step two, press `ssb`.You will notice that the text is enclosed
     within a box border. The type of border is determined by the current
     ordinary line style.
     ┌────────────────────────────────────────────────────────────┐
@@ -903,7 +903,7 @@ replacement mode, which is what we call free mode.
     └────────────────────────────────────────────────────────────┘
   3.Resize Shapes
     Cursor highlight the whole shape or just put cursor on it's border.Then
-    press `<leader>sr`. 
+    press `ssr`. 
        
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -932,7 +932,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    Once you reach the desired size, press `<leader>se` to draw the box with
+    Once you reach the desired size, press `sse` to draw the box with
     the new dimensions.  
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -949,7 +949,7 @@ replacement mode, which is what we call free mode.
   4.Change the shape of the border type
 
     Cursor highlight the whole shape or just put cursor on it's border.Then
-    press `<leader>sct`. It will switch to the border type of the current
+    press `sst`. It will switch to the border type of the current
     normal line style.
    
     ┌────────────────────────────────────────────────────────────┐
@@ -1345,7 +1345,7 @@ A text template can have up to 3 levels of dimensions.
                         step of lev2, which is often used to set the length 
                         or width of the switching graphics.
 
-    `ss`                Search for a template by entering a keyword within the
+    `sss`               Search for a template by entering a keyword within the
                         template set.
 
     When using the above operations to display or switch graphics sets, you 
@@ -1452,7 +1452,7 @@ A text template can have up to 3 levels of dimensions.
     Non-enum templates cannot use this method to switch the second
     layer; they can only switch the first layer.
 
-    `ss` Enter the search keyword in the command line, and after finding the
+    `sss` Enter the search keyword in the command line, and after finding the
     content, use `N` or `n` to navigate through the search results.
 
     ┌────────────────────────────────────────────────────────────┐
@@ -2167,9 +2167,9 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `M-S-U/N/I/M`    Draw diagonal lines                            |
 |              `sa`             auto add arrows                                |
 |              `sw`             (visual block)Draw rectangle                   |
-|              `sl`             Change line type                               |
+|              `scl`            Change line type                               |
 |              `su`             Change line type besed on cursor char          |
-|              `ssl`            Show current line type                         |
+|              `sls`            Show current line type                         |
 |              `sxs`            change cross style                             |
 |              `sxm`            flip clip cross enable                         |
 |              `sms`            smart line draw start                          |
@@ -2183,10 +2183,10 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `smf`            smart line flip direction                      |
 |              `smr`            smart line resize                              |
 |              `s.`             execute the macro in register `a` once.        |
-|              `<leader>db`     draw a box (draw box)                          |
-|              `<leader>sr`     shape resize start                             |
-|              `<leader>se`     shape resize end                               |
-|              `<leader>sct`    shape change border type                       |
+|              `ssb`            draw a box (draw box)                          |
+|              `ssr`            shape resize start                             |
+|              `sse`            shape resize end                               |
+|              `sst`            shape change border type                       |
 .------------------------------------------------------------------------------.
 | Eraser       `C-M-l/h/j/k`    Little eraser                                  |
 |              `S-R`            (visual block)global replace,Entering a space  |
@@ -2238,7 +2238,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 |             `sk`              For some templates, this operation means the   |
 |                               update step of lev2, which is often used to set|
 |                               the length or width of the switching graphics. |
-|             `ss`              Search for a template by entering a keyword    |
+|             `sss`             Search for a template by entering a keyword    |
 |                               within the template set.                       |     
 .------------------------------------------------------------------------------.
 | Cursor highlight marking                                                     |  
