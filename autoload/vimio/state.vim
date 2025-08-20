@@ -32,7 +32,7 @@ let g:vimio_state_paste_preview_cross_mode = 1
 let g:vimio_drawline_multi_lines = []
 let g:vimio_popup_all_popups = {}
 
-
+let g:vimio_hintline_enable = 0
 
 " global state: last_pos=[r,c]
 let g:vimio_state_select_shape_state = {

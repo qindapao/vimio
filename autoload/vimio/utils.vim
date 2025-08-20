@@ -856,4 +856,15 @@ function! vimio#utils#cursor_jump(row, col) abort
     call cursor(a:row, col_byte_start)
 endfunction
 
+function! vimio#utils#get_window_coordinates() abort
+    let coordinates = {}
+    let coordinates.row_top = line('w0')
+    let coordinates.row_bot = line('w$')
+    let coordinates.row = line('.')
+    let coordinates.virtcol_top = 4
+    let coordinates.virtcol_bot = winwidth(0)
+    let coordinates.virtcol = wincol()
+    
+    return coordinates
+endfunction
 

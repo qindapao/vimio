@@ -142,6 +142,9 @@ if g:vimio_enable_default_mappings
     " Switch cross character category
     nnoremap <silent> sxs :call vimio#ui#switch_cross_style()<CR>
 
+    " =============================hint line control============================
+    nnoremap <silent> sxh :call vimio#ui#toggle_hint_line()<CR>
+
     " ===========================Preview control================================
     " Controls whether the preview window ignores spaces (transparent or opaque)
     nnoremap <silent> st :call vimio#popup#switch_visual_block_popup_type()<CR>

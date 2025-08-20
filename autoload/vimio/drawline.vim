@@ -154,7 +154,6 @@ function! vimio#drawline#start() dict abort
     " force overlay
     call self.reset()
     let self.in_draw_context = v:true
-    let g:vimio_state_visual_block_popup_types_index = 1
     let self.start_point = [line('.'), virtcol('.')]
 endfunction
 
@@ -1198,11 +1197,13 @@ function! vimio#drawline#update_preview() dict abort
         let self.pop_up.obj = vimio#popup#new({
                     \ 'new_text': self.pop_up.txt,
                     \ 'anchor': self.pop_up.anchor,
+                    \ 'type': 'overlay',
                     \ })
     else
         call self.pop_up.obj.update({
                     \ 'new_text': self.pop_up.txt,
                     \ 'anchor': self.pop_up.anchor,
+                    \ 'type': 'overlay',
                     \ })
     endif
 endfunction
@@ -1300,7 +1301,6 @@ endfunction
 " }
 function! vimio#drawline#catch_multiple_lines_start() abort
     let g:vimio_drawline_multi_lines = []
-    let g:vimio_state_visual_block_popup_types_index = 1
     let cursor_pos = [  line('.'), virtcol('.') ]
     let cursor_byte_pos = [ line('.'), col('.') ]
     let cursor_char = vimio#utils#get_char(cursor_byte_pos[0], cursor_byte_pos[1])

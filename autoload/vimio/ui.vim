@@ -41,6 +41,14 @@ function! vimio#ui#visual_block_move(direction)
     call vimio#popup#update_cross_block()
 endfunction
 
+function! vimio#ui#toggle_hint_line() abort
+    let g:vimio_hintline_enable = !g:vimio_hintline_enable
+    if !g:vimio_hintline_enable
+        call vimio#popup#hintline_disable()
+    endif
+    call vimio#popup#update_cross_block()
+endfunction
+
 function! vimio#ui#visual_block_mouse_move_start()
     let g:vimio_state_save_ctrl_mouseleft = maparg('<C-LeftMouse>', 'n')
     let g:vimio_state_save_ctrl_mouseright = maparg('<C-RightMouse>', 'n')

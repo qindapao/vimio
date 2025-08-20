@@ -19,8 +19,9 @@
 " ======================Global pop-up for uniqueness===========================
 let s:popup_mask_dirty = v:false
 let s:popup_last_text = ''
+let s:popup_hintline_obj = {}
 
-function! vimio#popup#update_cross_block(...)
+function! vimio#popup#update_cross_block(...) abort
     let opts = get(a:, 1, {})
     let anchor = get(opts, 'anchor', 'topleft')
 
@@ -37,9 +38,16 @@ function! vimio#popup#switch_popup_type() abort
     let g:vimio_state_visual_block_popup_types_index = (g:vimio_state_visual_block_popup_types_index + 1) % len(g:vimio_config_visual_block_popup_types)
 endfunction
 
+function! vimio#popup#hintline_disable() abort
+    if !empty(s:popup_hintline_obj)
+        call s:popup_hintline_obj.close()
+        let s:popup_hintline_obj = {}
+    endif
+endfunction
+
 " Support parameter specifies the starting point and text.
 " { 'new_text': 'xxxyy', 'pos_start': [row, virtcol] }
-function! vimio#popup#update_block(...)
+function! vimio#popup#update_block(...) abort
 
     " " Check if the highlighted group exists and has not been cleared
     " let l:highlight_info = execute('highlight VimioVirtualText')
@@ -64,6 +72,19 @@ function! vimio#popup#update_block(...)
         call vimio#utils#hide_cursor()
     else
         call vimio#utils#restore_cursor()
+    endif
+
+    " update hintline
+    if g:vimio_hintline_enable
+        if empty(s:popup_hintline_obj)
+            let s:popup_hintline_obj = vimio#hintline#new({ 
+                        \ 'new_text': l:new_text,
+                        \ })
+        else
+            call s:popup_hintline_obj.update({ 
+                        \ 'new_text': l:new_text,
+                        \ })
+        endif
     endif
     
     " let t2 = reltime()
@@ -251,13 +272,14 @@ function! vimio#popup#new(popup_definition)
     let popup_obj.ANCHOR = 'topleft'
     let popup_obj.MASK_DIRTY = v:true
     let popup_obj.MASK = []
-    let popup_obj.TYPE = g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index]
+    let popup_obj.TYPE = get(a:popup_definition, 'type', g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index])
+    
     let popup_obj.ID = 0
     let popup_obj.OVERLAY_TIMER_ID = -1
     let popup_obj.FILTER = function('vimio#popup#null_filter')
 
     for method in ['update', 'schedule_overlay_mask', 'clear_overlay_timer',
-                \ 'update_popup_type', 'popup_close_self'
+                \ 'popup_close_self'
                 \]
         let popup_obj[method] = function('s:' . method, popup_obj)
     endfor
@@ -269,7 +291,7 @@ function! s:update(popup_definition) dict abort
     let new_text = get(a:popup_definition, 'new_text', self.TEXT)
     let self.ANCHOR = get(a:popup_definition, 'anchor', self.ANCHOR) 
     let self.FILTER = get(a:popup_definition, 'filter', self.FILTER)
-    call self.update_popup_type()
+    let self.TYPE = get(a:popup_definition, 'type', g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index])
 
     if self.ID != 0
         if self.TEXT ==# new_text
@@ -365,10 +387,6 @@ function! s:update_overlay_mask(obj) abort
     if a:obj.ID != 0
         call popup_setoptions(a:obj.ID, { 'mask': a:obj.MASK })
     endif
-endfunction
-
-function! s:update_popup_type() dict abort
-    let self.TYPE = g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index]
 endfunction
 
 function s:popup_close_self() dict abort
