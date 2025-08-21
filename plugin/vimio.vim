@@ -23,6 +23,13 @@ runtime autoload/vimio/state.vim
 highlight default link VimioVirtualText Comment
 " Enable the multi-cursor to use the Visual Inverse style from the theme.
 highlight default link VimioCursorsMultiCursor Visual
+" hintline
+highlight default link VimioHintLine Comment
+
+augroup vimio_colorscheme
+    autocmd!
+    autocmd ColorScheme * call vimio#utils#restore_cursor()
+augroup END
 
 " " Using an automatic command group for restoration is also possible, but the
 " " implementation above is simpler.

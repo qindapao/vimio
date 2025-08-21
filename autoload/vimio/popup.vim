@@ -63,6 +63,7 @@ function! vimio#popup#update_block(...) abort
     " a concern later, consider using other registers. It's also possible that 
     " the pop-up cannot respond to requests too quickly, so the update is made 
     " slower here.
+    " let t1 = reltime()
     let opts = get(a:, 1, {})
     let regcontent = get(opts, 'new_text', vimio#utils#get_reg('+'))
     let anchor = get(opts, 'anchor', 'topleft')
@@ -292,6 +293,7 @@ function! s:update(popup_definition) dict abort
     let self.ANCHOR = get(a:popup_definition, 'anchor', self.ANCHOR) 
     let self.FILTER = get(a:popup_definition, 'filter', self.FILTER)
     let self.TYPE = get(a:popup_definition, 'type', g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index])
+    let self.HIGHLIGHT = get(a:popup_definition, 'highlight', 'VimioVirtualText')
 
     if self.ID != 0
         if self.TEXT ==# new_text
@@ -311,7 +313,7 @@ function! s:update(popup_definition) dict abort
                     \ })
         if self.TYPE ==# 'overlay'
             call popup_setoptions(self.ID, {
-                        \ 'highlight': 'VimioVirtualText',
+                        \ 'highlight': self.HIGHLIGHT,
                         \ 'moved': 'any',
                         \ 'zindex': 100,
                         \ 'pos': self.ANCHOR,
@@ -319,7 +321,7 @@ function! s:update(popup_definition) dict abort
         else
             call popup_setoptions(self.ID, {
                         \ 'mask': [],
-                        \ 'highlight': 'VimioVirtualText',
+                        \ 'highlight': self.HIGHLIGHT,
                         \ 'moved': 'any',
                         \ 'zindex': 100,
                         \ 'pos': self.ANCHOR,
@@ -331,7 +333,7 @@ function! s:update(popup_definition) dict abort
             \ 'line': 'cursor',
             \ 'col': 'cursor',
             \ 'zindex': 100,
-            \ 'highlight': 'VimioVirtualText',
+            \ 'highlight': self.HIGHLIGHT,
             \ 'moved': 'any',
             \ 'pos': self.ANCHOR,
             \ 'filter': self.FILTER,

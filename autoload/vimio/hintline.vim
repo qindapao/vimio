@@ -138,21 +138,25 @@ function! vimio#hintline#new(opts)
                 \ 'new_text': s:text_botright(coordinates),
                 \ 'anchor': 'botright',
                 \ 'type': 'overlay',
+                \ 'highlight': 'VimioHintLine',
                 \ })
     let hintline_obj.botleft_part = vimio#popup#new({
                 \ 'new_text': s:text_botleft(coordinates, hintline_obj.WIDTH),
                 \ 'anchor': 'botleft',
                 \ 'type': 'overlay',
+                \ 'highlight': 'VimioHintLine',
                 \ })
     let hintline_obj.topright_part = vimio#popup#new({
                 \ 'new_text': s:text_topright(coordinates, hintline_obj.HEIGHT),
                 \ 'anchor': 'topright',
                 \ 'type': 'overlay',
+                \ 'highlight': 'VimioHintLine',
                 \ })
     let hintline_obj.topleft_part = vimio#popup#new({
                 \ 'new_text': s:text_topleft(coordinates, hintline_obj.WIDTH, hintline_obj.HEIGHT),
                 \ 'anchor': 'topleft',
                 \ 'type': 'overlay',
+                \ 'highlight': 'VimioHintLine',
                 \ })
     for method in ['update', 'close']
         let hintline_obj[method] = function('s:' . method, hintline_obj)
@@ -168,19 +172,23 @@ function! s:update(opts) dict abort
     let coordinates = vimio#utils#get_window_coordinates()
     call self.botright_part.update({
                 \ 'new_text': s:text_botright(coordinates),
-                \ 'type': 'overlay'
+                \ 'type': 'overlay',
+                \ 'highlight': 'VimioHintLine',
                 \ })
     call self.botleft_part.update({
                 \ 'new_text': s:text_botleft(coordinates, self.WIDTH),
-                \ 'type': 'overlay'
+                \ 'type': 'overlay',
+                \ 'highlight': 'VimioHintLine',
                 \ })
     call self.topright_part.update({
                 \ 'new_text': s:text_topright(coordinates, self.HEIGHT),
-                \ 'type': 'overlay'
+                \ 'type': 'overlay',
+                \ 'highlight': 'VimioHintLine',
                 \ })
     call self.topleft_part.update({
                 \ 'new_text': s:text_topleft(coordinates, self.WIDTH, self.HEIGHT),
-                \ 'type': 'overlay'
+                \ 'type': 'overlay',
+                \ 'highlight': 'VimioHintLine',
                 \ })
 endfunction
 

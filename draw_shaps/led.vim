@@ -1,7 +1,7 @@
 function! Vimio__DefineSmartDrawShapesLed(indexes, index)
     let l:led1 =<< EOF
  .-.
-( ～)
+( ~ )
  '-'
 EOF
 

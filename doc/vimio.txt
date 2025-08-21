@@ -33,13 +33,14 @@ CONTENTS                                                     *vimio-contents*
   8. shape template....................................|vimio-shape-template|
     8.1 Default shape template..........................|vimio-default-shape|
     8.2 User-defined shape templates...............|vimio-user-defined-shape|
-  9. Cursor marking and character operation....................|vimio-cursor|
- 10. Algorithm-based smart selection..................|vimio-smart-selection|
- 11. Summary of all operations................................|vimio-summary| 
- 12. CJK supports.................................................|vimio-cjk|
- 13. Configuration Options.....................................|vimio-config|
- 14. Troubleshooting & FAQ........................................|vimio-faq|
- 15. License & Credits........................................|vimio-license|
+  9. Hint line...............................................|vimio-hintline|
+ 10. Cursor marking and character operation....................|vimio-cursor|
+ 11. Algorithm-based smart selection..................|vimio-smart-selection|
+ 12. Summary of all operations................................|vimio-summary| 
+ 13. CJK supports.................................................|vimio-cjk|
+ 14. Configuration Options.....................................|vimio-config|
+ 15. Troubleshooting & FAQ........................................|vimio-faq|
+ 16. License & Credits........................................|vimio-license|
 
 ==============================================================================
 0. Inspiration and Background                             *vimio-inspiration*
@@ -276,7 +277,7 @@ replacement mode, which is what we call free mode.
     │now line type:['─', '│']                                    │
     └────────────────────────────────────────────────────────────┘
   2.This time we drew a unicode rectangle instead of an ascii rectangle, and 
-    when you press `scl`, the line type changes in a cycle.
+    when you press `slc`, the line type changes in a cycle.
   3.Switch line type based on the line type of the character under the current 
     cursor
 
@@ -693,7 +694,7 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
   8.The line type of the smart line is shared with the line type of the regular
-    line. Press `scl` to switch.
+    line. Press `slc` to switch.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1441,7 +1442,7 @@ A text template can have up to 3 levels of dimensions.
     │21│  stencil sub set name: process_up                       │
     │22│  sub snapshot:                                          │
     │23│                                                         │
-    │24│  step: 0(0/10,0/2)                                      │
+    │24│  step: 1(0/10,0/2)                                      │
     │25│                                                         │
     │26│                                                         │
     │27│                                                         │
@@ -1462,10 +1463,10 @@ A text template can have up to 3 levels of dimensions.
     │ 2│                                                         │
     │ 3│                                                         │
     │ 4│                                                         │
-    │24│                                                         │
-    │25│                                                         │
-    │26│                                                         │
-    │27│                                                         │
+    │ 5│                                                         │
+    │ 6│                                                         │
+    │ 7│                                                         │
+    │ 8│                                                         │
     ├──┴─────────────────────────────────────────────────────────┤
     │stencils search pattern: box                                │
     └────────────────────────────────────────────────────────────┘
@@ -1549,9 +1550,53 @@ an example:
 
     2. Please see |vimio-config|.
 
+==============================================================================
+9. Hint line                                                 *vimio-hintline*
+
+By default, the hint line feature is turned off. During the preview, we can
+only see the graphics.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│                                                         │
+    │ 3│                                                         │
+    │ 4│                                                         │
+    │ 5│                ░------.          ░------.               │
+    │ 6│                |      |          |      |               │
+    │ 7│                '------'          '------'               │
+    │ 8│                                                         │
+    │ 9│                                                         │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+`sxh` toggle hint line on or off. When it's on you can see the boundaries of
+the graphic during the preview.
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                .      .                                 │
+    │ 2│                .      .                                 │
+    │ 3│                .      .                                 │
+    │ 4│                .      .                                 │
+    │ 5│................░------..................................│
+    │ 6│                |      |          |      |               │
+    │ 7│................'------'.................................│
+    │ 8│                .      .                                 │
+    │ 9│                .      .                                 │
+    │10│                .      .                                 │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
+This can help us align the edges of the moving graphic with other graphics.
 
 ==============================================================================
-9. Cursor marking and character operation                      *vimio-cursor*
+10. Cursor marking and character operation                     *vimio-cursor*
 
 If the characters we want to copy or cut are not standard rectangles, then we 
 cannot operate them all at once using the visual block. At this time, we need to
@@ -1694,7 +1739,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     them again or perform other operations, which can be combined at will.
 
 ==============================================================================
-10. Algorithm-based smart selection                   *vimio-smart-selection*
+11. Algorithm-based smart selection                   *vimio-smart-selection*
 
 
     `<leader>s4`        solid select 4 direction
@@ -2150,7 +2195,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 
     
 ==============================================================================
-11. Summary of all operations                                 *vimio-summary*
+12. Summary of all operations                                 *vimio-summary*
 
 .------------------------------------------------------------------------------.
 | Category     operate              Function                                   |
@@ -2167,11 +2212,12 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `M-S-U/N/I/M`    Draw diagonal lines                            |
 |              `sa`             auto add arrows                                |
 |              `sw`             (visual block)Draw rectangle                   |
-|              `scl`            Change line type                               |
+|              `slc`            Change line type                               |
 |              `su`             Change line type besed on cursor char          |
 |              `sls`            Show current line type                         |
 |              `sxs`            change cross style                             |
 |              `sxm`            flip clip cross enable                         |
+|              `sxh`            flip hintline on or off                        |
 |              `sms`            smart line draw start                          |
 |              `sme`            smart line draw end                            |
 |              `smas`           smart line toggle the start arrow on or off    |
@@ -2239,7 +2285,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 |                               update step of lev2, which is often used to set|
 |                               the length or width of the switching graphics. |
 |             `sss`             Search for a template by entering a keyword    |
-|                               within the template set.                       |     
+|                               within the template set.                       |
 .------------------------------------------------------------------------------.
 | Cursor highlight marking                                                     |  
 |             `C-S-N`           Highlight the character under the cursor       |
@@ -2300,7 +2346,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 '------------------------------------------------------------------------------'
 
 ==============================================================================
-12. CJK supports                                                  *vimio-cjk* 
+13. CJK supports                                                  *vimio-cjk* 
 
 
     ┌────────────────────────────────────────────────────────────┐
@@ -2324,7 +2370,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     Japanese and Korean text alignment and drawing
 
 ==============================================================================
-13. Configuration Options                                      *vimio-config*
+14. Configuration Options                                      *vimio-config*
 
 
 • To disable default mappings:
@@ -2366,7 +2412,7 @@ compatibility.
 See |vimio-user-defined-shape|.
 
 ==============================================================================
-14. Troubleshooting & FAQ                                         *vimio-faq*
+15. Troubleshooting & FAQ                                         *vimio-faq*
 
 Q: Misaligned blocks with tabs?  
 A: Convert tabs: `:set expandtab | :retab`.
@@ -2406,7 +2452,7 @@ A: Using Vim's quick movement plugins, such as `vim9-stargate` or
         \ "┶┷┸┹┺┽┾┿╀╁╂╃╄╅╆╇╈╉╊┌┐└┘┛\\)❫⟫▲▼◀▶△▽◁▷┬┴╋┫┓╦╩╫╪╢╡]")<CR>
 
 ==============================================================================
-15. License & Credits                                         *vimio-license*
+16. License & Credits                                         *vimio-license*
 
 MIT License © 2025 qindapao
 Inspired by Asciio by Nadim Khemir.

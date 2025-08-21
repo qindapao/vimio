@@ -117,7 +117,7 @@ function! vimio#stencil#show_graph_set_info()
                 \ 'new_text': lines_str, 
                 \ 'anchor': 'botright',
                 \ 'filter': function('vimio#stencil#popup_filter'),
-                \ 'type': 'normal',
+                \ 'type': 'cover',
                 \ }
     if type(s:vimio_stencil_graph_set_popup) == type({})
         call s:vimio_stencil_graph_set_popup.update(popup_def)

@@ -59,17 +59,41 @@ function! vimio#utils#get_reg(reg_name)
 endfunction
 
 function! vimio#utils#get_current_paste_text(...) abort
+    " let t1 = reltime()
     let opts = get(a:, 1, {})
     let raw_str = get(opts, 'new_text', vimio#utils#get_reg('+'))
+    " let t2 = reltime()
     let pos = get(opts, 'pos_start', [line('.'), virtcol('.')])
 
     let raw_lines = split(raw_str, "\n")
+    " let t3 = reltime()
     if exists('g:vimio_state_paste_preview_cross_mode') && g:vimio_state_paste_preview_cross_mode
-        let preview_chars = vimio#utils#build_preview_chars(raw_lines, pos)
-        let preview_chars_and_cross = vimio#utils#get_rect_txt_for_single_width_char(preview_chars, v:true, pos)
+        let preview_opts = vimio#utils#build_preview_chars(raw_lines, v:true, pos)
+        " let t4 = reltime()
+        let preview_chars_and_cross = vimio#utils#get_rect_txt_for_single_width_char('', v:true, pos, preview_opts)
         " echom "preview_chars_and_cross: " . preview_chars_and_cross 
+        " let t5 = reltime()
+        " call vimio#debug#log(
+        "             \ "get text from clip: %.2f;"
+        "             \ . "text split to lines: %.2f;"
+        "             \ . "prview chars: %.2f;"
+        "             \ . "get_rect_txt_for_single_width_char: %.2f;",
+        "             \ vimio#debug#time_ms(t1, t2),
+        "             \ vimio#debug#time_ms(t2, t3),
+        "             \ vimio#debug#time_ms(t3, t4),
+        "             \ vimio#debug#time_ms(t4, t5)
+        "             \)
         return preview_chars_and_cross
     endif
+    " let t4 = reltime()
+    " call vimio#debug#log(
+    "             \ "get text from clip: %.2f;"
+    "             \ . "text split to lines: %.2f;"
+    "             \ . "no cross deal: %.2f;",
+    "             \ vimio#debug#time_ms(t1, t2),
+    "             \ vimio#debug#time_ms(t2, t3),
+    "             \ vimio#debug#time_ms(t3, t4)
+    "             \)
     return raw_str
 endfunction
 
@@ -272,39 +296,51 @@ endfunction
 function! vimio#utils#hide_cursor() abort
     if exists('&guicursor') && !exists('g:vimio_state_saved_guicursor')
         let g:vimio_state_saved_guicursor = &guicursor
-        " echom "[vimio] saved guicursor: " . g:vimio_state_saved_guicursor
-        let g:vimio_state_saved_cursor_highlight = matchstr(execute('silent! highlight Cursor'), 'xxx\s\+\zs.*')
-        let g:vimio_state_saved_lcursor_highlight = matchstr(execute('silent! highlight lCursor'), 'xxx\s\+\zs.*')
-        highlight Cursor guifg=NONE guibg=NONE gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE
-        highlight lCursor guifg=NONE guibg=NONE gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE 
 
-        " Set the 'guicursor' option to make the cursor effectively invisible in all modes.
-        " 'a' applies the setting to all modes (normal, insert, visual, etc.)
-        " 'Cursor/lCursor' defines empty or minimal highlight groups for the cursor,
-        " which can result in a hidden or transparent cursor depending on the environment.
+        let cursor_line = execute('silent! highlight Cursor')
+        let lcursor_line = execute('silent! highlight lCursor')
+
+        " :TODO: bug In certain cases, the output of an attribute may span multiple lines.
+        " Cursor xxx guifg=bg guibg=fg
+        "            links to JBCursor
+        if cursor_line =~# 'links to'
+            let g:vimio_state_saved_cursor_link = matchstr(cursor_line, 'links to \zs\S\+')
+        else
+            let g:vimio_state_saved_cursor_highlight = matchstr(cursor_line, 'xxx\s\+\zs.*')
+        endif
+
+        if lcursor_line =~# 'links to'
+            let g:vimio_state_saved_lcursor_link = matchstr(lcursor_line, 'links to \zs\S\+')
+        else
+            let g:vimio_state_saved_lcursor_highlight = matchstr(lcursor_line, 'xxx\s\+\zs.*')
+        endif
+
+        highlight Cursor guifg=NONE guibg=NONE gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE
+        highlight lCursor guifg=NONE guibg=NONE gui=NONE ctermfg=NONE ctermbg=NONE cterm=NONE
         let &guicursor = 'a:Cursor/lCursor'
-        " echom "[vimio] guicursor set to hidden"
     endif
 endfunction
 
 function! vimio#utils#restore_cursor() abort
-    " echom "[vimio] restore_cursor called"
+    if exists('g:vimio_state_saved_cursor_link')
+        execute 'highlight! link Cursor ' . g:vimio_state_saved_cursor_link
+        unlet g:vimio_state_saved_cursor_link
+    elseif exists('g:vimio_state_saved_cursor_highlight')
+        execute 'highlight Cursor ' . g:vimio_state_saved_cursor_highlight
+        unlet g:vimio_state_saved_cursor_highlight
+    endif
+
+    if exists('g:vimio_state_saved_lcursor_link')
+        execute 'highlight! link lCursor ' . g:vimio_state_saved_lcursor_link
+        unlet g:vimio_state_saved_lcursor_link
+    elseif exists('g:vimio_state_saved_lcursor_highlight')
+        execute 'highlight lCursor ' . g:vimio_state_saved_lcursor_highlight
+        unlet g:vimio_state_saved_lcursor_highlight
+    endif
+
     if exists('g:vimio_state_saved_guicursor')
-        if exists('g:vimio_state_saved_cursor_highlight')
-            execute 'highlight Cursor ' . g:vimio_state_saved_cursor_highlight
-            unlet g:vimio_state_saved_cursor_highlight
-        endif
-
-        if exists('g:vimio_state_saved_lcursor_highlight')
-            execute 'highlight lCursor ' . g:vimio_state_saved_lcursor_highlight
-            unlet g:vimio_state_saved_lcursor_highlight
-        endif    
-
-        " echom "[vimio] restoring guicursor: " . g:vimio_state_saved_guicursor
         let &guicursor = g:vimio_state_saved_guicursor
         unlet g:vimio_state_saved_guicursor
-    " else
-    "     echom "[vimio] g:vimio_state_saved_guicursor does not exist"
     endif
 endfunction
 
@@ -694,27 +730,46 @@ endfunction
 
 
 " Generate a text matrix for preview
-function! vimio#utils#build_preview_chars(text_lines, pos_start) abort
-    let result = []
-    let [start_row, start_col] = a:pos_start
-    let row = start_row
+function! vimio#utils#build_preview_chars(text_lines, cross_enable, pos_start) abort
+    let rect_opts = {
+                \ 'min_row': a:pos_start[0], 'max_row': a:pos_start[0]+len(a:text_lines)-1,
+                \ 'min_col': a:pos_start[1], 'max_col': a:pos_start[1]+max(map(copy(a:text_lines), 'strdisplaywidth(v:val)'))-1,
+                \ 'rect': [], 'rect_cross_chars': {},
+                \ }
+    let row = a:pos_start[0]
+
+    let rect = []
+    let rect_cross_chars = {}
+    let blank_row = repeat([' '], rect_opts.max_col - rect_opts.min_col + 1)
+    for _ in range(rect_opts.min_row, rect_opts.max_row)
+        call add(rect, copy(blank_row))
+    endfor
 
     for line in a:text_lines
-        let col = start_col
+        let col = a:pos_start[1]
+        
+        let row_offset = row-rect_opts.min_row
         for char in split(line, '\zs')
-            if strdisplaywidth(char) == 2
-                call add(result, [row, col, char])
-                call add(result, [row, col + 1, ''])
-                let col += 2
-            else
-                call add(result, [row, col, char])
-                let col += 1
+            let width = strdisplaywidth(char)
+            let rect[row_offset][col-rect_opts.min_col] = char
+
+            if a:cross_enable && has_key(g:vimio_config_draw_cross_chars, char)
+                let rect_cross_chars[row . ',' . col] = char
+            end
+
+            if width == 2
+                let rect[row_offset][col+1-rect_opts.min_col] = ''
             endif
+
+            let col += width
         endfor
         let row += 1
     endfor
 
-    return result
+    let rect_opts.rect = rect
+    let rect_opts.rect_cross_chars = rect_cross_chars
+
+    return rect_opts
 endfunction
 
 
@@ -722,35 +777,49 @@ endfunction
 " [[5,6,'a'], [7,8,'b']]
 " :TODO: The current graphics performance is slightly subpar, but it is still
 "       acceptable. It can be optimized in the future.
-function! vimio#utils#get_rect_txt_for_single_width_char(preview_text, cross_enable, pos) abort
-    let min_row = v:null
-    let max_row = v:null
-    let min_col = v:null
-    let max_col = v:null
+function! vimio#utils#get_rect_txt_for_single_width_char(preview_text, cross_enable, pos, ...) abort
+    " let t0 = reltime()
+    let opts = get(a:, 1, {})
+    if !empty(opts)
+        let rect = opts.rect
+        let rect_cross_chars = opts.rect_cross_chars
+        let min_row = opts.min_row
+        let max_row = opts.max_row
+        let min_col = opts.min_col
+        let max_col = opts.max_col
+    else
+        let rows = map(copy(a:preview_text), 'v:val[0]')
+        let cols = map(copy(a:preview_text), 'v:val[1]')
+        let min_row = min(rows)
+        let max_row = max(rows)
+        let min_col = min(cols)
+        let max_col = max(cols)
+        " let t0_1 = reltime()
 
-    for item in a:preview_text
-        let [r, c] = [item[0], item[1]]
-        if min_row == v:null || r < min_row | let min_row = r | endif
-        if max_row == v:null || r > max_row | let max_row = r | endif
-        if min_col == v:null || c < min_col | let min_col = c | endif
-        if max_col == v:null || c > max_col | let max_col = c | endif
-    endfor
+        let rect = []
+        let rect_cross_chars = {}
+        for _ in range(min_row, max_row)
+            call add(rect, repeat([' '], max_col - min_col + 1))
+        endfor
+        " let t0_2 = reltime()
 
-    let rect = []
-    let rect_cross_chars = {}
-    for _ in range(min_row, max_row)
-        call add(rect, repeat([' '], max_col - min_col + 1))
-    endfor
-
-    for item in a:preview_text
-        let [row, col, ch] = item
-        let r = row - min_row
-        let c = col - min_col
-        let rect[r][c] = ch
-        if a:cross_enable && has_key(g:vimio_config_draw_cross_chars, ch)
-            let rect_cross_chars[row . ',' . col] = ch
-        end
-    endfor
+        for item in a:preview_text
+            let [row, col, ch] = item
+            let rect[row - min_row][col - min_col] = ch
+            if a:cross_enable && has_key(g:vimio_config_draw_cross_chars, ch)
+                let rect_cross_chars[row . ',' . col] = ch
+            end
+        endfor
+        " let t0_3 = reltime()
+        " call vimio#debug#log(
+        "             \ "before t0_1: %.2f;"
+        "             \ . "before t0_2: %.2f;"
+        "             \ . "before t0_3: %.2f;",
+        "             \ vimio#debug#time_ms(t0, t0_1),
+        "             \ vimio#debug#time_ms(t0_1, t0_2),
+        "             \ vimio#debug#time_ms(t0_2, t0_3)
+        "             \)
+    endif
 
     if a:cross_enable
         " let t1 = reltime()
@@ -779,11 +848,13 @@ function! vimio#utils#get_rect_txt_for_single_width_char(preview_text, cross_ena
         endfor
         " let t6 = reltime()
         " call vimio#debug#log(
-        "             \ "filter_editor_chars: %.2f;"
+        "             \ "before: %.2f;"
+        "             \ . "filter_editor_chars: %.2f;"
         "             \ . "all_chars: %.2f;"
         "             \ . "cross_point: %.2f;"
         "             \ . "cross_chars: %.2f;"
-        "             \ . "filter_rect: %.2f",
+        "             \ . "filter_rect: %.2f;",
+        "             \ vimio#debug#time_ms(t0, t1),
         "             \ vimio#debug#time_ms(t1, t2),
         "             \ vimio#debug#time_ms(t2, t3),
         "             \ vimio#debug#time_ms(t3, t4),
@@ -866,5 +937,17 @@ function! vimio#utils#get_window_coordinates() abort
     let coordinates.virtcol = wincol()
     
     return coordinates
+endfunction
+
+function! vimio#utils#clean_lines(lines) abort
+    " Remove trailing spaces at the end of each line
+    let cleaned = map(a:lines, 'substitute(v:val, ''\s\+$'', '''', '''')')
+
+    " Remove empty lines or lines consisting entirely of whitespace starting from the end.
+    while !empty(cleaned) && cleaned[-1] =~ '^\s*$'
+        call remove(cleaned, -1)
+    endwhile
+
+    return cleaned
 endfunction
 
