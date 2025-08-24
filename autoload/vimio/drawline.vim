@@ -1192,7 +1192,7 @@ function! vimio#drawline#update_preview() dict abort
         let self.pop_up.pos = copy(self.start_point)
     endif
 
-    let self.pop_up.txt = vimio#utils#get_rect_txt_for_single_width_char(preview_text, self.cross.enable, self.pop_up.pos)
+    let self.pop_up.txt = g:Vimio_GetRectTxtForSingleWidthCharFunc(preview_text, self.cross.enable, self.pop_up.pos)
     if empty(self.pop_up.obj)
         let self.pop_up.obj = vimio#popup#new({
                     \ 'new_text': self.pop_up.txt,

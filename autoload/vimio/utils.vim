@@ -68,9 +68,9 @@ function! vimio#utils#get_current_paste_text(...) abort
     let raw_lines = split(raw_str, "\n")
     " let t3 = reltime()
     if exists('g:vimio_state_paste_preview_cross_mode') && g:vimio_state_paste_preview_cross_mode
-        let preview_opts = vimio#utils#build_preview_chars(raw_lines, v:true, pos)
+        let preview_opts = g:Vimio_BuildPreviewCharsFunc(raw_lines, v:true, pos)
         " let t4 = reltime()
-        let preview_chars_and_cross = vimio#utils#get_rect_txt_for_single_width_char('', v:true, pos, preview_opts)
+        let preview_chars_and_cross = g:Vimio_GetRectTxtForSingleWidthCharFunc([[]], v:true, pos, preview_opts)
         " echom "preview_chars_and_cross: " . preview_chars_and_cross 
         " let t5 = reltime()
         " call vimio#debug#log(
@@ -730,7 +730,7 @@ endfunction
 
 
 " Generate a text matrix for preview
-function! vimio#utils#build_preview_chars(text_lines, cross_enable, pos_start) abort
+function! vimio#utils#BuildPreviewChars(text_lines, cross_enable, pos_start) abort
     let rect_opts = {
                 \ 'min_row': a:pos_start[0], 'max_row': a:pos_start[0]+len(a:text_lines)-1,
                 \ 'min_col': a:pos_start[1], 'max_col': a:pos_start[1]+max(map(copy(a:text_lines), 'strdisplaywidth(v:val)'))-1,

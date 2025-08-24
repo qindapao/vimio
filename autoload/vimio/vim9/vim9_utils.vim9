@@ -1,0 +1,183 @@
+vim9script
+
+def BuildPreviewChars(text_lines: list<string>, cross_enable: bool, pos_start: list<number>): dict<any>
+    var min_row = pos_start[0]
+    var min_col = pos_start[1]
+    var max_row = min_row + text_lines->len() - 1
+    var max_col = min_col + text_lines->copy()->map((_, val) => strdisplaywidth(val))->max() - 1
+
+    var rect_opts = {
+        min_row: min_row,
+        max_row: max_row,
+        min_col: min_col,
+        max_col: max_col,
+        rect: [],
+        rect_cross_chars: {},
+    }
+
+    var rect = []
+    var rect_cross_chars = {}
+    var blank_row = repeat([' '], max_col - min_col + 1)
+
+    for _ in range(min_row, max_row)
+        rect->add(blank_row->copy())
+    endfor
+
+    var row = min_row
+    for line in text_lines
+        var col = min_col
+        var row_offset = row - min_row
+
+        for char in split(line, '\zs')
+            var width = strdisplaywidth(char)
+            rect[row_offset][col - min_col] = char
+
+            if cross_enable && has_key(g:vimio_config_draw_cross_chars, char)
+                rect_cross_chars[row .. ',' .. col] = char
+            endif
+
+            if width == 2
+                rect[row_offset][col + 1 - min_col] = ''
+            endif
+
+            col += width
+        endfor
+        row += 1
+    endfor
+
+    rect_opts.rect = rect
+    rect_opts.rect_cross_chars = rect_cross_chars
+    return rect_opts
+enddef
+
+# Example:
+#   let a = { '5,8': '─', '5,9': '┼' }
+#   let b = { '5,8': '+', '6,10': '*' }
+#   let merged = vimio#utils#merge_sparse_values(a, b)
+#   " Result:
+#   " {
+#   "   '5,8': ['─', '+'],
+#   "   '5,9': ['┼'],
+#   "   '6,10': ['*']
+#   " }
+def MergeSparseValues(dict1: dict<string>, dict2: dict<string>): dict<list<string>>
+    var result: dict<list<string>> = {}
+
+    # merge dict1
+    for key in keys(dict1)
+        result[key] = [dict1[key]]
+    endfor
+
+    # merge dict2
+    for key in keys(dict2)
+        result[key] = get(result, key, [])
+        result[key]->add(dict2[key])
+    endfor
+
+    return result
+enddef
+
+# Example:
+#   let a = { '5,8': '─', '5,9': '┼' }
+#   let b = { '5,8': '+', '6,10': '*' }
+#   let shared = vimio#utils#get_sparse_intersections(a, b)
+#   " Result:
+#   " {
+#   "   '5,8': ['─', '+']
+#   " }
+def GetSparseIntersections(dict1: dict<string>, dict2: dict<string>): dict<list<string>>
+    var result: dict<list<string>> = {}
+
+    for key in keys(dict1)
+        if has_key(dict2, key)
+            result[key] = [dict1[key], dict2[key]]
+        endif
+    endfor
+
+    return result
+enddef
+
+def GetRectTxtForSingleWidthChar(
+        preview_text: list<list<any>>,
+        cross_enable: bool,
+        pos: list<number>,
+        ...opts_list: list<dict<any>>
+        ): string
+    var opts = get(opts_list, 0, {})
+    var rect: list<list<string>>
+    var rect_cross_chars: dict<string>
+    var min_row: number
+    var max_row: number
+    var min_col: number
+    var max_col: number
+
+    if !empty(opts)
+        rect = opts.rect
+        rect_cross_chars = opts.rect_cross_chars
+        min_row = opts.min_row
+        max_row = opts.max_row
+        min_col = opts.min_col
+        max_col = opts.max_col
+    else
+        var rows = copy(preview_text)->map((_, v) => v[0])
+        var cols = copy(preview_text)->map((_, v) => v[1])
+        min_row = min(rows)
+        max_row = max(rows)
+        min_col = min(cols)
+        max_col = max(cols)
+
+        rect = []
+        rect_cross_chars = {}
+        var blank_row = repeat([' '], max_col - min_col + 1)
+        for _ in range(min_row, max_row)
+            rect->add(blank_row->copy())
+        endfor
+
+        for item in preview_text
+            var [row, col, ch] = item
+            rect[row - min_row][col - min_col] = ch
+            if cross_enable && has_key(g:vimio_config_draw_cross_chars, ch)
+                rect_cross_chars[row .. ',' .. col] = ch
+            endif
+        endfor
+    endif
+
+    if cross_enable
+        var [pos_row, pos_col] = pos
+        var min_row_ext = max([pos_row - 1, 1])
+        var max_row_ext = min([pos_row + (max_row - min_row) + 1, line('$')])
+        var min_col_ext = max([pos_col - 1, 1])
+        var max_col_ext = pos_col + (max_col - min_col) + 1
+
+        var editor_chars = vimio#utils#get_editor_rect(
+            [min_row_ext, min_col_ext],
+            max_col_ext - min_col_ext + 2,
+            max_row_ext - min_row_ext + 2,
+            true
+        )
+
+        var all_chars = MergeSparseValues(rect_cross_chars, editor_chars)
+        var cross_point = GetSparseIntersections(rect_cross_chars, editor_chars)
+        var cross_chars: dict<string> = vimio#scene#get_cross_chars(cross_point, all_chars)
+    
+        for [key, ch] in items(cross_chars)
+            var [r, c] = split(key, ',')->map('str2nr(v:val)')
+            rect[r - min_row][c - min_col] = ch
+        endfor
+    endif
+
+    # For each line, first use map() to convert each character ch into a string.
+    # Then join() it into a single line of text.
+    # Ultimately, it remains a `list<string>`, but type inference will no longer result in an error.
+    var lines: list<string> = []
+    for line in rect
+        lines->add(join(line, ''))
+    endfor
+
+    return join(lines, "\n")
+enddef
+
+
+g:Vimio_BuildPreviewCharsFunc = BuildPreviewChars
+g:Vimio_GetRectTxtForSingleWidthCharFunc = GetRectTxtForSingleWidthChar
+

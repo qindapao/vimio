@@ -10,6 +10,24 @@ if exists('g:vimio_loaded')
 endif
 let g:vimio_loaded = 1
 
+function! s:VimioFailbackFuncs() abort
+    let g:Vimio_BuildPreviewCharsFunc = function('vimio#utils#BuildPreviewChars')
+    let g:Vimio_GetRectTxtForSingleWidthCharFunc = function('vimio#utils#get_rect_txt_for_single_width_char')
+endfunction
+
+
+" load vim9 script
+if has('vim9script')
+    try
+        execute 'source' fnameescape(expand('<sfile>:p:h') . '/../autoload/vimio/vim9/vim9_utils.vim9')
+    catch
+        echom "vim9 funcs load fail: " . v:exception
+        call s:VimioFailbackFuncs()
+    endtry
+else
+    call s:VimioFailbackFuncs()
+endif
+
 " Load default config (if not set by user)
 if !exists('g:vimio_enable_default_mappings')
     let g:vimio_enable_default_mappings = 1
