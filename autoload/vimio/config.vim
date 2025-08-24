@@ -29,6 +29,27 @@
 
 let g:vimio_config_visual_block_popup_types = ['cover', 'overlay']
 
+" \u1100-\u115F: Hangul alphabet
+" \u2E80-\u2EFF: CJK Radicals Supplement
+" \u2F00-\u2FDF: Kangxi radicals;
+" \u3000-\u303F: CJK punctuation marks;
+" \u31C0-\u31EF: CJK strokes;
+" \u3200-\u32FF: CJK letters and months
+" \u3300-\u33FF: CJK Special Characters (Date Merge)
+" \u3400-\u4DBF: CJK Unified Ideographs Extension-A
+" \u4DC0-\u4DFF: The Sixty-four Hexagrams of the I Ching
+" \u4E00-\u9FBF: CJK (Chinese, Japanese, Korean) Unified Ideographs
+" \uAC00-\uD7A3: Hangul phonetic system
+" \uF900-\uFAFF: CJK Compatibility Ideographs
+" \uFE30-\uFE4F: CJK Compatibility Symbols (vertical variant, underline, comma);
+" \uFF00-\uFFEF: Full-width ASCII, full-width Chinese and English punctuation, half-width katakana, half-width hiragana, half-width Korean letters;
+" \uFFE0-\uFFE6: Full-width symbols (such as full-width currency symbols)
+
+" Use regular expressions to match characters with a width of 2
+" let l:pattern = '[\u1100-\u115F\u2E80-\u2EFF\u2F00-\u2FDF\u3000-\u303F\u31C0-\u31EF\u3200-\u32FF\u3300-\u33FF\u3400-\u4DBF\u4DC0-\u4DFF\u4E00-\u9FFF\uAC00-\uD7A3\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFF60\uFFE0-\uFFE6]'
+" The following is not rigorous but is fast and covers most cases.
+let g:vimio_doublewidth_pattern = '[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE30-\uFE4F\uFF00-\uFF60\uFFE0-\uFFE6]'
+
 let g:vimio_config_draw_ascii_cross_chars = {
             \ '-': 1, '|': 1, '+': 1, '.': 1, "'": 1, '^': 1, 'v': 1, '<': 1, '>': 1,
             \ }

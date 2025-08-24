@@ -97,6 +97,79 @@ def GetSparseIntersections(dict1: dict<string>, dict2: dict<string>): dict<list<
     return result
 enddef
 
+export def GetDoublewidthCols(row: number, ...args: list<any>): list<number>
+    var cols: list<number> = []
+    var col = 1
+    var line = get(args, 0, getline(row))
+    var len = len(line)
+
+    var pattern = g:vimio_doublewidth_pattern
+
+    while col <= len
+        var pos = matchstrpos(line, pattern, col - 1)
+        if empty(pos) || pos[1] == -1
+            break
+        endif
+
+        call add(cols, virtcol([row, pos[1] + 1]))
+        col = pos[1] + 3
+    endwhile
+
+    return cols
+enddef
+
+# :TODO: If you want efficiency, you can map vimio#utils#get_line_cells 
+#   to GetLineCellsInsertDoubleChar everywhere in the code.
+#
+# :TODO: There are two ways to implement it, refer to
+#   vimio#utils#get_doublewidth_cols_old fast but Requires follow-up maintenance
+#   vimio#utils#get_doublewidth_cols_new slow but no subsequent maintenance required
+#   Use the first implementation for speed
+def GetLineCellsInsertDoubleChar(row: number, ...args: list<any>): list<any>
+    if row < 1 || row > line('$')
+        return [[], 0]
+    endif
+
+    var lineStr = getline(row)
+    var phyCol = get(args, 0, virtcol('.'))
+
+    var realPhyWidth = virtcol([row, '$']) - 1
+    var maxWidth = max([phyCol, realPhyWidth])
+
+    var lineCharsArray = split(lineStr, '\zs')
+
+    for insertIndex in GetDoublewidthCols(row, lineStr)
+        call insert(lineCharsArray, '', insertIndex - 1)
+    endfor
+
+    call extend(lineCharsArray, repeat([' '], maxWidth - realPhyWidth))
+    return [lineCharsArray, phyCol - 1]
+enddef
+
+
+def GetEditorRect(pos: list<number>, width: number, height: number, isJustCrossChar: bool): dict<string>
+    var startRow = pos[0]
+    var startCol = pos[1]
+    var result: dict<string> = {}
+
+    for row in range(startRow, startRow + height - 1)
+        if row > line('$')
+            continue
+        endif
+
+        var [chars, _] = GetLineCellsInsertDoubleChar(row, startCol + width)
+        for col in range(startCol, startCol + width - 1)
+            var ch = chars[col - 1]
+            if isJustCrossChar && !has_key(g:vimio_config_draw_cross_chars, ch)
+                continue
+            endif
+            result[string(row) .. ',' .. string(col)] = ch
+        endfor
+    endfor
+
+    return result
+enddef
+
 def GetRectTxtForSingleWidthChar(
         preview_text: list<list<any>>,
         cross_enable: bool,
@@ -142,28 +215,42 @@ def GetRectTxtForSingleWidthChar(
         endfor
     endif
 
+    # var t1: any
+    # var t2: any
+    # var t3: any
+    # var t4: any
+    # var t5: any
+    # var t6: any
+    # var t7: any
+
     if cross_enable
+        # t1 = reltime()
         var [pos_row, pos_col] = pos
         var min_row_ext = max([pos_row - 1, 1])
         var max_row_ext = min([pos_row + (max_row - min_row) + 1, line('$')])
         var min_col_ext = max([pos_col - 1, 1])
         var max_col_ext = pos_col + (max_col - min_col) + 1
 
-        var editor_chars = vimio#utils#get_editor_rect(
+        var editor_chars = GetEditorRect(
             [min_row_ext, min_col_ext],
             max_col_ext - min_col_ext + 2,
             max_row_ext - min_row_ext + 2,
             true
         )
+        # t2 = reltime()
 
         var all_chars = MergeSparseValues(rect_cross_chars, editor_chars)
+        # t3 = reltime()
         var cross_point = GetSparseIntersections(rect_cross_chars, editor_chars)
+        # t4 = reltime()
         var cross_chars: dict<string> = vimio#scene#get_cross_chars(cross_point, all_chars)
+        # t5 = reltime()
     
         for [key, ch] in items(cross_chars)
             var [r, c] = split(key, ',')->map('str2nr(v:val)')
             rect[r - min_row][c - min_col] = ch
         endfor
+        # t6 = reltime()
     endif
 
     # For each line, first use map() to convert each character ch into a string.
@@ -173,6 +260,21 @@ def GetRectTxtForSingleWidthChar(
     for line in rect
         lines->add(join(line, ''))
     endfor
+    # t7 = reltime()
+    # call vimio#debug#log(
+    #             "get_editor_rect: %.2f;"
+    #             .. "MergeSparseValues: %.2f;"
+    #             .. "GetSparseIntersections: %.2f;"
+    #             .. "get_cross_chars: %.2f;"
+    #             .. "rect: %.2f;"
+    #             .. "lines: %.2f;",
+    #             vimio#debug#time_ms(t1, t2),
+    #             vimio#debug#time_ms(t2, t3),
+    #             vimio#debug#time_ms(t3, t4),
+    #             vimio#debug#time_ms(t4, t5),
+    #             vimio#debug#time_ms(t5, t6),
+    #             vimio#debug#time_ms(t6, t7)
+    #             )
 
     return join(lines, "\n")
 enddef
