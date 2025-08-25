@@ -1192,7 +1192,7 @@ function! vimio#drawline#update_preview() dict abort
         let self.pop_up.pos = copy(self.start_point)
     endif
 
-    let self.pop_up.txt = g:Vimio_GetRectTxtForSingleWidthCharFunc(preview_text, self.cross.enable, self.pop_up.pos)
+    let self.pop_up.txt = g:Vimio_GetRectTxtForSingleWidthCharFunc(preview_text, self.cross.enable, self.pop_up.pos, 'overlay')
     if empty(self.pop_up.obj)
         let self.pop_up.obj = vimio#popup#new({
                     \ 'new_text': self.pop_up.txt,
@@ -1246,9 +1246,10 @@ endfunction
 
 " End and insert character
 function! vimio#drawline#end() dict abort
-    call vimio#replace#paste_block_clip(0, { 
+    call vimio#replace#paste_block_clip({ 
                 \ 'new_text': self.pop_up.txt,
-                \ 'pos_start': [self.pop_up.pos[0], self.pop_up.pos[1]]
+                \ 'pos_start': [self.pop_up.pos[0], self.pop_up.pos[1]],
+                \ 'pop_up_type': 'overlay',
                 \ })
     " Close the pop-up window here
     call self.pop_up.obj.popup_close_self()

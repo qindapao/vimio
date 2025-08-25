@@ -384,23 +384,48 @@ replacement mode, which is what we call free mode.
 
 4.5.Change the style of the cross points.                 *vimio-cross-style*
 
+    `sxi`               show current cross and preview info
+    `sxa`               Switching crossover algorithm, one used for situations
+                        where multiple line segments are adjacent, and another
+                        used for scenarios where various line types intersect.
+                        
+                        If the intersection in the preview does not meet
+                        expectations, switching will allow you to see the effect.                      
+    
+    ┌───────────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                               │
+    ├──┬────────────────────────────────────────────────────────────────┤
+    │ 1│                                               │││              │
+    │ 2│  ──────────  ┌─────┐      a cross b =>      ──┼┼┼─────         │
+    │ 3│a ────────── A│     │  (use multi algorithm) ──┼┼┼─────         │
+    │ 4│  ──────────  └─────┘                        ──┴┴┴─────         │
+    │ 5│                                                                │
+    │ 6│  │││         ┏━━━━━┓                    ┌─────┲━━━━━┓          │
+    │ 7│b │││        B┃     ┃                    │     ┃     ┃          │
+    │ 8│  │││         ┗━━━━━┛      A cross B =>  └─────┺━━━━━┛          │
+    │ 9│  │││                  (use single algorithm)                   │
+    │10│                                                                │
+    ├──┴────────────────────────────────────────────────────────────────┤
+    │[Cross and Preview] mode=on algorithm=multi style=2 preview=overlay│
+    └───────────────────────────────────────────────────────────────────┘  
+
     `sxs`               change cross style
     (swith x style)
     
-    ┌────────────────────────────────────────────────────────────┐
-    │                        VIM - main.c                        │
-    ├──┬─────────────────────────────────────────────────────────┤
-    │ 1│                                                         │
-    │ 2│    ┌─────────┐ │2                                       │
-    │ 3│    │   ──────)─)────                                    │
-    │ 4│    │         │ │                                        │
-    │ 5│    │   ──────┼─┼────                                    │
-    │ 6│    │         │ │1                                       │
-    │ 7│    └─────────┘ │                                        │
-    │ 8│                │                                        │
-    ├──┴─────────────────────────────────────────────────────────┤
-    │now index: 1                                                │
-    └────────────────────────────────────────────────────────────┘
+    ┌───────────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                               │
+    ├──┬────────────────────────────────────────────────────────────────┤
+    │ 1│                                                                │
+    │ 2│    ┌─────────┐ │2                                              │
+    │ 3│    │   ──────)─)────                                           │
+    │ 4│    │         │ │                                               │
+    │ 5│    │   ──────┼─┼────                                           │
+    │ 6│    │         │ │1                                              │
+    │ 7│    └─────────┘ │                                               │
+    │ 8│                │                                               │
+    ├──┴────────────────────────────────────────────────────────────────┤
+    │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
+    └───────────────────────────────────────────────────────────────────┘  
 
     When the crossing style is switched, the prompt bar will display the current
     style index. From the above diagram, you can see that the character at the 
@@ -421,103 +446,103 @@ replacement mode, which is what we call free mode.
     this mode.
 
     Let me give you an example to illustrate:
-    ┌────────────────────────────────────────────────────────────┐
-    │                        VIM - main.c                        │
-    ├──┬─────────────────────────────────────────────────────────┤
-    │ 1│                                                         │
-    │ 2│             │                                           │
-    │ 3│      ┌──────┼──┐                                        │
-    │ 4│      │      │  │                                        │
-    │ 5│      │      │  │                                        │
-    │ 6│      │      └──┼──────                                  │
-    │ 7│      └─────────┘                                        │
-    │ 8│                                                         │
-    ├──┴─────────────────────────────────────────────────────────┤
-    │now index: 1                                                │
-    └────────────────────────────────────────────────────────────┘
+    ┌───────────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                               │
+    ├──┬────────────────────────────────────────────────────────────────┤
+    │ 1│                                                                │
+    │ 2│             │                                                  │
+    │ 3│      ┌──────┼──┐                                               │
+    │ 4│      │      │  │                                               │
+    │ 5│      │      │  │                                               │
+    │ 6│      │      └──┼──────                                         │
+    │ 7│      └─────────┘                                               │
+    │ 8│                                                                │
+    ├──┴────────────────────────────────────────────────────────────────┤
+    │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
+    └───────────────────────────────────────────────────────────────────┘
 
     1. First, we highlight the rectangular box.
 
-    ┌────────────────────────────────────────────────────────────┐
-    │                        VIM - main.c                        │
-    ├──┬─────────────────────────────────────────────────────────┤
-    │ 1│                                                         │
-    │ 2│             │                                           │
-    │ 3│      ░░░░░░░░░░░                                        │
-    │ 4│      ░      │  ░                                        │
-    │ 5│      ░      │  ░                                        │
-    │ 6│      ░      └──░──────                                  │
-    │ 7│      ░░░░░░░░░░░                                        │
-    │ 8│                                                         │
-    ├──┴─────────────────────────────────────────────────────────┤
-    │now index: 1                                                │
-    └────────────────────────────────────────────────────────────┘
+    ┌───────────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                               │
+    ├──┬────────────────────────────────────────────────────────────────┤
+    │ 1│                                                                │
+    │ 2│             │                                                  │
+    │ 3│      ░░░░░░░░░░░                                               │
+    │ 4│      ░      │  ░                                               │
+    │ 5│      ░      │  ░                                               │
+    │ 6│      ░      └──░──────                                         │
+    │ 7│      ░░░░░░░░░░░                                               │
+    │ 8│                                                                │
+    ├──┴────────────────────────────────────────────────────────────────┤
+    │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
+    └───────────────────────────────────────────────────────────────────┘
     
     2. Then we cut the highlighted block. Press `C-S-X`.
         1.) If in cross mode, we obtain the following graph.
-        ┌────────────────────────────────────────────────────────────┐
-        │                        VIM - main.c                        │
-        ├──┬─────────────────────────────────────────────────────────┤
-        │ 1│                                                         │
-        │ 2│             │                                           │
-        │ 3│             │                                           │
-        │ 4│             │                                           │
-        │ 5│             │                                           │
-        │ 6│             └─────────                                  │
-        │ 7│                                                         │
-        │ 8│                                                         │
-        ├──┴─────────────────────────────────────────────────────────┤
-        │now index: 1                                                │
-        └────────────────────────────────────────────────────────────┘
+        ┌───────────────────────────────────────────────────────────────────┐
+        │                        VIM - main.c                               │
+        ├──┬────────────────────────────────────────────────────────────────┤
+        │ 1│                                                                │
+        │ 2│             │                                                  │
+        │ 3│             │                                                  │
+        │ 4│             │                                                  │
+        │ 5│             │                                                  │
+        │ 6│             └─────────                                         │
+        │ 7│                                                                │
+        │ 8│                                                                │
+        ├──┴────────────────────────────────────────────────────────────────┤
+        │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
+        └───────────────────────────────────────────────────────────────────┘
         2.) If not in cross mode, we obtain the following graph.
-        ┌────────────────────────────────────────────────────────────┐
-        │                        VIM - main.c                        │
-        ├──┬─────────────────────────────────────────────────────────┤
-        │ 1│                                                         │
-        │ 2│             │                                           │
-        │ 3│                                                         │
-        │ 4│             │                                           │
-        │ 5│             │                                           │
-        │ 6│             └── ──────                                  │
-        │ 7│                                                         │
-        │ 8│                                                         │
-        ├──┴─────────────────────────────────────────────────────────┤
-        │now index: 1                                                │
-        └────────────────────────────────────────────────────────────┘
+        ┌───────────────────────────────────────────────────────────────────┐
+        │                        VIM - main.c                               │
+        ├──┬────────────────────────────────────────────────────────────────┤
+        │ 1│                                                                │
+        │ 2│             │                                                  │
+        │ 3│                                                                │
+        │ 4│             │                                                  │
+        │ 5│             │                                                  │
+        │ 6│             └── ──────                                         │
+        │ 7│                                                                │
+        │ 8│                                                                │
+        ├──┴────────────────────────────────────────────────────────────────┤
+        │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
+        └───────────────────────────────────────────────────────────────────┘
         You can see that in cross mode, the gaps left after deletion have been
         automatically filled.
         3.) Similarly, in cross mode, the characters in the preview will also
             be automatically adjusted, whereas in non-cross mode, they remain
             unchanged.
-        ┌────────────────────────────────────────────────────────────┐
-        │                        VIM - main.c                        │
-        ├──┬─────────────────────────────────────────────────────────┤
-        │ 1│                                                         │
-        │ 2│             │                                           │
-        │ 3│      ┌──────┼──┐          ┌─────────┐                   │
-        │ 4│      |      │  │          │         │                   │
-        │ 5│      │      │  │          │         │                   │
-        │ 6│      │      └──┼──────    │         │                   │
-        │ 7│      └─────────┘          └─────────┘                   │
-        │ 8│                                                         │
-        ├──┴─────────────────────────────────────────────────────────┤
-        │now index: 1                                                │
-        └────────────────────────────────────────────────────────────┘
+        ┌───────────────────────────────────────────────────────────────────┐
+        │                        VIM - main.c                               │
+        ├──┬────────────────────────────────────────────────────────────────┤
+        │ 1│                                                                │
+        │ 2│             │                                                  │
+        │ 3│      ┌──────┼──┐          ┌─────────┐                          │
+        │ 4│      |      │  │          │         │                          │
+        │ 5│      │      │  │          │         │                          │
+        │ 6│      │      └──┼──────    │         │                          │
+        │ 7│      └─────────┘          └─────────┘                          │
+        │ 8│                                                                │
+        ├──┴────────────────────────────────────────────────────────────────┤
+        │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
+        └───────────────────────────────────────────────────────────────────┘
 
-        ┌────────────────────────────────────────────────────────────┐
-        │                        VIM - main.c                        │
-        ├──┬─────────────────────────────────────────────────────────┤
-        │ 1│                                                         │
-        │ 2│             │                                           │
-        │ 3│      ┌──────┼──┐          ┌──────┼──┐                   │
-        │ 4│      │      │  │          │         │                   │
-        │ 5│      │      │  │          │         │                   │
-        │ 6│      │      └──┼──────    │         ┼                   │
-        │ 7│      └─────────┘          └─────────┘                   │
-        │ 8│                                                         │
-        ├──┴─────────────────────────────────────────────────────────┤
-        │now index: 1                                                │
-        └────────────────────────────────────────────────────────────┘
+        ┌───────────────────────────────────────────────────────────────────┐
+        │                        VIM - main.c                               │
+        ├──┬────────────────────────────────────────────────────────────────┤
+        │ 1│                                                                │
+        │ 2│             │                                                  │
+        │ 3│      ┌──────┼──┐          ┌──────┼──┐                          │
+        │ 4│      │      │  │          │         │                          │
+        │ 5│      │      │  │          │         │                          │
+        │ 6│      │      └──┼──────    │         ┼                          │
+        │ 7│      └─────────┘          └─────────┘                          │
+        │ 8│                                                                │
+        ├──┴────────────────────────────────────────────────────────────────┤
+        │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
+        └───────────────────────────────────────────────────────────────────┘
         The shape on the right is the one in the preview. You can see that in
         cross mode, the graphic in the preview is corrected into a rectangle,
         whereas in non-cross mode, it is the original graphic that has been cut
@@ -1125,46 +1150,13 @@ of deletion.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     
-    `C-M-Space`         Paste the shape from the clip and completely cover the 
-                        same area
-    ┌────────────────────────────────────────────────────────────┐
-    │                        VIM - main.c                        │
-    ├──┬─────────────────────────────────────────────────────────┤
-    │ 1│                                                         │
-    │ 2│  .------.             ┌─────────┐                       │
-    │ 3│  |      |             │     A   │                       │
-    │ 4│  |      |             │         │                       │
-    │ 5│  '------'             └─────────┘                       │
-    │ 6│    ^             2.At point A, press `C-M-Space`        │
-    │ 7│    │                                                    │
-    │ 8│    │                                                    │
-    │ 9│    └──the content in clip                               │
-    │10│ 1. visual block select then `xy`                        │
-    ├──┴─────────────────────────────────────────────────────────┤
-    │                                                            │
-    └────────────────────────────┬───────────────────────────────┘
-                                 │                             
-                                 │
-                                 v
-    ┌────────────────────────────────────────────────────────────┐
-    │                        VIM - main.c                        │
-    ├──┬─────────────────────────────────────────────────────────┤
-    │ 1│                                                         │
-    │ 2│  .------.             ┌─────────┐                       │
-    │ 3│  |      |             │     .------.                    │
-    │ 4│  |      |             │     |      |                    │
-    │ 5│  '------'             └─────|      |                    │
-    │ 6│                             '------'                    │
-    │ 7│                                                         │
-    │ 8│                                                         │
-    │ 9│                                                         │
-    │10│                                                         │
-    ├──┴─────────────────────────────────────────────────────────┤
-    │                                                            │
-    └────────────────────────────────────────────────────────────┘
+    `C-S-Space`         Paste the shape from the clip, There are two modes,
+                        depending on the current preview mode. 
 
-    `C-S-Space`         Paste the shape from the clip and cover the same area 
-                        ignore spaces
+                        See |vimio-shape-preview|.
+
+    (1) When the preview mode is set to 'overlay', the paste will penetrate
+        the graphic.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1201,30 +1193,63 @@ of deletion.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     
-    In order to better distinguish the difference between the two types of 
-    pasting, let's take a more vivid example
-
+    (2) When the preview mode is 'cover', paste to cover the graphic.
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│  .------.             ┌─────────┐                       │
+    │ 3│  |      |             │     A   │                       │
+    │ 4│  |      |             │         │                       │
+    │ 5│  '------'             └─────────┘                       │
+    │ 6│    ^             2.At point A, press `C-S-Space`        │
+    │ 7│    │                                                    │
+    │ 8│    │                                                    │
+    │ 9│    └──the content in clip                               │
+    │10│ 1. visual block select then `xy`                        │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────┬───────────────────────────────┘
+                                 │                             
+                                 │
+                                 v
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│                                                         │
+    │ 2│  .------.             ┌─────────┐                       │
+    │ 3│  |      |             │     .------.                    │
+    │ 4│  |      |             │     |      |                    │
+    │ 5│  '------'             └─────|      |                    │
+    │ 6│                             '------'                    │
+    │ 7│                                                         │
+    │ 8│                                                         │
+    │ 9│                                                         │
+    │10│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+    
+    To illustrate the differences between the two preview modes when pasting.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
     │ 1│                                                         │
     │ 2│                                             .           │
     │ 3│     .                                      / \          │
-    │ 4│    / \             `C-S-Space` ───────>   .---.         │
+    │ 4│    / \             `overlay`   ───────>   .---.         │
     │ 5│   '---'                                  / \ / \        │
     │ 6│ Text graphics                           '---'---'       │
     │ 7│ in the clipboard                                        │
     │ 8│                                             .           │
     │ 9│                                            / \          │
-    │10│                    `C-M-Space` ───────>   .   .         │
+    │10│                    `cover`     ───────>   .   .         │
     │11│                                          / \ / \        │
     │12│                                         '---'---'       │
     │13│                                                         │
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    
-    
 
 ==============================================================================
 7. Shape Preview                                        *vimio-shape-preview* 
@@ -1255,9 +1280,7 @@ and preview the effect after the text is inserted.
     If we copy an ascii circle to the system clipboard, then when you move it 
     like this, a lighter virtual text will appear. You move the cursor with the 
     shortcut keys above, and this virtual preview text will follow your cursor.
-    When you move to the right position, you can press `C-M-Space` or 
-    `C-S-Space` to paste it. I have already mentioned the difference between 
-    these two pasting methods above.
+    When you move to the right position, you can press `C-S-Space` to paste it.
     
     `so`                Make the preview window always appear
 
@@ -1534,7 +1557,8 @@ an example:
     cat dog
     EOF
     
-        let vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'animals', 'value': [
+        let vimio_config_shapes = {'set_index': a:index, 
+            \ 'stencil_set_name': 'animals', 'value': [
             \ {
             \ 'index': a:indexes[0],
             \ 'name': 'animals',
@@ -2218,6 +2242,8 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `sxs`            change cross style                             |
 |              `sxm`            flip clip cross enable                         |
 |              `sxh`            flip hintline on or off                        |
+|              `sxi`            show current cross and preview info            |
+|              `sxa`            Switching crossover algorithm                  |
 |              `sms`            smart line draw start                          |
 |              `sme`            smart line draw end                            |
 |              `smas`           smart line toggle the start arrow on or off    |
@@ -2253,10 +2279,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `C-S-Right/Left/Up/Down`                                        |
 |                               Paste a character from the clipboard and move  | 
 |                               the cursor.                                    | 
-|              `C-M-Space`      Paste the shape from the clip and completely   |      
-|                               cover the same area                            |      
-|              `C-S-Space`      Paste the shape from the clip and cover the    |     
-|                               same area ignore spaces                        |     
+|              `C-S-Space`      Paste the shape from the clip                  |     
 .------------------------------------------------------------------------------.
 | Preview      `C-j/k/h/l`      Display preview and move                       |
 |              `so`             Make the preview window always appear          |

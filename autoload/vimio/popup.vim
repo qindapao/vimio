@@ -241,6 +241,7 @@ function! vimio#popup#switch_visual_block_popup_type()
 
     " Update pop-up window
     call vimio#popup#update_cross_block()
+    call vimio#ui#cross_show_all_info()
 endfunction
 
 function! vimio#popup#on_block_popup_close(id, result) abort

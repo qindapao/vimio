@@ -49,12 +49,11 @@ function! vimio#ui#toggle_hint_line() abort
     call vimio#popup#update_cross_block()
 endfunction
 
+
 function! vimio#ui#visual_block_mouse_move_start()
     let g:vimio_state_save_ctrl_mouseleft = maparg('<C-LeftMouse>', 'n')
-    let g:vimio_state_save_ctrl_mouseright = maparg('<C-RightMouse>', 'n')
 
-    nnoremap <silent> <C-LeftMouse> :call vimio#replace#paste_block_clip(1)<CR>
-    nnoremap <silent> <C-RightMouse> :call vimio#replace#paste_block_clip(0)<CR>
+    nnoremap <silent> <C-LeftMouse> :call vimio#replace#paste_block_clip()<CR>
 
     set mouse=n
     augroup VimioUiVisualBlockMouseMove
@@ -68,11 +67,6 @@ endfunction
 function! vimio#ui#visual_block_mouse_move_cancel()
     if exists('g:vimio_state_save_ctrl_mouseleft')
         execute 'nnoremap <silent> <C-LeftMouse> ' . g:vimio_state_save_ctrl_mouseleft
-    endif
-
-    if exists('g:vimio_state_save_ctrl_mouseright')
-        " :TODO: It is currently found that the previous operation has not been restored normally.
-        execute 'nnoremap <silent> <C-RightMouse> ' . g:vimio_state_save_ctrl_mouseright
     endif
 
     augroup VimioUiVisualBlockMouseMove
@@ -209,7 +203,7 @@ function! vimio#ui#switch_cross_style()
             call line['update_preview']()
         endfor
     endif
-    echo "now index: " . g:vimio_state_cross_style_index
+    call vimio#ui#cross_show_all_info()
 endfunction
 
 function! vimio#ui#switch_line_style(is_just_show)
@@ -225,10 +219,32 @@ function! vimio#ui#switch_line_style(is_just_show)
     echo "now line type:" . string(g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index])
 endfunction
 
-function! vimio#ui#paste_flip_cross_mode()
+function! vimio#ui#cross_show_all_info() abort
+    let mode_str = g:vimio_state_paste_preview_cross_mode ? 'on' : 'off'
+    echo "[Cross and Preview] mode=" . mode_str
+        \ . " algorithm=" . g:vimio_config_cross_algorithm
+        \ . " style=" . g:vimio_state_cross_style_index
+        \ . " preview=" . g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index]
+endfunction
+
+function! vimio#ui#paste_flip_cross_mode() abort
     let val = g:vimio_state_paste_preview_cross_mode
     let g:vimio_state_paste_preview_cross_mode = !val
-    echo "now paste cross mode: " . g:vimio_state_paste_preview_cross_mode
+
+    call vimio#popup#update_cross_block()
+    call vimio#ui#cross_show_all_info()
+endfunction
+
+function! vimio#ui#toggle_cross_mode_algorithm()
+    if g:vimio_config_cross_algorithm == 'multi'
+        let g:vimio_config_cross_algorithm = 'single'
+    else
+        let g:vimio_config_cross_algorithm = 'multi'
+    endif
+    call vimio#scene#clear_cross_cache()
+    call vimio#cursors#clear_cursor_cross_cache()
+    call vimio#popup#update_cross_block()
+    call vimio#ui#cross_show_all_info()
 endfunction
 
 " Get the line type under the current cursor and switch to it
@@ -273,9 +289,10 @@ function! vimio#ui#box_suround()
     let pos_y = max([1, y - box.TEXT_BEGIN_Y])
     let pos_x = max([1, x - box.TEXT_BEGIN_X])
 
-    call vimio#replace#paste_block_clip(1, {
+    call vimio#replace#paste_block_clip({
                 \ 'new_text': box.TEXT,
-                \ 'pos_start': [pos_y, pos_x]
+                \ 'pos_start': [pos_y, pos_x],
+                \ 'pop_up_type': 'cover',
                 \})
 endfunction
 
@@ -319,9 +336,10 @@ function! vimio#ui#shapes_change_type() abort
     " current application scenarios, will not be implemented for the time being.
 
     call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 1)
-    call vimio#replace#paste_block_clip(1, {
+    call vimio#replace#paste_block_clip({
                 \ 'new_text': shape_obj.TEXT,
-                \ 'pos_start': [shape_obj.Y, shape_obj.X]
+                \ 'pos_start': [shape_obj.Y, shape_obj.X],
+                \ 'pop_up_type': 'cover',
                 \})
     " " cancel highlight
     " call vimio#cursors#clear_cursors()
@@ -411,9 +429,10 @@ function! vimio#ui#shapes_resize_end() abort
     " delete original shape
     call vimio#cursors#create_rectangle_string(g:vimio_state_multi_cursors, 1, ' ', 1)
 
-    call vimio#replace#paste_block_clip(1, {
+    call vimio#replace#paste_block_clip({
                 \ 'new_text': s:shape_obj.TEXT,
-                \ 'pos_start': [s:shape_obj['Y'], s:shape_obj['X']]
+                \ 'pos_start': [s:shape_obj['Y'], s:shape_obj['X']],
+                \ 'pop_up_type': 'cover',
                 \})
     let s:shape_obj = {}
 endfunction

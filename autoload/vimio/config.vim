@@ -28,6 +28,8 @@
 " - g:vimio_shape_name_config_map
 
 let g:vimio_config_visual_block_popup_types = ['cover', 'overlay']
+" 'single' 'multi'
+let g:vimio_config_cross_algorithm = 'multi'
 
 " \u1100-\u115F: Hangul alphabet
 " \u2E80-\u2EFF: CJK Radicals Supplement

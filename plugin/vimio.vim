@@ -13,6 +13,7 @@ let g:vimio_loaded = 1
 function! s:VimioFailbackFuncs() abort
     let g:Vimio_BuildPreviewCharsFunc = function('vimio#utils#BuildPreviewChars')
     let g:Vimio_GetRectTxtForSingleWidthCharFunc = function('vimio#utils#get_rect_txt_for_single_width_char')
+    let g:Vimio_GetLineCellsFunc = function('vimio#utils#get_line_cells')
 endfunction
 
 
@@ -128,12 +129,13 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> <C-S-Up> :call vimio#replace#replace_char_under_cursor_from_clip('k')<CR>
     " Paste the characters from the clip and move to the down
     nnoremap <silent> <C-S-Down> :call vimio#replace#replace_char_under_cursor_from_clip('j')<CR>
-    " Paste the shape from the clip and completely cover the same area
-    nnoremap <silent> <C-M-Space> :call vimio#replace#paste_block_clip(1)<CR>
     " Paste the shape from the clip and cover the same area ignore spaces
-    nnoremap <silent> <C-S-Space> :call vimio#replace#paste_block_clip(0)<CR>
+    nnoremap <silent> <C-S-Space> :call vimio#replace#paste_block_clip()<CR>
     " Paste Switch Cross Mode
     nnoremap <silent> sxm :call vimio#ui#paste_flip_cross_mode()<CR>
+    " change cross algorithm
+    nnoremap <silent> sxa :call vimio#ui#toggle_cross_mode_algorithm()<CR>
+    nnoremap <silent> sxi :call vimio#ui#cross_show_all_info()<CR>
 
     " ===============================cut========================================
     vnoremap xx "+ygvgr | " visual block cut(the space in the end cannot be missing.)

@@ -512,9 +512,10 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
             if len(cross_points_after) != 0
                 " The new crossover character is pasted back in place.
                 let [lines_cross, min_row_cross, min_col_cross] = vimio#cursors#create_rectangle_string_only(cross_points_after)
-                call vimio#replace#paste_block_clip(0, {
+                call vimio#replace#paste_block_clip({
                             \ 'new_text': join(lines_cross, "\n"),
-                            \ 'pos_start': [min_row_cross, min_col_cross]
+                            \ 'pos_start': [min_row_cross, min_col_cross],
+                            \ 'pop_up_type': 'overlay',
                             \})
             endif
         endif

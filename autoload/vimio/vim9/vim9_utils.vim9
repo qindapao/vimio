@@ -32,7 +32,7 @@ def BuildPreviewChars(text_lines: list<string>, cross_enable: bool, pos_start: l
             var width = strdisplaywidth(char)
             rect[row_offset][col - min_col] = char
 
-            if cross_enable && has_key(g:vimio_config_draw_cross_chars, char)
+            if cross_enable
                 rect_cross_chars[row .. ',' .. col] = char
             endif
 
@@ -50,46 +50,46 @@ def BuildPreviewChars(text_lines: list<string>, cross_enable: bool, pos_start: l
     return rect_opts
 enddef
 
-# Example:
-#   let a = { '5,8': '─', '5,9': '┼' }
-#   let b = { '5,8': '+', '6,10': '*' }
-#   let merged = vimio#utils#merge_sparse_values(a, b)
-#   " Result:
-#   " {
-#   "   '5,8': ['─', '+'],
-#   "   '5,9': ['┼'],
-#   "   '6,10': ['*']
-#   " }
-def MergeSparseValues(dict1: dict<string>, dict2: dict<string>): dict<list<string>>
+def MergeSparseValues(dict1: dict<string>, dict2: dict<string>, pop_up_type: string): dict<list<string>>
     var result: dict<list<string>> = {}
 
-    # merge dict1
+    # First, add all the key-value pairs from dict1.
     for key in keys(dict1)
-        result[key] = [dict1[key]]
+        if has_key(g:vimio_config_draw_cross_chars, dict1[key])
+            result[key] = [dict1[key]]
+        endif
     endfor
 
-    # merge dict2
-    for key in keys(dict2)
-        result[key] = get(result, key, [])
-        result[key]->add(dict2[key])
-    endfor
+    # Only merge the keys in dict2 that are not present in dict1.
+    if g:vimio_config_cross_algorithm == 'multi'
+        for key in keys(dict2)
+            if pop_up_type == 'cover' && has_key(dict1, key)
+                continue
+            endif
+            result[key] = get(result, key, [])
+            result[key]->add(dict2[key])
+        endfor
+    else
+        for key in keys(dict2)
+            if !has_key(dict1, key)
+                result[key] = [dict2[key]]
+            else
+                if pop_up_type == 'overlay' && dict1[key] == ' '
+                    result[key] = [dict2[key]]
+                endif
+            endif
+        endfor
+    endif
 
     return result
 enddef
 
-# Example:
-#   let a = { '5,8': '─', '5,9': '┼' }
-#   let b = { '5,8': '+', '6,10': '*' }
-#   let shared = vimio#utils#get_sparse_intersections(a, b)
-#   " Result:
-#   " {
-#   "   '5,8': ['─', '+']
-#   " }
+
 def GetSparseIntersections(dict1: dict<string>, dict2: dict<string>): dict<list<string>>
     var result: dict<list<string>> = {}
 
     for key in keys(dict1)
-        if has_key(dict2, key)
+        if has_key(dict2, key) && dict1[key] != ' '
             result[key] = [dict1[key], dict2[key]]
         endif
     endfor
@@ -118,9 +118,6 @@ export def GetDoublewidthCols(row: number, ...args: list<any>): list<number>
     return cols
 enddef
 
-# :TODO: If you want efficiency, you can map vimio#utils#get_line_cells 
-#   to GetLineCellsInsertDoubleChar everywhere in the code.
-#
 # :TODO: There are two ways to implement it, refer to
 #   vimio#utils#get_doublewidth_cols_old fast but Requires follow-up maintenance
 #   vimio#utils#get_doublewidth_cols_new slow but no subsequent maintenance required
@@ -152,13 +149,18 @@ def GetEditorRect(pos: list<number>, width: number, height: number, isJustCrossC
     var startCol = pos[1]
     var result: dict<string> = {}
 
-    for row in range(startRow, startRow + height - 1)
-        if row > line('$')
-            continue
+    var lastLine = line('$')
+    var endRow = startRow + height - 1
+    var endCol = startCol + width - 1
+    var endCol_1 = startCol + width 
+
+    for row in range(startRow, endRow)
+        if row > lastLine
+            break
         endif
 
-        var [chars, _] = GetLineCellsInsertDoubleChar(row, startCol + width)
-        for col in range(startCol, startCol + width - 1)
+        var [chars, _] = GetLineCellsInsertDoubleChar(row, endCol_1)
+        for col in range(startCol, endCol)
             var ch = chars[col - 1]
             if isJustCrossChar && !has_key(g:vimio_config_draw_cross_chars, ch)
                 continue
@@ -174,6 +176,7 @@ def GetRectTxtForSingleWidthChar(
         preview_text: list<list<any>>,
         cross_enable: bool,
         pos: list<number>,
+        pop_up_type: string,
         ...opts_list: list<dict<any>>
         ): string
     var opts = get(opts_list, 0, {})
@@ -209,7 +212,7 @@ def GetRectTxtForSingleWidthChar(
         for item in preview_text
             var [row, col, ch] = item
             rect[row - min_row][col - min_col] = ch
-            if cross_enable && has_key(g:vimio_config_draw_cross_chars, ch)
+            if cross_enable
                 rect_cross_chars[row .. ',' .. col] = ch
             endif
         endfor
@@ -239,12 +242,18 @@ def GetRectTxtForSingleWidthChar(
         )
         # t2 = reltime()
 
-        var all_chars = MergeSparseValues(rect_cross_chars, editor_chars)
+        var all_chars = MergeSparseValues(rect_cross_chars, editor_chars, pop_up_type)
         # t3 = reltime()
         var cross_point = GetSparseIntersections(rect_cross_chars, editor_chars)
         # t4 = reltime()
         var cross_chars: dict<string> = vimio#scene#get_cross_chars(cross_point, all_chars)
         # t5 = reltime()
+
+        # call vimio#debug#log_obj("rect_cross_chars", rect_cross_chars, 4, '')
+        # call vimio#debug#log_obj("editor_chars", editor_chars, 4, '')
+        # call vimio#debug#log_obj("all_chars", all_chars, 4, '')
+        # call vimio#debug#log_obj("cross_point", cross_point, 4, '')
+        # call vimio#debug#log_obj("cross_chars", cross_chars, 4, '')
     
         for [key, ch] in items(cross_chars)
             var [r, c] = split(key, ',')->map('str2nr(v:val)')
@@ -282,4 +291,5 @@ enddef
 
 g:Vimio_BuildPreviewCharsFunc = BuildPreviewChars
 g:Vimio_GetRectTxtForSingleWidthCharFunc = GetRectTxtForSingleWidthChar
+g:Vimio_GetLineCellsFunc = GetLineCellsInsertDoubleChar
 

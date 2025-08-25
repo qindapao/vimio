@@ -5,13 +5,20 @@
 " character replacement under the cursor.
 "
 " Contents:
-" - vimio#replace#paste_block_clip(is_space_replace,...)
+" - vimio#replace#paste_block_clip(...)
 " - vimio#replace#replace_char_under_cursor_from_clip(direction)
 " - vimio#replace#visual_replace_to_space()
 " - vimio#replace#visual_replace_char()
 
-function! vimio#replace#paste_block_clip(is_space_replace, ...)
+function! vimio#replace#paste_block_clip(...)
     let opts = get(a:, 1, {})
+    let pop_up_type = get(opts, 'pop_up_type', g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index])
+
+    let is_space_replace = v:true
+    if pop_up_type == 'overlay'
+        let is_space_replace = v:false
+    endif
+
     " Get data from the clip register
     let regcontent = vimio#utils#get_current_paste_text(opts)
 
@@ -134,7 +141,7 @@ function! vimio#replace#paste_block_clip(is_space_replace, ...)
              " bottom  2     current slot -> top
 
             " If the overlay character is not a space, overlay
-            if top != ' ' || a:is_space_replace
+            if top != ' ' || is_space_replace
                 if top_width == 1
                     let chars_arr[k_index] = top
                     if bottom_width == 0

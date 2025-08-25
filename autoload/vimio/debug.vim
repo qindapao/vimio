@@ -37,12 +37,23 @@ function! s:describe_funcref(funcref) abort
     return fun_name . ' (' . script_path . ' ' . location . ')'
 endfunction
 
-function! s:print_value(key, value, pad) abort
+function! s:print_value(key, value, pad, is_record_log_file) abort
+    let out_str = ''
     if type(a:value) == v:t_func
-        echom a:pad . string(a:key) . ': ' . s:describe_funcref(a:value)
+        if a:is_record_log_file
+            let out_str = out_str . a:pad . string(a:key) . ': ' . s:describe_funcref(a:value) . "\n"
+        else
+            echom a:pad . string(a:key) . ': ' . s:describe_funcref(a:value)
+        endif
     else
-        echom a:pad . string(a:key) . ': ' . string(a:value)
+        if a:is_record_log_file
+            let out_str = out_str . a:pad . string(a:key) . ': ' . string(a:value) . "\n"
+        else
+            echom a:pad . string(a:key) . ': ' . string(a:value)
+        endif
     endif
+
+    return out_str
 endfunction
 
 
@@ -61,14 +72,21 @@ endfunction
 "   • Indentation: controlled by indent_unit
 "   • Iterative implementation (no recursion)
 "==============================================================================
-function! vimio#debug#pretty_print(name, obj, indent_unit, ...) abort
+function! vimio#debug#pretty_print(name, obj, indent_unit, title, is_record_log_file) abort
+    let out_str = ''
     " Optional title
-    if a:0 >= 1
-        echom a:1
+    if a:is_record_log_file
+        let out_str = a:title . "\n"
+    else
+        echom a:title
     endif
 
     " Top‐level
-    echom a:name . ' =>'
+    if a:is_record_log_file
+        let out_str = out_str . a:name . ' =>' . "\n"
+    else
+        echom a:name . ' =>'
+    endif
 
     " Prepare initial frame for obj
     let stack = []
@@ -83,8 +101,12 @@ function! vimio#debug#pretty_print(name, obj, indent_unit, ...) abort
 
     else
         " Primitive under the name
-        echom repeat(' ', a:indent_unit) . ': ' . string(a:obj)
-        return
+        if a:is_record_log_file
+            let out_str = out_str . repeat(' ', a:indent_unit) . ': ' . string(a:obj) . "\n"
+        else
+            echom repeat(' ', a:indent_unit) . ': ' . string(a:obj)
+        endif
+        return out_str
     endif
 
     " Iterative loop
@@ -106,7 +128,11 @@ function! vimio#debug#pretty_print(name, obj, indent_unit, ...) abort
 
                 " Print and, if container, push child frame
                 if type(Value) == v:t_dict
-                    echom pad . string(key) . ' =>'
+                    if a:is_record_log_file
+                        let out_str = out_str . pad . string(key) . ' =>' . "\n"
+                    else
+                        echom pad . string(key) . ' =>'
+                    endif
                     let child_keys = sort(keys(Value))
                     call add(stack, {
                                 \ 'type'    :'dict',
@@ -116,7 +142,11 @@ function! vimio#debug#pretty_print(name, obj, indent_unit, ...) abort
                                 \ 'level'   :lvl+1
                                 \})
                 elseif type(Value) == v:t_list
-                    echom pad . string(key) . ' =:'
+                    if a:is_record_log_file
+                        let out_str = out_str . pad. string(key) . ' =:' . "\n"
+                    else
+                        echom pad . string(key) . ' =:'
+                    endif
                     let child_idxs = range(0, len(Value)-1)
                     call add(stack, {
                                 \ 'type'    :'list',
@@ -126,7 +156,11 @@ function! vimio#debug#pretty_print(name, obj, indent_unit, ...) abort
                                 \ 'level'   :lvl+1
                                 \})
                 else
-                    call s:print_value(key, Value, pad)
+                    if a:is_record_log_file
+                        let out_str = out_str . s:print_value(key, Value, pad, 1)
+                    else
+                        call s:print_value(key, Value, pad, 0)
+                    endif
                 endif
             endif
 
@@ -139,7 +173,11 @@ function! vimio#debug#pretty_print(name, obj, indent_unit, ...) abort
                 call add(stack, next)
 
                 if type(value) == v:t_dict
-                    echom pad . i . ' =>'
+                    if a:is_record_log_file
+                        let out_str = out_str . pad. i . ' =>' . "\n"
+                    else
+                        echom pad . i . ' =>'
+                    endif
                     let child_keys = keys(value)
                     call add(stack, {
                                 \ 'type'    :'dict',
@@ -149,7 +187,11 @@ function! vimio#debug#pretty_print(name, obj, indent_unit, ...) abort
                                 \ 'level'   :lvl+1
                                 \})
                 elseif type(value) == v:t_list
-                    echom pad . i . ' =:'
+                    if a:is_record_log_file
+                        let out_str = out_str . pad . i . ' =:' . "\n"
+                    else
+                        echom pad . i . ' =:'
+                    endif
                     let child_idxs = range(0, len(value)-1)
                     call add(stack, {
                                 \ 'type'    :'list',
@@ -159,24 +201,23 @@ function! vimio#debug#pretty_print(name, obj, indent_unit, ...) abort
                                 \ 'level'   :lvl+1
                                 \})
                 else
-                    echom pad . i . ': ' . string(value)
+                    if a:is_record_log_file
+                        let out_str = out_str . pad . i . ": " . string(value) . "\n"
+                    else
+                        echom pad . i . ': ' . string(value)
+                    endif
                 endif
             endif
         endif
     endwhile
+
+    return out_str
 endfunction
 
-function! vimio#debug#diff_pretty_lcs(obj1, obj2, indent_unit) abort
+function! vimio#debug#diff_pretty_lcs(obj1, obj2, indent_unit, is_record_log_file) abort
     " Step 1: Pretty-print both objects
-    let left_str = ''
-    redir => left_str
-    call vimio#debug#pretty_print('Left',  a:obj1, a:indent_unit)
-    redir END
-
-    let right_str = ''
-    redir => right_str
-    call vimio#debug#pretty_print('Right', a:obj2, a:indent_unit)
-    redir END
+    let left_str = vimio#debug#pretty_print('Left',  a:obj1, a:indent_unit, 'left_str', 1)
+    let right_str = vimio#debug#pretty_print('Right', a:obj2, a:indent_unit, 'right_str', 1)
 
     " Step 2: Split into lines
     let left_lines  = split(left_str,  "\n")
@@ -285,29 +326,63 @@ function! vimio#debug#diff_pretty_lcs(obj1, obj2, indent_unit) abort
     let line_sep     = repeat('-', total_width)
 
     " Step 8: Render all ops with computed width
-    echom line_sep
-    echom printf('%-' . header_width . 's │ %-' . header_width . 's',
-                \ 'Left Structure', 'Right Structure')
-    echom line_sep
+    let out_log_str = ''
+    if a:is_record_log_file
+        let out_log_str = out_log_str 
+                \ . line_sep . "\n" 
+                \ . printf('%-' . header_width . 's │ %-' . header_width . 's',
+                \   'Left Structure', 'Right Structure') . "\n"
+                \ . line_sep . "\n"
+    else
+        echom line_sep
+        echom printf('%-' . header_width . 's │ %-' . header_width . 's',
+                    \ 'Left Structure', 'Right Structure')
+        echom line_sep
+    endif
 
     for entry in rendered
         let [op, L, R] = entry
         if op ==# ' '
-            echom printf('  %-' . col_width . 's │ %-' . col_width . 's', L, R)
+            if a:is_record_log_file
+                let out_log_str = out_log_str 
+                            \ . printf('  %-' . col_width 
+                            \ . 's │ %-' . col_width . 's', L, R) . "\n"
+            else
+                echom printf('  %-' . col_width . 's │ %-' . col_width . 's', L, R)
+            endif
         elseif op ==# '~'
-            echohl WarningMsg
-            echom printf('~ %-' . col_width . 's │ %-' . col_width . 's', L, R)
-            echohl None
+            if a:is_record_log_file
+                let out_log_str = out_log_str . printf('~ %-' . col_width 
+                            \ . 's │ %-' . col_width . 's', L, R) . "\n"
+            else
+                echohl WarningMsg
+                echom printf('~ %-' . col_width . 's │ %-' . col_width . 's', L, R)
+                echohl None
+            endif
         elseif op ==# '-'
-            echohl DiffDelete
-            echom printf('- %-' . col_width . 's │ %-' . col_width . 's', L, '')
-            echohl None
+            if a:is_record_log_file
+                let out_log_str = out_log_str 
+                            \ . printf('- %-' . col_width 
+                            \ . 's │ %-' . col_width . 's', L, '') . "\n"
+            else
+                echohl DiffDelete
+                echom printf('- %-' . col_width . 's │ %-' . col_width . 's', L, '')
+                echohl None
+            endif
         elseif op ==# '+'
-            echohl DiffAdd
-            echom printf('+ %-' . col_width . 's │ %-' . col_width . 's', '', R)
-            echohl None
+            if a:is_record_log_file
+                let out_log_str = out_log_str 
+                            \ . printf('+ %-' . col_width 
+                            \ . 's │ %-' . col_width . 's', '', R) . "\n"
+            else
+                echohl DiffAdd
+                echom printf('+ %-' . col_width . 's │ %-' . col_width . 's', '', R)
+                echohl None
+            endif
         endif
     endfor
+
+    return out_log_str
 endfunction
 
 
@@ -348,8 +423,23 @@ function! vimio#debug#log(fmt, ...) abort
     let formatted = call('printf', arglist)
 
     let timestamp = vimio#debug#get_timestamp_ms()
+    let bracketed_ts = timestamp
 
-    call writefile([timestamp . ' ' . formatted], logfile, 'a')
+    let padlen = strlen(bracketed_ts)
+    let pad = repeat(' ', padlen - 1) . '|'
+
+    let lines = split(formatted, "\n")
+
+    let output = []
+    for i in range(len(lines))
+        if i == 0
+            call add(output, bracketed_ts . ' ' . lines[i])
+        else
+            call add(output, pad . ' ' . lines[i])
+        endif
+    endfor
+
+    call writefile(output, logfile, 'a')
 endfunction
 
 function! vimio#debug#log_obj(name, obj, ...) abort
@@ -371,10 +461,7 @@ function! vimio#debug#log_obj(name, obj, ...) abort
     endif
 
     if type(a:obj) == v:t_dict || type(a:obj) == v:t_list
-        let out = ''
-        redir => out
-        silent call vimio#debug#pretty_print(a:name, a:obj, indent)
-        redir END
+        let out = vimio#debug#pretty_print(a:name, a:obj, indent, a:name, 1)
         call writefile(split(out, "\n"), logfile, 'a')
     else
         let line = printf("[%s] %s: %s", vimio#debug#get_timestamp_ms(), a:name, string(a:obj))

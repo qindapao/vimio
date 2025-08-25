@@ -55,7 +55,8 @@ function! vimio#utils#get_reg(reg_name)
         let attempts += 1
     endwhile
     " echom "read reg: " . a:reg_name . "times: " . attempts . ';' 
-    return regcontent
+    " TAB replace to 4 blanks
+    return substitute(regcontent, '\t', '    ', 'g')
 endfunction
 
 function! vimio#utils#get_current_paste_text(...) abort
@@ -64,27 +65,45 @@ function! vimio#utils#get_current_paste_text(...) abort
     let raw_str = get(opts, 'new_text', vimio#utils#get_reg('+'))
     " let t2 = reltime()
     let pos = get(opts, 'pos_start', [line('.'), virtcol('.')])
+    let pop_up_type = get(opts, 'pop_up_type', g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index])
 
     let raw_lines = split(raw_str, "\n")
     " let t3 = reltime()
     if exists('g:vimio_state_paste_preview_cross_mode') && g:vimio_state_paste_preview_cross_mode
         let preview_opts = g:Vimio_BuildPreviewCharsFunc(raw_lines, v:true, pos)
-        " let preview_opts = vimio#utils#BuildPreviewChars(raw_lines, v:true, pos)
+        " let t3_0 = reltime()
+        " let preview_opts_0 = vimio#utils#BuildPreviewChars(raw_lines, v:true, pos)
         " let t4 = reltime()
-        let preview_chars_and_cross = g:Vimio_GetRectTxtForSingleWidthCharFunc([[]], v:true, pos, preview_opts)
-        " let preview_chars_and_cross = vimio#utils#get_rect_txt_for_single_width_char([[]], v:true, pos, preview_opts)
-        " echom "preview_chars_and_cross: " . preview_chars_and_cross 
+        let preview_chars_and_cross = g:Vimio_GetRectTxtForSingleWidthCharFunc([[]], v:true, pos, pop_up_type, preview_opts)
+        " let t4_0 = reltime()
+        " let preview_chars_and_cross_0 = vimio#utils#get_rect_txt_for_single_width_char([[]], v:true, pos, pop_up_type, preview_opts)
         " let t5 = reltime()
+
         " call vimio#debug#log(
         "             \ "get text from clip: %.2f;"
         "             \ . "text split to lines: %.2f;"
-        "             \ . "prview chars: %.2f;"
-        "             \ . "get_rect_txt_for_single_width_char: %.2f;",
+        "             \ . "prview chars new: %.2f;"
+        "             \ . "prview chars old: %.2f;"
+        "             \ . "get_rect_txt_for_single_width_char new: %.2f;"
+        "             \ . "get_rect_txt_for_single_width_char old: %.2f;",
         "             \ vimio#debug#time_ms(t1, t2),
         "             \ vimio#debug#time_ms(t2, t3),
-        "             \ vimio#debug#time_ms(t3, t4),
-        "             \ vimio#debug#time_ms(t4, t5)
+        "             \ vimio#debug#time_ms(t3, t3_0),
+        "             \ vimio#debug#time_ms(t3_0, t4),
+        "             \ vimio#debug#time_ms(t4, t4_0),
+        "             \ vimio#debug#time_ms(t4_0, t5)
         "             \)
+
+        " if preview_opts != preview_opts_0
+        "     call vimio#debug#log('preview_opts diff! %s', 
+        "                 \ vimio#debug#diff_pretty_lcs(preview_opts, preview_opts_0, 4, 1))
+        " endif
+
+        " if preview_chars_and_cross != preview_chars_and_cross_0
+        "     call vimio#debug#log('preview_chars_and_cross diff! %s', 
+        "                 \ vimio#debug#diff_pretty_lcs(preview_chars_and_cross, preview_chars_and_cross_0, 4, 1))
+        " endif
+
         return preview_chars_and_cross
     endif
     " let t4 = reltime()
@@ -200,8 +219,16 @@ endfunction
 function! vimio#utils#get_line_cells(row, ...) abort
     let args = [a:row] + a:000
 
-    let l:old = call('vimio#utils#get_line_cells_insert_double_char', args)
+    " let t1 = reltime()
+    let l:old = call(g:Vimio_GetLineCellsFunc, args)
+    " let t2 = reltime()
     " let l:new = call('vimio#utils#get_line_cells_common', args)
+    " let t3 = reltime()
+
+    " call vimio#debug#log("old:%.3f; new:%.3f;", 
+    "             \ vimio#debug#time_ms(t1, t2),
+    "             \ vimio#debug#time_ms(t2, t3))
+
     return l:old
 endfunction
 
@@ -630,80 +657,46 @@ function! vimio#utils#list_get_item_screen_len(list, index)
     return strdisplaywidth(a:list[a:index])
 endfunction
 
-" ============================================================================
-" Function: vimio#utils#merge_sparse_values(dict1, dict2)
-"
-" Description:
-"   Merges two sparse dictionaries (indexed by "row,col" strings).
-"   If a key exists in both dictionaries, the result will contain a list of
-"   both values: [val1, val2]. If a key exists in only one dictionary,
-"   the result will contain a single-item list: [val].
-"
-" Parameters:
-"   dict1 - Dictionary with keys as "row,col" and values as characters.
-"   dict2 - Same structure as dict1.
-"
-" Returns:
-"   A merged dictionary with keys from both sources.
-"   Values are lists containing one or two characters.
-"
-" Example:
-"   let a = { '5,8': '─', '5,9': '┼' }
-"   let b = { '5,8': '+', '6,10': '*' }
-"   let merged = vimio#utils#merge_sparse_values(a, b)
-"   " Result:
-"   " {
-"   "   '5,8': ['─', '+'],
-"   "   '5,9': ['┼'],
-"   "   '6,10': ['*']
-"   " }
-" ============================================================================
-function! vimio#utils#merge_sparse_values(dict1, dict2) abort
+function! vimio#utils#merge_sparse_values(dict1, dict2, pop_up_type) abort
     let result = {}
 
-    " merge dict1
+    " First, add all the key-value pairs from dict1.
     for key in keys(a:dict1)
-        let result[key] = [a:dict1[key]]
+        if has_key(g:vimio_config_draw_cross_chars, a:dict1[key])
+            let result[key] = [a:dict1[key]]
+        endif
     endfor
 
-    " merge dict2
-    for key in keys(a:dict2)
-        let current = get(result, key, [])
-        call add(current, a:dict2[key])
-        let result[key] = current
-    endfor
+    " Only merge the keys in dict2 that are not present in dict1.
+    if g:vimio_config_cross_algorithm == 'multi'
+        for key in keys(a:dict2)
+            if a:pop_up_type == 'cover' && has_key(a:dict1, key)
+                continue
+            endif
+            let current = get(result, key, [])
+            call add(current, a:dict2[key])
+            let result[key] = current
+        endfor
+    else
+        for key in keys(a:dict2)
+            if !has_key(a:dict1, key)
+                let result[key] = [a:dict2[key]]
+            else
+                if a:pop_up_type == 'overlay' && a:dict1[key] == ' '
+                    let result[key] = [a:dict2[key]]
+                endif
+            endif
+        endfor
+    endif
 
     return result
 endfunction
 
-" ============================================================================
-" Function: vimio#utils#get_sparse_intersections(dict1, dict2)
-"
-" Description:
-"   Returns a new dictionary containing only the keys present in both dict1
-"   and dict2. Each shared key maps to a two-item list: [dict1[key], dict2[key]]
-"
-" Parameters:
-"   dict1 - First sparse dictionary, with keys like "row,col"
-"   dict2 - Second sparse dictionary, same structure
-"
-" Returns:
-"   A dictionary with shared keys, each mapped to [val1, val2]
-"
-" Example:
-"   let a = { '5,8': '─', '5,9': '┼' }
-"   let b = { '5,8': '+', '6,10': '*' }
-"   let shared = vimio#utils#get_sparse_intersections(a, b)
-"   " Result:
-"   " {
-"   "   '5,8': ['─', '+']
-"   " }
-" ============================================================================
 function! vimio#utils#get_sparse_intersections(dict1, dict2) abort
     let result = {}
 
     for key in keys(a:dict1)
-        if has_key(a:dict2, key)
+        if has_key(a:dict2, key) && a:dict1[key] != ' '
             let result[key] = [a:dict1[key], a:dict2[key]]
         endif
     endfor
@@ -736,7 +729,7 @@ function! vimio#utils#BuildPreviewChars(text_lines, cross_enable, pos_start) abo
             let width = strdisplaywidth(char)
             let rect[row_offset][col-rect_opts.min_col] = char
 
-            if a:cross_enable && has_key(g:vimio_config_draw_cross_chars, char)
+            if a:cross_enable
                 let rect_cross_chars[row . ',' . col] = char
             end
 
@@ -760,7 +753,7 @@ endfunction
 " [[5,6,'a'], [7,8,'b']]
 " :TODO: The current graphics performance is slightly subpar, but it is still
 "       acceptable. It can be optimized in the future.
-function! vimio#utils#get_rect_txt_for_single_width_char(preview_text, cross_enable, pos, ...) abort
+function! vimio#utils#get_rect_txt_for_single_width_char(preview_text, cross_enable, pos, pop_up_type, ...) abort
     " let t0 = reltime()
     let opts = get(a:, 1, {})
     if !empty(opts)
@@ -789,7 +782,7 @@ function! vimio#utils#get_rect_txt_for_single_width_char(preview_text, cross_ena
         for item in a:preview_text
             let [row, col, ch] = item
             let rect[row - min_row][col - min_col] = ch
-            if a:cross_enable && has_key(g:vimio_config_draw_cross_chars, ch)
+            if a:cross_enable
                 let rect_cross_chars[row . ',' . col] = ch
             end
         endfor
@@ -818,7 +811,7 @@ function! vimio#utils#get_rect_txt_for_single_width_char(preview_text, cross_ena
                     \ v:true
                     \)
         " let t2 = reltime()
-        let all_chars = vimio#utils#merge_sparse_values(rect_cross_chars, editor_chars)
+        let all_chars = vimio#utils#merge_sparse_values(rect_cross_chars, editor_chars, a:pop_up_type)
         " let t3 = reltime()
         let cross_point = vimio#utils#get_sparse_intersections(rect_cross_chars, editor_chars)
         " let t4 = reltime()
@@ -846,7 +839,7 @@ function! vimio#utils#get_rect_txt_for_single_width_char(preview_text, cross_ena
         "             \)
     endif
 
-    let lines = map(rect, 'join(v:val, "")')
+    let lines = map(copy(rect), 'join(v:val, "")')
     return join(lines, "\n")
 endfunction
 
