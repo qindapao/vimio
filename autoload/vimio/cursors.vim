@@ -481,7 +481,7 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
         call vimio#scene#calculate_cross_points(
                     \ a:points,
                     \ s:cursor_cross_cache,
-                    \ g:vimio_config_draw_normal_char_funcs_map,
+                    \ g:vimio_config_draw_char_funcs_map,
                     \ g:vimio_config_draw_cross_styles,
                     \ g:vimio_state_cross_style_index,
                     \ cross_points
@@ -498,7 +498,7 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
     if g:vimio_state_paste_preview_cross_mode
 
         let cross_points_after = []
-        let combined_table = g:vimio_config_draw_normal_char_funcs_map + g:vimio_config_draw_delete_chars_funcs_map
+        let combined_table = g:vimio_config_draw_char_funcs_map + g:vimio_config_draw_delete_chars_funcs_map
         if a:delete_original
             call vimio#scene#calculate_cross_points(
                         \ cross_points,

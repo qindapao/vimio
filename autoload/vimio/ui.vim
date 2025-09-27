@@ -195,8 +195,7 @@ function! vimio#ui#smart_line_cancel() abort
 endfunction
 
 function! vimio#ui#switch_cross_style()
-    call vimio#scene#clear_cross_cache()
-    call vimio#cursors#clear_cursor_cross_cache()
+    call s:clear_all_cross_cache()
     let g:vimio_state_cross_style_index = (g:vimio_state_cross_style_index + 1) % len(g:vimio_config_draw_cross_styles)
     if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
         for line in g:vimio_drawline_multi_lines
@@ -221,10 +220,26 @@ endfunction
 
 function! vimio#ui#cross_show_all_info() abort
     let mode_str = g:vimio_state_paste_preview_cross_mode ? 'on' : 'off'
+    let style_index = g:vimio_state_cross_style_index
+    let style_map = get(g:vimio_config_draw_cross_styles, style_index, {})
+    let preview_pairs = []
+    let vimiomono_mode = g:vimio_vimiomono_super_slash_mode.values[g:vimio_vimiomono_super_slash_mode.index]
+
+    " 提取前三个字符对
+    for [k, v] in items(style_map)
+        call add(preview_pairs, k . '→' . v)
+        if len(preview_pairs) >= 3
+            break
+        endif
+    endfor
+
+    let preview_str = join(preview_pairs, ', ')
     echo "[Cross and Preview] mode=" . mode_str
         \ . " algorithm=" . g:vimio_config_cross_algorithm
-        \ . " style=" . g:vimio_state_cross_style_index
         \ . " preview=" . g:vimio_config_visual_block_popup_types[g:vimio_state_visual_block_popup_types_index]
+        \ . " vimiomono=" . vimiomono_mode
+        \ . " style=" . style_index
+        \ . " sample=" . preview_str
 endfunction
 
 function! vimio#ui#paste_flip_cross_mode() abort
@@ -241,8 +256,7 @@ function! vimio#ui#toggle_cross_mode_algorithm()
     else
         let g:vimio_config_cross_algorithm = 'multi'
     endif
-    call vimio#scene#clear_cross_cache()
-    call vimio#cursors#clear_cursor_cross_cache()
+    call s:clear_all_cross_cache()
     call vimio#popup#update_cross_block()
     call vimio#ui#cross_show_all_info()
 endfunction
@@ -435,5 +449,28 @@ function! vimio#ui#shapes_resize_end() abort
                 \ 'pop_up_type': 'cover',
                 \})
     let s:shape_obj = {}
+endfunction
+
+function! s:clear_all_cross_cache() abort
+    call vimio#scene#clear_cross_cache()
+    call vimio#cursors#clear_cursor_cross_cache()
+endfunction
+
+" :TODO: Currently, fonts can only be recognized in the GUI, not in the terminal.
+" It is up to the user to decide.
+function! vimio#ui#vimiomono_slash_mode_switch() abort
+    if &guifont !~? "vimio mono"
+        echo "The current font in use is not vimiomono."
+        return 1
+    endif
+
+    let g:vimio_vimiomono_super_slash_mode.index = 
+                \ (g:vimio_vimiomono_super_slash_mode.index + 1) % 
+                \ len(g:vimio_vimiomono_super_slash_mode.values)
+
+    call vimio#ui#cross_show_all_info()
+    call vimio#config#set_global_mode(g:vimio_vimiomono_super_slash_mode.index)
+
+    call s:clear_all_cross_cache()
 endfunction
 

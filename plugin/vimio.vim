@@ -300,7 +300,9 @@ if g:vimio_enable_default_mappings
     nnoremap <silent> sse :call vimio#ui#shapes_resize_end()<CR>
     " change type
     nnoremap <silent> sst :call vimio#ui#shapes_change_type()<CR>
-     
+
+    " vimiomono Super Slash Mode
+    nnoremap <silent> ssg :call vimio#ui#vimiomono_slash_mode_switch()<CR>
 
     " =====================================mouse===============================
     " Quickly insert shape in clip

@@ -34,11 +34,18 @@ let g:vimio_popup_all_popups = {}
 
 let g:vimio_hintline_enable = 0
 
+" It is disabled by default and will only activate when the 
+" corresponding font is included.
+" normal => thin unicode line
+let g:vimio_vimiomono_super_slash_mode = {"index": 0, "values": ['off', 'normal']}
+
 " global state: last_pos=[r,c]
 let g:vimio_state_select_shape_state = {
     \ 'last_pos': [-1, -1]
     \ }
 
+" scene cross cache
+let g:vimio_scene_cross_cache = {}
 
 function! vimio#state#draw_line_record_pre_pos()
     if exists("g:vimio_state_current_cursor_pos")

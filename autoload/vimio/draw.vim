@@ -58,8 +58,8 @@ function! vimio#draw#line_left_right(direction)
     if pre_index >= 0 && pre_index < len(line_chars_array)
         let pre_char = line_chars_array[index+(a:direction=='l'?-1:1)]
         if has_key(g:vimio_config_draw_cross_chars, pre_char)
-            for table_param in g:vimio_config_draw_normal_char_funcs_map
-                if call(table_param[1], [pre_up, pre_down, pre_left, pre_right, table_param[2]])
+            for table_param in g:vimio_config_draw_char_funcs_map
+                if call(table_param[1], [pre_up, pre_down, pre_left, pre_right, [''], [''], [''], [''], table_param[2]])
                     if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
                         let line_chars_array[pre_index] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
                     else
@@ -79,8 +79,8 @@ function! vimio#draw#line_left_right(direction)
     let down = [ get(down_line_chars_array, down_index, '') ]
 
     let entered_if = 0
-    for table_param in g:vimio_config_draw_normal_char_funcs_map
-        if call(table_param[1], [up, down, left, right, table_param[2]])
+    for table_param in g:vimio_config_draw_char_funcs_map
+        if call(table_param[1], [up, down, left, right, [''], [''], [''], [''], table_param[2]])
             if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
                 let line_chars_array[index] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
             else
@@ -210,8 +210,8 @@ function! vimio#draw#line_up_down(direction)
     if has_key(g:vimio_config_draw_cross_chars, pre_char)
 
         let entered_if = 0
-        for table_param in g:vimio_config_draw_normal_char_funcs_map
-            if call(table_param[1], [pre_up, pre_down, pre_left, pre_right, table_param[2]])
+        for table_param in g:vimio_config_draw_char_funcs_map
+            if call(table_param[1], [pre_up, pre_down, pre_left, pre_right, [''], [''], [''], [''], table_param[2]])
                 if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
                     let result_char = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
                 else
@@ -242,8 +242,8 @@ function! vimio#draw#line_up_down(direction)
     let right = [ get(line_chars_array, index+1, '') ]
 
     let entered_if = 0
-    for table_param in g:vimio_config_draw_normal_char_funcs_map
-        if call(table_param[1], [up, down, left, right, table_param[2]])
+    for table_param in g:vimio_config_draw_char_funcs_map
+        if call(table_param[1], [up, down, left, right, [''], [''], [''], [''], table_param[2]])
             if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
                 let line_chars_array[index] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
             else
