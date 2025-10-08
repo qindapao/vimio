@@ -28,8 +28,6 @@
 " - s:erase_original_batch(points,replace_char)
 " - vimio#cursors#replace_highlight_group_to_clip()
 
-let s:cursor_cross_cache = {}
-let s:cursor_delete_cross_cache = {}
 
 function! vimio#cursors#vhl_apply() abort
     if g:vimio_state_vhl_match_id !=# -1
@@ -390,11 +388,6 @@ endfunction
 "==============================================================================
 
 
-function! vimio#cursors#clear_cursor_cross_cache() abort
-    let s:cursor_cross_cache = {}
-    let s:cursor_delete_cross_cache = {}
-endfunction
-
 " Generate a rectangular text through several points.
 function! vimio#cursors#create_rectangle_string_only(points) abort
     " 1) Compute bounding box
@@ -449,18 +442,20 @@ endfunction
 " result:
 "   [['x', 5, 19], ['b', 4, 1]]
 function! s:UpdateListWithOverlay(list1, list2)
-    for item2 in a:list2
-        let char2 = item2[0]
-        let x2 = item2[1]
-        let y2 = item2[2]
-
-        for i in range(len(a:list1))
-            let item1 = a:list1[i]
-            if item1[1] == x2 && item1[2] == y2
-                let a:list1[i][0] = char2
-            endif
-        endfor
+    let coord_map = {}
+    for item in a:list2
+        let key = item[1] . ',' . item[2]
+        let coord_map[key] = item[0]
     endfor
+
+    for i in range(len(a:list1))
+        let item = a:list1[i]
+        let key = item[1] . ',' . item[2]
+        if has_key(coord_map, key)
+            let a:list1[i][0] = coord_map[key]
+        endif
+    endfor
+
     return a:list1
 endfunction
 
@@ -480,7 +475,6 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
     if g:vimio_state_paste_preview_cross_mode
         call vimio#scene#calculate_cross_points(
                     \ a:points,
-                    \ s:cursor_cross_cache,
                     \ g:vimio_config_draw_char_funcs_map,
                     \ g:vimio_config_draw_cross_styles,
                     \ g:vimio_state_cross_style_index,
@@ -498,12 +492,10 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
     if g:vimio_state_paste_preview_cross_mode
 
         let cross_points_after = []
-        let combined_table = g:vimio_config_draw_char_funcs_map + g:vimio_config_draw_delete_chars_funcs_map
         if a:delete_original
             call vimio#scene#calculate_cross_points(
                         \ cross_points,
-                        \ s:cursor_delete_cross_cache,
-                        \ combined_table,
+                        \ g:vimio_config_delete_char_funcs_map,
                         \ g:vimio_config_draw_cross_styles,
                         \ g:vimio_state_cross_style_index,
                         \ cross_points_after
@@ -524,8 +516,7 @@ function! vimio#cursors#create_rectangle_string(points, delete_original, replace
         let cross_preview = []
         call vimio#scene#calculate_cross_points(
                     \ cross_points,
-                    \ s:cursor_delete_cross_cache,
-                    \ combined_table,
+                    \ g:vimio_config_delete_char_funcs_map,
                     \ g:vimio_config_draw_cross_styles,
                     \ g:vimio_state_cross_style_index,
                     \ cross_preview,

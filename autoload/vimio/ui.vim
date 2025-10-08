@@ -195,7 +195,6 @@ function! vimio#ui#smart_line_cancel() abort
 endfunction
 
 function! vimio#ui#switch_cross_style()
-    call s:clear_all_cross_cache()
     let g:vimio_state_cross_style_index = (g:vimio_state_cross_style_index + 1) % len(g:vimio_config_draw_cross_styles)
     if len(g:vimio_drawline_multi_lines) >= 1 && g:vimio_drawline_multi_lines[0]['in_draw_context'] == v:true
         for line in g:vimio_drawline_multi_lines
@@ -256,7 +255,6 @@ function! vimio#ui#toggle_cross_mode_algorithm()
     else
         let g:vimio_config_cross_algorithm = 'multi'
     endif
-    call s:clear_all_cross_cache()
     call vimio#popup#update_cross_block()
     call vimio#ui#cross_show_all_info()
 endfunction
@@ -451,10 +449,6 @@ function! vimio#ui#shapes_resize_end() abort
     let s:shape_obj = {}
 endfunction
 
-function! s:clear_all_cross_cache() abort
-    call vimio#scene#clear_cross_cache()
-    call vimio#cursors#clear_cursor_cross_cache()
-endfunction
 
 " :TODO: Currently, fonts can only be recognized in the GUI, not in the terminal.
 " It is up to the user to decide.
@@ -470,7 +464,5 @@ function! vimio#ui#vimiomono_slash_mode_switch() abort
 
     call vimio#ui#cross_show_all_info()
     call vimio#config#set_global_mode(g:vimio_vimiomono_super_slash_mode.index)
-
-    call s:clear_all_cross_cache()
 endfunction
 

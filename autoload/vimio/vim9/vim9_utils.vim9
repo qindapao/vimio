@@ -89,7 +89,7 @@ def GetSparseIntersections(dict1: dict<string>, dict2: dict<string>): dict<list<
     var result: dict<list<string>> = {}
 
     for key in keys(dict1)
-        if has_key(dict2, key) && dict1[key] != ' '
+        if has_key(dict2, key) && dict1[key] !=# ' '
             result[key] = [dict1[key], dict2[key]]
         endif
     endfor
@@ -172,102 +172,6 @@ def GetEditorRect(pos: list<number>, width: number, height: number, isJustCrossC
     return result
 enddef
 
-def IsCrossPointCharsUnicodeAsciiNotMix(cross_chars: list<string>): bool
-    # This is somewhat special because the four ASCII arrow Unicode characters
-    # are also applicable, so they are not considered during the judgment. 
-    var ignored_chars = {'<': 1, '>': 1, '^': 1, 'v': 1}
-
-    var has_ascii = false
-    var has_unicode = false
-
-    for ch in cross_chars
-        if has_key(ignored_chars, ch)
-            continue
-        endif
-
-        if has_key(g:vimio_config_draw_ascii_cross_chars, ch)
-            has_ascii = true
-        else
-            has_unicode = true
-        endif
-
-        if has_ascii && has_unicode
-            return false
-        endif
-    endfor
-
-    return true
-enddef
-
-def GetCrossChars(cross_point: dict<list<string>>, all_chars: dict<list<string>>): dict<string>
-    var result: dict<string> = {}
-
-    for [key, cross_chars] in cross_point->items()
-        var [row, col] = key->split(',')->mapnew((_, v) => str2nr(v))
-
-        var left  = col > 1        ? get(all_chars, row .. ',' .. (col - 1), ['']) : ['']
-        var right =                get(all_chars, row .. ',' .. (col + 1), [''])
-        var up    = row > 1        ? get(all_chars, (row - 1) .. ',' .. col, ['']) : ['']
-        var down  =                get(all_chars, (row + 1) .. ',' .. col, [''])
-
-        var diag_45: list<string>
-        var diag_135: list<string>
-        var diag_225: list<string>
-        var diag_315: list<string>
-
-        if g:vimio_vimiomono_super_slash_mode.index != 0
-            diag_45  = row > 1             ? get(all_chars, (row - 1) .. ',' .. (col + 1), ['']) : ['']
-            diag_135 = row > 1 && col > 1  ? get(all_chars, (row - 1) .. ',' .. (col - 1), ['']) : ['']
-            diag_225 = col > 1             ? get(all_chars, (row + 1) .. ',' .. (col - 1), ['']) : ['']
-            diag_315 =                      get(all_chars, (row + 1) .. ',' .. (col + 1), [''])
-        else
-            diag_45  = ['']
-            diag_135 = ['']
-            diag_225 = ['']
-            diag_315 = ['']
-        endif
-
-        var cache_key = join(up, '') .. '='
-            .. join(down, '') .. '='
-            .. join(left, '') .. '='
-            .. join(right, '') .. '='
-            .. join(diag_45, '') .. '='
-            .. join(diag_135, '') .. '='
-            .. join(diag_225, '') .. '='
-            .. join(diag_315, '') .. '='
-            .. join(cross_chars, '')
-
-        if !has_key(g:vimio_scene_cross_cache, cache_key)
-            var is_cross_not_found = true
-
-            if IsCrossPointCharsUnicodeAsciiNotMix(cross_chars)
-                for table_param in g:vimio_config_draw_char_funcs_map
-                    if call(table_param[1], [up, down, left, right, diag_45, diag_135, diag_225, diag_315, table_param[2]])
-                        is_cross_not_found = false
-                        if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
-                            g:vimio_scene_cross_cache[cache_key] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
-                        else
-                            g:vimio_scene_cross_cache[cache_key] = table_param[0]
-                        endif
-                        break
-                    endif
-                endfor
-            endif
-
-            if is_cross_not_found
-                g:vimio_scene_cross_cache[cache_key] = ''
-            endif
-        endif
-
-        var cache_value = g:vimio_scene_cross_cache[cache_key]
-        if cache_value != ''
-            result[key] = cache_value
-        endif
-    endfor
-
-    return result
-enddef
-
 def GetRectTxtForSingleWidthChar(
         preview_text: list<list<any>>,
         cross_enable: bool,
@@ -342,8 +246,7 @@ def GetRectTxtForSingleWidthChar(
         # t3 = reltime()
         var cross_point = GetSparseIntersections(rect_cross_chars, editor_chars)
         # t4 = reltime()
-        # var cross_chars: dict<string> = vimio#scene#get_cross_chars(cross_point, all_chars)
-        var cross_chars = GetCrossChars(cross_point, all_chars)
+        var cross_chars: dict<string> = vimio#scene#get_cross_chars(cross_point, all_chars)
         # t5 = reltime()
 
         # call vimio#debug#log_obj("rect_cross_chars", rect_cross_chars, 4, '')

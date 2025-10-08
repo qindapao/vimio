@@ -5,166 +5,10 @@
 " connection point, etc., in a particular context.
 "
 " Contents:
-" - vimio#scene#unicode(up,down,left,right,char_category_indexs)
-" - vimio#scene#cross(up,down,left,right,char_category_indexs)
-" - vimio#scene#dot(up,down,left,right,char_category_indexs)
-" - vimio#scene#apostrophe(up,down,left,right,char_category_indexs)
 " - vimio#scene#get_cross_chars(cross_point,all_chars)
 " - vimio#scene#clear_cross_cache()
 
-
-function! s:check_direction(char_index, direction_map, direction_chars)
-    if has_key(a:direction_map, a:char_index)
-        if vimio#utils#chars_some_not_in(g:vimio_config_draw_cross_chars, a:direction_chars)
-            return 0
-        endif
-        if vimio#utils#chars_all_not_in(g:vimio_config_draw_unicode_cross_chars[a:char_index], a:direction_chars)
-            return 0
-        endif
-    endif
-    return 1
-endfunction
-
-function! vimio#scene#unicode(up, down, left, right, diag_45, diag_135, diag_225, diag_315, char_category_indexs)
-    for char_index in a:char_category_indexs
-        for [char_map, chars] in [
-                    \ [g:vimio_config_draw_index_map_left, a:left],
-                    \ [g:vimio_config_draw_index_map_right, a:right],
-                    \ [g:vimio_config_draw_index_map_up, a:up],
-                    \ [g:vimio_config_draw_index_map_down, a:down],
-                    \ [g:vimio_config_draw_index_map_diag_45, a:diag_45],
-                    \ [g:vimio_config_draw_index_map_diag_135, a:diag_135],
-                    \ [g:vimio_config_draw_index_map_diag_225, a:diag_225],
-                    \ [g:vimio_config_draw_index_map_diag_315, a:diag_315],
-                    \ ]
-            if ! s:check_direction(char_index, char_map, chars)
-                return 0
-            endif
-        endfor
-    endfor
-    return 1
-endfunction
-
-" Scenes suitable for drawing a plus sign
-function! vimio#scene#cross(up, down, left, right, diag_45, diag_135, diag_225, diag_315, char_category_indexs)
-    " Check whether the parameter is defined
-    if a:up == [''] || a:down == [''] || a:left == [''] || a:right == ['']
-        return 0
-    endif
-
-    " Dictionary defining valid characters
-    let valid_chars = {
-    \ 'up': {'|': 1, '.': 1, "'": 1, '+': 1, '^': 1, ')': 1},
-    \ 'down': {'|': 1, '.': 1, "'": 1, '+': 1, 'v': 1, ')': 1},
-    \ 'left': {'-': 1, '.': 1, "'": 1, '+': 1, '<': 1},
-    \ 'right': {'-': 1, '.': 1, "'": 1, '+': 1, '>': 1}
-    \ }
-
-    return vimio#utils#chars_any_in(valid_chars['up'], a:up)
-                \ && vimio#utils#chars_any_in(valid_chars['down'], a:down) 
-                \ && vimio#utils#chars_any_in(valid_chars['left'], a:left) 
-                \ && vimio#utils#chars_any_in(valid_chars['right'], a:right)
-endfunction
-
-" Drawing the scene of the point number
-" :TODO: Should the judgment regarding the use of "dot" and "apostrophe" be more lenient?
-function! vimio#scene#dot(up, down, left, right, diag_45, diag_135, diag_225, diag_315, char_category_indexs)
-    " Check whether the parameters are defined and meet the conditions.
-    if (index(a:up, '|') >= 0 || index(a:up, ')') >= 0 || index(a:up, '^') >= 0)
-        \ && (index(a:down, '|') >= 0 || index(a:down, ')') >= 0 || index(a:down, 'v') >= 0)
-        \ && (index(a:left, '-') >= 0 || index(a:left, '<') >= 0)
-        \ && (index(a:right, '-') >= 0 || index(a:right, '>') >= 0)
-        return 0
-    endif
-
-    " Check if the lower left or lower right satisfies the condition
-    return ((index(a:left, '-') >= 0 || index(a:left, '<') >= 0) && (index(a:down, '|') >= 0 || index(a:down, ')') >= 0 || index(a:down, 'v') >= 0)) ||
-            \ ((index(a:right, '-') >= 0 || index(a:right, '>') >= 0) && (index(a:down, '|') >= 0 || index(a:down, ')') >= 0 || index(a:down, 'v') >= 0))
-endfunction
-
-" Draw a scene with single quotes
-function! vimio#scene#apostrophe(up, down, left, right, diag_45, diag_135, diag_225, diag_315, char_category_indexs)
-    if (index(a:up, '|') >= 0 || index(a:up, ')') >= 0 || index(a:up, '^') >= 0)
-        \ && (index(a:right, '-') >= 0 || index(a:right, '>') >= 0)
-        \ && index(a:down, '|') < 0 && index(a:down, ')') < 0 && index(a:down, 'v') < 0
-        return 1
-    endif
-
-    return (index(a:up, '|') >= 0 || index(a:up, ')') >= 0 || index(a:up, '^') >= 0)
-        \ && (index(a:left, '-') >= 0 || index(a:left, '<') >= 0)
-        \ && !(
-        \   (index(a:down, '|') >= 0 || index(a:down, ')') >= 0 || index(a:down, 'v') >= 0)
-        \   || (index(a:right, '|') >= 0 || index(a:right, ')') >= 0 || index(a:right, '>') >= 0)
-        \ )
-endfunction
-
-" :TODO: chars ' and . is need to be considered ?
-function! vimio#scene#horizontal_line(up, down, left, right, diag_45, diag_135, diag_225, diag_315, char_category_indexs)
-    if (index(a:left, '-') >= 0 || index(a:left, '<') >=0 || index(a:left, '+') >= 0)
-        return 1
-    endif
-    if (index(a:right, '-') >= 0 || index(a:right, '>') >= 0 || index(a:right, '+') >= 0)
-        return 1
-    endif
-
-    return 0
-endfunction
-
-" :TODO: chars ' and . is need to be considered ?
-function! vimio#scene#vertical_line(up, down, left, right, diag_45, diag_135, diag_225, diag_315, char_category_indexs)
-    if (index(a:up, '|') >= 0 || index(a:up, '^') >= 0 || index(a:up, '+') >= 0)
-        return 1
-    endif
-    if (index(a:down, '|') >= 0 || index(a:down, 'v') >= 0 || index(a:down, '+') >= 0)
-        return 1
-    endif
-
-    return 0
-endfunction
-
-function! vimio#scene#thin_horizontal_dashed_line(up, down, left, right, diag_45, diag_135, diag_225, diag_315, char_category_indexs)
-    if index(a:left, '┄') >= 0
-        return 1
-    endif
-    if index(a:right, '┄') >= 0
-        return 1
-    endif
-
-    return 0
-endfunction
-
-function! vimio#scene#thin_vertical_dashed_line(up, down, left, right, diag_45, diag_135, diag_225, diag_315, char_category_indexs)
-    if index(a:up, '┆') >= 0
-        return 1
-    endif
-    if index(a:down, '┆') >= 0
-        return 1
-    endif
-
-    return 0
-endfunction
-
-function! vimio#scene#bold_horizontal_dashed_line(up, down, left, right, diag_45, diag_135, diag_225, diag_315, char_category_indexs)
-    if index(a:left, '┅') >= 0
-        return 1
-    endif
-    if index(a:right, '┅') >= 0
-        return 1
-    endif
-
-    return 0
-endfunction
-
-function! vimio#scene#bold_vertical_dashed_line(up, down, left, right, diag_45, diag_135, diag_225, diag_315, char_category_indexs)
-    if index(a:up, '┇') >= 0
-        return 1
-    endif
-    if index(a:down, '┇') >= 0
-        return 1
-    endif
-
-    return 0
-endfunction
+let s:empty_str_list = ['']
 
 function! s:ConvertPointsToMap(raw) abort
     let result = {}
@@ -186,100 +30,113 @@ function! s:ConvertPointsToMap(raw) abort
     return result
 endfunction
 
+function! vimio#scene#get_cross_chars_native(cross_point, all_chars) abort
+
+    let lib_path = vimio#utils#get_vimio_libs_path()
+    if !filereadable(lib_path)
+        " C lib file not exist，null need fallback
+        return v:null
+    endif
+
+    " let t1 = reltime()
+    let cross_json = json_encode(a:cross_point)
+    let all_json = json_encode(a:all_chars)
+    let mode = (g:vimio_vimiomono_super_slash_mode.index ==# 0)? '0' : '1'
+    let input = cross_json . "\n" . all_json . "\n" . mode
+
+    " let t2 = reltime()
+    let result_json = libcall(lib_path, 'vimio_get_cross_chars', input)
+    " let t3 = reltime()
+    let json_str = json_decode(result_json)
+    " let t4 = reltime()
+    " let key_count = len(keys(json_str))
+
+    " call vimio#debug#log("cnt: %d, encode time:%.2f, native time:%.2f, decode time:%.2f", 
+    "             \ key_count,
+    "             \ vimio#debug#time_ms(t1, t2),
+    "             \ vimio#debug#time_ms(t2, t3),
+    "             \ vimio#debug#time_ms(t3, t4))
+    return json_str
+endfunction
 
 function! vimio#scene#get_cross_chars(cross_point, all_chars) abort
-    let result = {}
+    " let t1 = reltime()
+    let result = vimio#scene#get_cross_chars_native(a:cross_point, a:all_chars)
+    " let t2 = reltime()
 
+    if result !=# v:null
+        for [key, center_char] in items(result)
+            if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], center_char)
+                let result[key] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][center_char]
+            endif
+        endfor
+
+        " let t3 = reltime()
+        " call vimio#debug#log(
+        "             \ "take time:%.2f, style time:%.2f", 
+        "             \ vimio#debug#time_ms(t1, t2), vimio#debug#time_ms(t2, t3))
+        return result
+    endif
+
+
+    let result = {}
+    " let t4 = reltime()
     for [key, cross_chars] in items(a:cross_point)
-        let [row, col] = map(split(key, ','), 'str2nr(v:val)')
+        " If there are characters in cross_chars that are not part of the cross
+        " character set, exit directly without further judgment.
+        let skip_this = 0
+        for ch in cross_chars
+            if !has_key(g:vimio_config_draw_cross_chars, ch)
+                let skip_this = 1
+                break
+            endif
+        endfor
+
+        if skip_this
+            continue
+        endif
+
+        " 这是更优雅的写法
+        " let [row, col] = map(split(key, ','), 'str2nr(v:val)')
+        " 这是更快的写法
+        let comma = stridx(key, ',')
+        let row = str2nr(strpart(key, 0, comma))
+        let col = str2nr(strpart(key, comma + 1))
 
         "     col
         " row  x
-        let left = (col>1) ? get(a:all_chars, row . ',' . (col-1), ['']) : ['']
-        let right  = get(a:all_chars, row. ',' . (col+1), [''])
-        let up = (row>1) ? get(a:all_chars, (row-1) . ',' . col, ['']) : ['']
-        let down = get(a:all_chars, (row+1) . ',' . col, [''])
+        let left = (col>1) ? get(a:all_chars, row . ',' . (col-1), s:empty_str_list) : s:empty_str_list
+        let right  = get(a:all_chars, row. ',' . (col+1), s:empty_str_list)
+        let up = (row>1) ? get(a:all_chars, (row-1) . ',' . col, s:empty_str_list) : s:empty_str_list
+        let down = get(a:all_chars, (row+1) . ',' . col, s:empty_str_list)
         if g:vimio_vimiomono_super_slash_mode.index != 0
-            let diag_45   = (row > 1)             ? get(a:all_chars, (row - 1) . ',' . (col + 1), ['']) : ['']
-            let diag_135  = (row > 1 && col > 1)  ? get(a:all_chars, (row - 1) . ',' . (col - 1), ['']) : ['']
-            let diag_225  = (col > 1)             ? get(a:all_chars, (row + 1) . ',' . (col - 1), ['']) : ['']
-            let diag_315  = get(a:all_chars, (row + 1) . ',' . (col + 1), [''])
+            let diag_45   = (row > 1)             ? get(a:all_chars, (row - 1) . ',' . (col + 1), s:empty_str_list) : s:empty_str_list
+            let diag_135  = (row > 1 && col > 1)  ? get(a:all_chars, (row - 1) . ',' . (col - 1), s:empty_str_list) : s:empty_str_list
+            let diag_225  = (col > 1)             ? get(a:all_chars, (row + 1) . ',' . (col - 1), s:empty_str_list) : s:empty_str_list
+            let diag_315  = get(a:all_chars, (row + 1) . ',' . (col + 1), s:empty_str_list)
         else
-            let diag_45 = ['']
-            let diag_135 = ['']
-            let diag_225 = ['']
-            let diag_315 = ['']
+            let diag_45 = s:empty_str_list
+            let diag_135 = s:empty_str_list
+            let diag_225 = s:empty_str_list
+            let diag_315 = s:empty_str_list
         endif
 
-        let cache_key = join(up, '') . '=' 
-                    \ . join(down, '') . '=' 
-                    \ . join(left, '') . '=' 
-                    \ . join(right, '') . '=' 
-                    \ . join(diag_45, '') . '=' 
-                    \ . join(diag_135, '') . '=' 
-                    \ . join(diag_225, '') . '=' 
-                    \ . join(diag_315, '') . '=' 
-                    \ . join(cross_chars, '')
-        if !has_key(g:vimio_scene_cross_cache, cache_key)
-            let is_cross_not_found = v:true
-
-            if s:is_cross_point_chars_unicode_ascii_not_mix(cross_chars)
-                for table_param in g:vimio_config_draw_char_funcs_map
-                    if call(table_param[1], [up, down, left, right, diag_45, diag_135, diag_225, diag_315, table_param[2]])
-                        let is_cross_not_found = v:false
-                        if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
-                            let g:vimio_scene_cross_cache[cache_key] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
-                        else
-                            let g:vimio_scene_cross_cache[cache_key] = table_param[0]
-                        endif
-                        break
-                    endif
-                endfor
+        let center_char = vimio#config#multi_cross_get_center_char(right, diag_45, up, diag_135, left, diag_225, down, diag_315, g:vimio_config_draw_char_funcs_map)
+        if center_char !=# ''
+            if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], center_char)
+                let result[key] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][center_char]
+            else
+                let result[key] = center_char
             endif
-
-            if is_cross_not_found
-                let g:vimio_scene_cross_cache[cache_key] = ''
-            endif
-
-        endif
-
-        let cache_value = g:vimio_scene_cross_cache[cache_key]
-        if cache_value != ''
-            let result[key] = cache_value
         endif
     endfor
+
+    " let t5 = reltime()
+    " call vimio#debug#log(
+    "             \ "new take time:%.2f old take time:%.2f", 
+    "             \ vimio#debug#time_ms(t1, t3), vimio#debug#time_ms(t4, t5))
 
     return result
-endfunction
-
-function! vimio#scene#clear_cross_cache() abort
-    let g:vimio_scene_cross_cache = {}
-endfunction
-
-function! s:is_cross_point_chars_unicode_ascii_not_mix(cross_chars) abort
-    "This is somewhat special because the four ASCII arrow Unicode characters
-    "are also applicable, so they are not considered during the judgment. 
-    let ignored_chars = {'<': 1, '>': 1, '^': 1, 'v': 1}
-
-
-    let has_ascii    = v:false
-    let has_unicode  = v:false
-    for ch in a:cross_chars
-        if has_key(ignored_chars, ch)
-            continue
-        endif
-        if has_key(g:vimio_config_draw_ascii_cross_chars, ch)
-            let has_ascii = v:true
-        else
-            let has_unicode = v:true
-        endif
-
-        if has_ascii && has_unicode
-            return v:false
-        endif
-    endfor
-
-    return v:true
 endfunction
 
 function! s:GetSafeCell(cache, row, col) abort
@@ -290,7 +147,7 @@ function! s:GetSafeCell(cache, row, col) abort
     endtry
 endfunction
 
-function! vimio#scene#calculate_cross_points(points, cache_ref, cache_table, cross_style_table, cross_style_index, result_ref, ...) abort
+function! vimio#scene#calculate_cross_points(points, cache_table, cross_style_table, cross_style_index, result_ref, ...) abort
     let is_row_cache_already = v:false
     if a:0 >= 1
         let is_row_cache_already = v:true
@@ -335,36 +192,18 @@ function! vimio#scene#calculate_cross_points(points, cache_ref, cache_table, cro
             let diag_225 = [s:GetSafeCell(row_chars_cache, point[1]+1, point[2]-1)]
             let diag_315 = [s:GetSafeCell(row_chars_cache, point[1]+1, point[2]+1)]
         else
-            let diag_45 = ['']
-            let diag_135 = ['']
-            let diag_225 = ['']
-            let diag_315 = ['']
+            let diag_45 = s:empty_str_list
+            let diag_135 = s:empty_str_list
+            let diag_225 = s:empty_str_list
+            let diag_315 = s:empty_str_list
         endif
 
-        let cache_key = up[0] . '=' . down[0] . '=' . left[0] . '=' . right[0] . '=' . diag_45[0] . '=' . diag_135[0] . '=' . diag_225[0] . '=' . diag_315[0]
-
-        " If it already exists in the cache, skip it.
-        if !has_key(a:cache_ref, cache_key)
-            let is_cross_not_found = v:true
-
-            for table_param in a:cache_table
-                if call(table_param[1], [up, down, left, right, diag_45, diag_135, diag_225, diag_315, table_param[2]])
-                    let is_cross_not_found = v:false
-                    let result = has_key(a:cross_style_table[a:cross_style_index], table_param[0]) ?
-                                \ a:cross_style_table[a:cross_style_index][table_param[0]] :
-                                \ table_param[0]
-                    let a:cache_ref[cache_key] = result
-                    break
-                endif
-            endfor
-
-            if is_cross_not_found
-                let a:cache_ref[cache_key] = ''
-            endif
-        endif
-
-        if a:cache_ref[cache_key] !=# ''
-            call add(a:result_ref, [a:cache_ref[cache_key], point[1], point[2]])
+        let center_char = vimio#config#multi_cross_get_center_char(right, diag_45, up, diag_135, left, diag_225, down, diag_315, a:cache_table)
+        if center_char !=# ''
+            let result = has_key(a:cross_style_table[a:cross_style_index], center_char) ?
+                        \ a:cross_style_table[a:cross_style_index][center_char] :
+                        \ center_char
+            call add(a:result_ref, [result, point[1], point[2]])
         endif
     endfor
 endfunction

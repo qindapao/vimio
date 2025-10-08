@@ -44,9 +44,6 @@ let g:vimio_state_select_shape_state = {
     \ 'last_pos': [-1, -1]
     \ }
 
-" scene cross cache
-let g:vimio_scene_cross_cache = {}
-
 function! vimio#state#draw_line_record_pre_pos()
     if exists("g:vimio_state_current_cursor_pos")
         let g:vimio_state_prev_cursor_pos = copy(g:vimio_state_current_cursor_pos)

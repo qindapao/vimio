@@ -58,17 +58,15 @@ function! vimio#draw#line_left_right(direction)
     if pre_index >= 0 && pre_index < len(line_chars_array)
         let pre_char = line_chars_array[index+(a:direction=='l'?-1:1)]
         if has_key(g:vimio_config_draw_cross_chars, pre_char)
-            for table_param in g:vimio_config_draw_char_funcs_map
-                if call(table_param[1], [pre_up, pre_down, pre_left, pre_right, [''], [''], [''], [''], table_param[2]])
-                    if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
-                        let line_chars_array[pre_index] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
-                    else
-                        let line_chars_array[pre_index] = table_param[0]
-                    endif
-                    call vimio#utils#set_line_str(line_chars_array, row, row, col)
-                    break
+            let center_char = vimio#config#multi_cross_get_center_char(pre_right, [''], pre_up, [''], pre_left, [''], pre_down, [''], g:vimio_config_draw_char_funcs_map)
+            if center_char !=# ''
+                if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], center_char)
+                    let line_chars_array[pre_index] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][center_char]
+                else
+                    let line_chars_array[pre_index] = center_char
                 endif
-            endfor
+                call vimio#utils#set_line_str(line_chars_array, row, row, col)
+            endif
         endif
     endif
 
@@ -79,17 +77,15 @@ function! vimio#draw#line_left_right(direction)
     let down = [ get(down_line_chars_array, down_index, '') ]
 
     let entered_if = 0
-    for table_param in g:vimio_config_draw_char_funcs_map
-        if call(table_param[1], [up, down, left, right, [''], [''], [''], [''], table_param[2]])
-            if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
-                let line_chars_array[index] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
-            else
-                let line_chars_array[index] = table_param[0]
-            endif
-            let entered_if = 1
-            break
+    let center_char = vimio#config#multi_cross_get_center_char(right, [''], up, [''], left, [''], down, [''], g:vimio_config_draw_char_funcs_map)
+    if center_char !=# ''
+        if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], center_char)
+            let line_chars_array[index] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][center_char]
+        else
+            let line_chars_array[index] = center_char
         endif
-    endfor
+        let entered_if = 1
+    endif
 
     if entered_if == 0
         let line_chars_array[index] = g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index][0]
@@ -210,17 +206,15 @@ function! vimio#draw#line_up_down(direction)
     if has_key(g:vimio_config_draw_cross_chars, pre_char)
 
         let entered_if = 0
-        for table_param in g:vimio_config_draw_char_funcs_map
-            if call(table_param[1], [pre_up, pre_down, pre_left, pre_right, [''], [''], [''], [''], table_param[2]])
-                if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
-                    let result_char = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
-                else
-                    let result_char = table_param[0]
-                endif
-                let entered_if = 1
-                break
+        let center_char = vimio#config#multi_cross_get_center_char(pre_right, [''], pre_up, [''], pre_left, [''], pre_down, [''], g:vimio_config_draw_char_funcs_map)
+        if center_char !=# ''
+            if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], center_char)
+                let result_char = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][center_char]
+            else
+                let result_char = center_char
             endif
-        endfor
+            let entered_if = 1
+        endif
 
         if entered_if == 1
             if a:direction == 'j'
@@ -242,17 +236,15 @@ function! vimio#draw#line_up_down(direction)
     let right = [ get(line_chars_array, index+1, '') ]
 
     let entered_if = 0
-    for table_param in g:vimio_config_draw_char_funcs_map
-        if call(table_param[1], [up, down, left, right, [''], [''], [''], [''], table_param[2]])
-            if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], table_param[0])
-                let line_chars_array[index] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][table_param[0]]
-            else
-                let line_chars_array[index] = table_param[0]
-            endif
-            let entered_if = 1
-            break
+    let center_char = vimio#config#multi_cross_get_center_char(right, '', up, '', left, '', down, '', g:vimio_config_draw_char_funcs_map)
+    if center_char != ''
+        if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], center_char)
+            let line_chars_array[index] = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][center_char]
+        else
+            let line_chars_array[index] = center_char
         endif
-    endfor
+        let entered_if = 1
+    endif
 
     if entered_if == 0
         let line_chars_array[index] = g:vimio_config_draw_line_styles[g:vimio_state_draw_line_index][1]
