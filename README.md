@@ -45,6 +45,12 @@ With this plugin, you can draw:
                  └─────────────────────────────┘                   └─────────┘
 ```
 
+**here are two demos:**
+
+![demo_1](pics/demo_1.gif)
+
+![demo_2](pics/demo_2.gif)
+
 ---
 
 ## Features
