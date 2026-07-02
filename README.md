@@ -3,11 +3,11 @@
 Vimio is a lightweight Vim plugin for drawing text-based diagrams—such as flowcharts, architecture sketches, and layout mockups—using only ASCII and Unicode characters, directly in your editor.
 
 ```
-                __     __  _               _ 
-                \ \   / / (_)  _ __ ___   (_)   ___  
-                 \ \ / /  | | | '_ ` _ \  | |  / _ \ 
-                  \ V /   | | | | | | | | | | | (_) |       
-                   \_/    |_| |_| |_| |_| |_|  \___/        
+                __     __  _               _
+                \ \   / / (_)  _ __ ___   (_)   ___
+                 \ \ / /  | | | '_ ` _ \  | |  / _ \
+                  \ V /   | | | | | | | | | | | (_) |
+                   \_/    |_| |_| |_| |_| |_|  \___/
 ```
 
 Inspired by [Asciio](https://github.com/nkh/P5-App-Asciio) by Nadim Khemir.
@@ -130,10 +130,10 @@ Then place your custom template files in the directory you specified (g:vimio_cu
 
 ⚠️ Important: Please avoid using the following file names in your custom templates, as they are reserved by the plugin and may cause conflicts:
 
-basic.vim  
-figlet.vim  
-led.vim  
-animal.vim  
+basic.vim
+figlet.vim
+led.vim
+animal.vim
 
 Use unique names like my_animal.vim, custom_led.vim, etc., to ensure compatibility.
 
@@ -197,9 +197,9 @@ Switch to Unicode box-drawing:
 Insert a cat from the shape library:
 
 ```
- /\_/\  
-( o.o ) 
- > ^ <  
+ /\_/\
+( o.o )
+ > ^ <
 ```
 
 ---

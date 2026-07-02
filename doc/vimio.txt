@@ -2359,7 +2359,9 @@ Let’s first talk about all the operation sets, and then give some examples.
 |                               8 direction                                    |
 |             `<leader>am8`     (Maximum Cycle)border and border inside select |
 |                               8 direction                                    |
-|             `<leader>lb`      box selection based on penetration lines       |
+|             `<leader>lba`     box selection all based on penetration line    |
+|             `<leader>lbi`     box selection inside border based on           |
+|                               penetration lines                              |
 |             `<leader>sos`     extract outgoing spokes inside in 4 direction  |
 |             `<leader>sod`     extract outgoing spokes inside in 8 direction  |
 |             `<leader>r4`      select all related in 4 direction              |
