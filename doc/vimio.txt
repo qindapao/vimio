@@ -1014,7 +1014,7 @@ replacement mode, which is what we call free mode.
 5.2. Big eraser                                            *vimio-big-eraser*
 
 The big eraser is a native feature of vim. The method is to select a 
-rectangular area in visual block mode, then press `S-R`, and then enter a space.
+rectangular area in visual block mode, then press `r`, and then enter a space.
 This replaces the entire rectangular block with spaces, achieving the purpose 
 of deletion.
 
@@ -2261,7 +2261,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `sst`            shape change border type                       |
 .------------------------------------------------------------------------------.
 | Eraser       `C-M-l/h/j/k`    Little eraser                                  |
-|              `S-R`            (visual block)global replace,Entering a space  |
+|              `r`              (visual block)global replace,Entering a space  |
 |                                will delete                                   |
 .------------------------------------------------------------------------------.
 | Copy         `xy`             (visual block)copy to clip                     |
