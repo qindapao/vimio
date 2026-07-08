@@ -264,83 +264,98 @@ function! vimio#draw#line_up_down(direction)
 endfunction
 
 function! vimio#draw#traverse_rectangle()
-    " Get the start and end positions of the selected visual block
-    let [line_start, col_start] = [g:vimio_state_initial_pos_before_enter_visual[0], g:vimio_state_initial_pos_before_enter_visual[1]]
+    " 直接使用视觉选择标记获取真实起始和结束位置
+    let line_start = line("'<")
+    let col_start = virtcol("'<")
+    let line_end = line("'>")
+    let col_end = virtcol("'>")
     
-    let line_left = line("'<")
-    let line_right = line("'>")
-    let line_end = (line_left==line_start)?line_right:line_left
-
-    let col_left= virtcol("'<")
-    let col_right = virtcol("'>")
-    let col_end = (col_left==col_start)?col_right:col_left
-
+    " 保存原始的起始位置（用于最后恢复光标）
+    let orig_line_start = line_start
+    let orig_col_start = col_start
+    
+    " 标准化坐标：确保起始位置在左上角（用于绘制矩形框）
+    if line_start > line_end || (line_start == line_end && col_start > col_end)
+        let [line_start, line_end] = [line_end, line_start]
+        let [col_start, col_end] = [col_end, col_start]
+    endif
+    
+    " 将光标移动到起始位置（转换为字节偏移）
     let [start_chars_arr, start_index] = vimio#utils#get_line_cells(line_start, col_start)
     let col_byte_start = len(join(start_chars_arr[0:start_index], ''))
     call cursor(line_start, col_byte_start)
-
-    " Downward
-    if col_start == col_end && line_start < line_end
-        for col in range(line_start, line_end - 1)
-            call vimio#draw#line_up_down('j')
-        endfor
-        call vimio#draw#line_up_down('k')
-        call vimio#draw#line_up_down('j')
-    " Upward
-    elseif col_start == col_end && line_start > line_end
-        for col in range(line_end, line_start - 1)
-            call vimio#draw#line_up_down('k')
-        endfor
-        call vimio#draw#line_up_down('j')
-        call vimio#draw#line_up_down('k')
-    " Turn right
-    elseif line_start == line_end && col_start < col_end
-        for col in range(col_start, col_end - 2)
-            call vimio#draw#line_left_right('l')
-        endfor
-        call vimio#draw#line_left_right('h')
-        call vimio#draw#line_left_right('l')
-    " Turn left
-    elseif line_start == line_end && col_start > col_end
-        for col in range(col_end, col_start - 2)
+    
+    " 根据选择的形状绘制
+    if line_start == line_end
+        " === 水平线 ===
+        if col_start < col_end
+            for col in range(col_start, col_end - 2)
+                call vimio#draw#line_left_right('l')
+            endfor
             call vimio#draw#line_left_right('h')
-        endfor
-        call vimio#draw#line_left_right('l')
-        call vimio#draw#line_left_right('h')
-    " Rectangle to the right
-    elseif line_start < line_end && col_start < col_end
-        " Right bottom left top
-        for col in range(col_start, col_end - 2)
             call vimio#draw#line_left_right('l')
-        endfor
-        for col in range(line_start, line_end - 1)
-            call vimio#draw#line_up_down('j')
-        endfor
-        for col in range(col_start, col_end - 2)
+        else
+            for col in range(col_end, col_start - 2)
+                call vimio#draw#line_left_right('h')
+            endfor
+            call vimio#draw#line_left_right('l')
             call vimio#draw#line_left_right('h')
-        endfor
-        for col in range(line_start, line_end - 1)
+        endif
+        
+    elseif col_start == col_end
+        " === 垂直线 ===
+        if line_start < line_end
+            for col in range(line_start, line_end - 1)
+                call vimio#draw#line_up_down('j')
+            endfor
             call vimio#draw#line_up_down('k')
-        endfor
-        call vimio#draw#line_left_right('l')
-        call vimio#draw#line_left_right('h')
+            call vimio#draw#line_up_down('j')
+        else
+            for col in range(line_end, line_start - 1)
+                call vimio#draw#line_up_down('k')
+            endfor
+            call vimio#draw#line_up_down('j')
+            call vimio#draw#line_up_down('k')
+        endif
+        
     else
-        " Left top, right bottom
-        for col in range(col_end, col_start - 2)
-            call vimio#draw#line_left_right('h')
-        endfor
-        for col in range(line_end, line_start - 1)
-            call vimio#draw#line_up_down('k')
-        endfor
-        for col in range(col_end, col_start - 2)
+        " === 矩形框 ===
+        " 绘制上边
+        for col in range(col_start, col_end - 2)
             call vimio#draw#line_left_right('l')
         endfor
-        for col in range(line_end, line_start - 1)
+        
+        " 绘制右边
+        for col in range(line_start, line_end - 1)
             call vimio#draw#line_up_down('j')
         endfor
-        call vimio#draw#line_left_right('h')
+        
+        " 绘制下边
+        for col in range(col_start, col_end - 2)
+            call vimio#draw#line_left_right('h')
+        endfor
+        
+        " 绘制左边
+        for col in range(line_start, line_end - 1)
+            call vimio#draw#line_up_down('k')
+        endfor
+        
+        " 回到起点补画左上角
         call vimio#draw#line_left_right('l')
+        call vimio#draw#line_left_right('h')
     endif
+    
+    " === 关键修复：统一将光标移回左上角 ===
+    " 使用原始标记 '< 获取左上角位置
+    let final_line = line("'<")
+    let final_col = virtcol("'<")
+    
+    " 如果是矩形框，确保光标在左上角
+    " 如果是水平线，光标在线段起点
+    " 如果是垂直线，光标在线段起点
+    let [final_chars_arr, final_index] = vimio#utils#get_line_cells(final_line, final_col)
+    let final_col_byte = len(join(final_chars_arr[0:final_index], ''))
+    call cursor(final_line, final_col_byte)
 endfunction
 
 " :TODO: If a more suitable connecting character is found in the future, the 
