@@ -1523,8 +1523,8 @@ let g:vimio_config_draw_line_styles_class = [
 
 " Which looks better here, the Unicode slash or the ASCII slash?
 let g:vimio_config_draw_diagonal_line_styles_class = [
-            \ [['/', '\'], ['/', '\'], ['/', '\'], ['/', '\'], ['/', '\'], ['/', '\']],
-            \ [['/', '\'], ['/', '\'], ['/', '\'], ['/', '\'], ['/', '\'], ['/', '\']],
+            \ [['/', '\'], ['╱', '╲'], ['╱', '╲'], ['╱', '╲'], ['╱', '╲'], ['╱', '╲']],
+            \ [['/', '\'], ['╱', '╲'], ['╱', '╲'], ['╱', '╲'], ['╱', '╲'], ['╱', '╲']],
             \ ]
 " The index here correspond one-to-one with those above.
 let g:vimio_config_line_and_box_corner_chars_class = [
