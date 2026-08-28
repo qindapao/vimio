@@ -41,7 +41,7 @@ function! vimio#scene#get_cross_chars_native(cross_point, all_chars) abort
     " let t1 = reltime()
     let cross_json = json_encode(a:cross_point)
     let all_json = json_encode(a:all_chars)
-    let mode = (g:vimio_vimiomono_super_slash_mode.index ==# 0)? '0' : '1'
+    let mode = g:vimio_vimiomono_super_slash_mode.index
     let input = cross_json . "\n" . all_json . "\n" . mode
 
     " let t2 = reltime()
