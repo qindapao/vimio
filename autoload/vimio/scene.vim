@@ -28,9 +28,9 @@ function! s:ConvertPointsToMap(raw) abort
 endfunction
 
 let s:cached_libvimio_path = ''
-" -1 未探测
-"  0 探测不可用
-"  1 已探测可用
+" -1 Not detected
+"  0 Detected and not available
+"  1 Detected and available
 let s:is_libvimio_valid = -1
 function! vimio#scene#get_cross_chars_native(cross_point, all_chars) abort
 
