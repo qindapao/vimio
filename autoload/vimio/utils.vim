@@ -888,19 +888,16 @@ function! vimio#utils#clean_lines(lines) abort
     return cleaned
 endfunction
 
-let s:vimio_cached_lib_path = ''
 function! vimio#utils#get_vimio_libs_path() abort
-    if empty(s:vimio_cached_lib_path)
-        let plugin_root = vimio#utils#get_plugin_root()
-        if has('win32') || has('win64')
-            let s:vimio_cached_lib_path = plugin_root . '/libs/libvimio.dll'
-        elseif has('mac')
-            let s:vimio_cached_lib_path = plugin_root . '/libs/libvimio.dylib'
-        else
-            let s:vimio_cached_lib_path = plugin_root . '/libs/libvimio.so'
-        endif
+    let plugin_root = vimio#utils#get_plugin_root()
+    if has('win32') || has('win64')
+        let l:vimio_cached_lib_path = plugin_root . '/libs/libvimio.dll'
+    elseif has('mac')
+        let l:vimio_cached_lib_path = plugin_root . '/libs/libvimio.dylib'
+    else
+        let l:vimio_cached_lib_path = plugin_root . '/libs/libvimio.so'
     endif
 
-    return s:vimio_cached_lib_path
+    return l:vimio_cached_lib_path
 endfunction
 

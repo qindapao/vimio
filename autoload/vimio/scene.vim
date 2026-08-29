@@ -27,11 +27,19 @@ function! s:ConvertPointsToMap(raw) abort
     return result
 endfunction
 
+let s:cached_libvimio_path = ''
+" -1 未探测
+"  0 探测不可用
+"  1 已探测可用
+let s:is_libvimio_valid = -1
 function! vimio#scene#get_cross_chars_native(cross_point, all_chars) abort
 
-    let lib_path = vimio#utils#get_vimio_libs_path()
-    if !filereadable(lib_path)
-        " C lib file not exist，null need fallback
+    if s:is_libvimio_valid == -1
+        let s:cached_libvimio_path = vimio#utils#get_vimio_libs_path()
+        let s:is_libvimio_valid = filereadable(s:cached_libvimio_path) ? 1 : 0
+    endif
+
+    if !s:is_libvimio_valid
         return v:null
     endif
 
@@ -42,7 +50,7 @@ function! vimio#scene#get_cross_chars_native(cross_point, all_chars) abort
     let input = cross_json . "\n" . all_json . "\n" . mode
 
     " let t2 = reltime()
-    let result_json = libcall(lib_path, 'vimio_get_cross_chars', input)
+    let result_json = libcall(s:cached_libvimio_path, 'vimio_get_cross_chars', input)
     " let t3 = reltime()
     let json_str = json_decode(result_json)
     " let t4 = reltime()
