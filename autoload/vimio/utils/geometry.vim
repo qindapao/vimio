@@ -2,10 +2,6 @@
 " ----------------
 " Geometric figure recognition
 "
-" Contents:
-" - vimio#utils#geometry#points_to_matrix(points)
-" - vimio#utils#geometry#get_bounds(points)
-" - vimio#utils#geometry#is_rect(matrix,bounds)
 
 " ['a', row, col, -1]
 function! vimio#utils#geometry#points_to_matrix(points) abort

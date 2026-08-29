@@ -4,15 +4,6 @@
 " Used to switch graphic sets, graphic indexes, load template files, and call 
 " graphic generation functions.
 "
-" Contents:
-" - vimio#stencil#switch_lev1_index(direction)
-" - vimio#stencil#switch_lev2_index(direction)
-" - vimio#stencil#update_lev2_info()
-" - vimio#stencil#load_and_use_custom_drawset_funcs(func_name,indexes,index,file_name)
-" - vimio#stencil#switch_define_graph_set(is_show)
-" - vimio#stencil#get_default_graph_functions()
-" - vimio#stencil#get_all_graph_functions()
-" - vimio#stencil#cleanup_shape_subfuncs()
 
 let s:vimio_stencil_graph_set_popup = v:null
 let s:vimio_stencil_key_buffer = ''
@@ -180,7 +171,7 @@ endfunction
 
 function! vimio#stencil#get_default_graph_functions() abort
   return [
-        \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0], [60, 0], [600, 0], [600, 0], [20, 0], [20, 0], [600, 0], 0, [40, 0], 0, 0, 0], 0, 'basic.vim'],
+        \ ['Vimio__DefineSmartDrawShapesBasic', [0, [60, 0], [60, 0], [60, 0], [60, 0], [600, 0], [600, 0], [20, 0], [20, 0], [600, 0], 0, [40, 0], 0, 0, 0, 0], 0, 'basic.vim'],
         \ ['Vimio__DefineSmartDrawShapesFiglet', [0, 0, 0, 0, 0, 0], 0, 'figlet.vim'],
         \ ['Vimio__DefineSmartDrawShapesLed', [0], 0, 'led.vim'],
         \ ['Vimio__DefineSmartDrawShapesanimal', [0], 0, 'animal.vim'],

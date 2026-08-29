@@ -3,8 +3,6 @@
 " Identify specific graphics based on points
 "
 "
-" Contents:
-" - vimio#shapes#detect#from_points(points,is_space_strip)
 
 
 " ['a', row, col, -1]

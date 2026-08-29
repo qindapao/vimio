@@ -912,8 +912,8 @@ EOF
  '-'  ' '---''.' \__/ ) )( ( | /\ |
                      /_/  \_\|/  \|
                              '    '
-  8      9    10  11  12 13  14
-.    .  .-.  ╭───┐.    ●  █  ◥
+  8      9    10  11  12 13  14 15
+.    .  .-.  ╭───┐.    ●  █  ◥  
 |\  /| /   \ │ █ │|\ 
 | \/ |(     )└───┘'-'
  \  /  \   / 
@@ -939,6 +939,12 @@ EOF
 ▫ ◖ ◗ ▪ ◤ ◥ ◢ ◣
 EOF
 
+    let l:snapshot_1_fragment =<< EOF
+0  1  2  3  4  5  6  7  8  9
+╴  ╵  ╶  ╷  ╸  ╹  ╺  ╻    
+10 11 12 13 14 15 16 17 18 19
+                  
+EOF
 
 let g:vimio_state_shapes_sub_funcs = [
     \ 'Vimio__GenerateLeftRightTriangle',
@@ -1053,6 +1059,14 @@ let vimio_config_shapes = {'set_index': a:index, 'stencil_set_name': 'basic', 's
     \ 'name': 'marks',
     \ 'value': [ ['▫'], ['◖'], ['◗'], ['▪'], ['◤'], ['◥'], ['◢'], ['◣'] ],
     \ 'snapshot': join(l:snapshot_marks, "\n"),
+    \ },
+    \ {
+    \ 'index': a:indexes[15],
+    \ 'step': [1, 1],
+    \ 'name': 'draw_1_fragment',
+    \ 'value': [ ['╴'],  ['╵'],  ['╶'],  ['╷'],  ['╸'],  ['╹'],  ['╺'],  ['╻'],  [''],  [''],
+    \            [''],  [''],  [''],  [''],  [''],  [''],  [''],  [''],  [''],  [''] ],
+    \ 'snapshot': join(l:snapshot_1_fragment, "\n"),
     \ },
     \ ],
     \ }

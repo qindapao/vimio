@@ -5,8 +5,6 @@
 " Develop based on the following code.
 " https://github.com/nkh/P5-App-Asciio/blob/main/lib/App/Asciio/stripes/stripes.pm
 "
-" Contents:
-" - vimio#shapes#shapes#new(element_definition)
 
 let s:shapes_template = {
             \ 'NAME': 'shape',

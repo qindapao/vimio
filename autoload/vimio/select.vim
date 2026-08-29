@@ -1,7 +1,6 @@
 " autoload/vimio/select.vim
 " -----------------
 "
-" Contents:
 
 " Line character buffer
 let s:row_cache = {}

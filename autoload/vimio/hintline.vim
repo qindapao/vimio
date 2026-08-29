@@ -3,12 +3,6 @@
 " Preview the graphic's guideline to facilitate users in easily identifying
 " the boundaries of the graphic.
 "
-" Contents:
-" - s:text_botright()
-" - s:text_botleft(width)
-" - s:text_topright(height)
-" - s:text_topleft(width,height)
-" - vimio#hintline#new(...)
 
 " hintline
 "

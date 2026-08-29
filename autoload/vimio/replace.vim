@@ -4,11 +4,6 @@
 " Includes clipboard-based character paste, visual area replacement, and 
 " character replacement under the cursor.
 "
-" Contents:
-" - vimio#replace#paste_block_clip(...)
-" - vimio#replace#replace_char_under_cursor_from_clip(direction)
-" - vimio#replace#visual_replace_to_space()
-" - vimio#replace#visual_replace_char()
 
 function! vimio#replace#paste_block_clip(...)
     let opts = get(a:, 1, {})

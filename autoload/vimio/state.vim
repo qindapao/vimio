@@ -4,19 +4,6 @@
 " Used to record cursor position, drawing mode status, popup ID, 
 " and other shared states.
 "
-" Contents:
-" - g:vimio_state_visual_block_popup_types_index
-" - g:vimio_state_draw_line_index
-" - g:vimio_state_cross_style_index
-" - g:vimio_state_switch_lev2_step_index
-" - g:vimio_state_multi_cursors
-" - g:vimio_state_prev_cursor_pos
-" - g:vimio_state_current_cursor_pos
-" - g:vimio_state_paste_preview_cross_mode
-" - g:vimio_state_select_shape_state
-" - vimio#state#draw_line_record_pre_pos()
-" - vimio#state#draw_line_auto_group_record_pre_pos_set()
-" - vimio#state#draw_line_auto_group_record_pre_pos_clear()
 
 
 let g:vimio_state_visual_block_popup_types_index = 1

@@ -4,28 +4,6 @@
 " Includes quick operations such as line type switching, cross strategy 
 " switching, and character copy and paste.
 "
-" Contents:
-" - vimio#ui#visual_block_move(direction)
-" - vimio#ui#visual_block_mouse_move_start()
-" - vimio#ui#visual_block_mouse_move_cancel()
-" - vimio#ui#smart_line_continue_draw()
-" - vimio#ui#smart_line_draw_end()
-" - vimio#ui#smart_line_start_arrow_show_flip()
-" - vimio#ui#smart_line_end_arrow_show_flip()
-" - vimio#ui#smart_line_diagonal_flip()
-" - vimio#ui#smart_line_arrow_flip_start_end()
-" - vimio#ui#smart_line_flip_cross()
-" - vimio#ui#smart_line_cancel()
-" - vimio#ui#switch_cross_style()
-" - vimio#ui#switch_line_style(is_just_show)
-" - vimio#ui#paste_flip_cross_mode()
-" - vimio#ui#switch_line_style_by_char_under_cursor()
-" - vimio#ui#copy_char_under_cursor_to_clip()
-" - vimio#ui#box_suround()
-" - vimio#ui#shapes_change_type()
-" - vimio#ui#shapes_resize_start()
-" - vimio#ui#shapes_resize_move()
-" - vimio#ui#shapes_resize_end()
 
 
 let s:shape_obj = {}

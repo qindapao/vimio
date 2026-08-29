@@ -4,28 +4,6 @@
 " Includes horizontal, vertical, and diagonal drawing functions, eraser 
 " function, and boundary character judgment logic.
 "
-" Contents:
-" - vimio#drawline#init()
-" - vimio#drawline#new(line_definition)
-" - vimio#drawline#reset()
-" - vimio#drawline#start()
-" - vimio#drawline#record_end_point()
-" - vimio#drawline#flip_arrow_start_end()
-" - vimio#drawline#is_start_end_point_same()
-" - vimio#drawline#update_direction_for_arrow_start_end_flip()
-" - vimio#drawline#update_direction()
-" - vimio#drawline#get_corner_char(direction)
-" - vimio#drawline#get_diagonal_corner_char(direction,start_point_class)
-" - vimio#drawline#plan_diagonal_path(start,end,direction)
-" - vimio#drawline#update_preview()
-" - vimio#drawline#draw()
-" - vimio#drawline#start_arrow_show_flip()
-" - vimio#drawline#end_arrow_show_flip()
-" - vimio#drawline#diagonal_flip()
-" - vimio#drawline#cross_flip()
-" - vimio#drawline#end()
-" - vimio#drawline#cancel()
-" - vimio#drawline#continue_draw()
 
 
 let s:direction = {

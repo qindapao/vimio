@@ -4,8 +4,6 @@
 " Develop based on the following code.
 "   https://github.com/nkh/P5-App-Asciio/blob/main/lib/App/Asciio/stripes/editable_box2.pm
 "
-" Contents:
-" - vimio#shapes#box#new(element_definition)
 
 let s:display = 0
 let s:name    = 1

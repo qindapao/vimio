@@ -4,12 +4,6 @@
 " Includes horizontal, vertical, and diagonal drawing functions, eraser 
 " function, and boundary character judgment logic.
 "
-" Contents:
-" - vimio#draw#line_left_right(direction)
-" - vimio#draw#line_eraser(direction,...)
-" - vimio#draw#line_up_down(direction)
-" - vimio#draw#traverse_rectangle()
-" - vimio#draw#draw_slash_line(direction)
 
 " Draw a line and decide on the border characters
 " :TODO: The drawing mode cannot handle tabs. If there are tabs in the text, 

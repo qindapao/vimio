@@ -4,9 +4,6 @@
 " Used to determine whether a character is suitable for use as a crosspoint, 
 " connection point, etc., in a particular context.
 "
-" Contents:
-" - vimio#scene#get_cross_chars(cross_point,all_chars)
-" - vimio#scene#clear_cross_cache()
 
 let s:empty_str_list = ['']
 

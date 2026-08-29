@@ -4,10 +4,6 @@
 " Function that automatically inserts an arrow based on the direction of the 
 " cursor movement.
 "
-" Contents:
-" - vimio#utils#geometry#get_bounds(points)
-" - vimio#utils#geometry#is_rect(matrix,bounds)
-" - vimio#utils#geometry#points_to_matrix(points)
 
 function! vimio#arrows#get_arrow_char(pre_char, direction)
     return get(get(g:vimio_config_arrow_chars_map, a:direction, {}), a:pre_char, '')
