@@ -154,7 +154,7 @@ function! s:get_dir_value(list, offset)
     return 0
 endfunction
 
-function! vimio#config#multi_cross_get_center_char(right, d45, up, d135, left, d225, down, d315, func_map) abort
+function! vimio#config#multi_cross_get_char_key(right, d45, up, d135, left, d225, down, d315) abort
     let char_key = s:get_dir_value(a:left,  s:right_off_set) << s:left_off_set
     let char_key = or(char_key, s:get_dir_value(a:right, s:left_off_set) << s:right_off_set)
     let char_key = or(char_key, s:get_dir_value(a:up,    s:down_off_set) << s:up_off_set)
@@ -163,6 +163,13 @@ function! vimio#config#multi_cross_get_center_char(right, d45, up, d135, left, d
     let char_key = or(char_key, s:get_dir_value(a:d135,  s:d_315_off_set) << s:d_135_off_set)
     let char_key = or(char_key, s:get_dir_value(a:d225,  s:d_45_off_set) << s:d_225_off_set)
     let char_key = or(char_key, s:get_dir_value(a:d315,  s:d_135_off_set) << s:d_315_off_set)
+
+    return char_key
+endfunction
+
+
+function! vimio#config#multi_cross_get_center_char(right, d45, up, d135, left, d225, down, d315, func_map) abort
+    let char_key = vimio#config#multi_cross_get_char_key(a:right, a:d45, a:up, a:d135, a:left, a:d225, a:down, a:d315)
 
     return get(a:func_map, char_key, '')
 endfunction
@@ -2085,6 +2092,48 @@ let s:vimio_config_draw_vimiomono_dot_char_funcs_map = {
     \ s:CrossMakeCharMask(s:none, s:thin, s:thin, s:thin, s:thin, s:thin, s:thin, s:thin) : '',
     \ s:CrossMakeCharMask(s:thin, s:thin, s:thin, s:thin, s:thin, s:thin, s:thin, s:thin) : '',
     \ }
+
+"                                     right   d45     up      d135    left    d225    down    d315
+let g:vimio_config_draw_end_dot_char_funcs_map = [
+            \ {
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:thin, s:none, s:none, s:none) : '╴',
+            \ s:CrossMakeCharMask(s:none, s:none, s:thin, s:none, s:none, s:none, s:none, s:none) : '╵',
+            \ s:CrossMakeCharMask(s:thin, s:none, s:none, s:none, s:none, s:none, s:none, s:none) : '╶',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:none, s:none, s:thin, s:none) : '╷',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:bold, s:none, s:none, s:none) : '╸',
+            \ s:CrossMakeCharMask(s:none, s:none, s:bold, s:none, s:none, s:none, s:none, s:none) : '╹',
+            \ s:CrossMakeCharMask(s:bold, s:none, s:none, s:none, s:none, s:none, s:none, s:none) : '╺',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:none, s:none, s:bold, s:none) : '╻',
+            \ },
+            \ {
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:thin, s:none, s:none, s:none) : '╴',
+            \ s:CrossMakeCharMask(s:none, s:none, s:thin, s:none, s:none, s:none, s:none, s:none) : '╵',
+            \ s:CrossMakeCharMask(s:thin, s:none, s:none, s:none, s:none, s:none, s:none, s:none) : '╶',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:none, s:none, s:thin, s:none) : '╷',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:bold, s:none, s:none, s:none) : '╸',
+            \ s:CrossMakeCharMask(s:none, s:none, s:bold, s:none, s:none, s:none, s:none, s:none) : '╹',
+            \ s:CrossMakeCharMask(s:bold, s:none, s:none, s:none, s:none, s:none, s:none, s:none) : '╺',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:none, s:none, s:bold, s:none) : '╻',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:thin, s:none, s:none, s:none, s:none) : '',
+            \ s:CrossMakeCharMask(s:none, s:thin, s:none, s:none, s:none, s:none, s:none, s:none) : '',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:none, s:thin, s:none, s:none) : '',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:none, s:none, s:none, s:thin) : '',
+            \ },
+            \ {
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:thin, s:none, s:none, s:none) : '',
+            \ s:CrossMakeCharMask(s:none, s:none, s:thin, s:none, s:none, s:none, s:none, s:none) : '',
+            \ s:CrossMakeCharMask(s:thin, s:none, s:none, s:none, s:none, s:none, s:none, s:none) : '',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:none, s:none, s:thin, s:none) : '',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:bold, s:none, s:none, s:none) : '╸',
+            \ s:CrossMakeCharMask(s:none, s:none, s:bold, s:none, s:none, s:none, s:none, s:none) : '╹',
+            \ s:CrossMakeCharMask(s:bold, s:none, s:none, s:none, s:none, s:none, s:none, s:none) : '╺',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:none, s:none, s:bold, s:none) : '╻',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:thin, s:none, s:none, s:none, s:none) : '',
+            \ s:CrossMakeCharMask(s:none, s:thin, s:none, s:none, s:none, s:none, s:none, s:none) : '',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:none, s:thin, s:none, s:none) : '',
+            \ s:CrossMakeCharMask(s:none, s:none, s:none, s:none, s:none, s:none, s:none, s:thin) : '',
+            \ },
+            \ ]
 
 let g:vimio_config_draw_normal_char_funcs_map = extend(deepcopy(s:vimio_config_draw_normal_char_funcs_map_base), s:vimio_config_draw_normal_char_funcs_map_thin)
 call extend(s:vimio_config_draw_vimiomono_char_funcs_map, g:vimio_config_draw_normal_char_funcs_map)

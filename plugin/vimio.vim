@@ -157,6 +157,9 @@ if g:vimio_enable_default_mappings
     " Erase to the up
     nnoremap <silent> <C-M-k> :call vimio#draw#line_eraser('k')<CR>
 
+    " ===============================end dot====================================
+    nnoremap <silent> sso :call vimio#draw#draw_end_dot()<CR>
+
     " =============================draw line style control======================
     " Cycle to change the current linetype
     nnoremap <silent> slc :call vimio#ui#switch_line_style(0)<CR>

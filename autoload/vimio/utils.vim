@@ -901,3 +901,21 @@ function! vimio#utils#get_vimio_libs_path() abort
     return l:vimio_cached_lib_path
 endfunction
 
+function! vimio#utils#get_cursor_neighbors() abort
+    let [row, virtcol] = [line('.'), virtcol('.')]
+    let [chars_array_row, index_row] = vimio#utils#get_line_cells(row, virtcol)
+    let [chars_array_up, index_up] = vimio#utils#get_line_cells(row-1, virtcol)
+    let [chars_array_down, index_down] = vimio#utils#get_line_cells(row+1, virtcol)
+
+    let right = get(chars_array_row, index_row+1, '')
+    let left = (index_row>0)?get(chars_array_row, index_row-1, ''):''
+    let down = get(chars_array_down, index_down, '')
+    let up = get(chars_array_up, index_up, '')
+    let d45 = get(chars_array_up, index_up+1, '')
+    let d135 = (index_up>0)?get(chars_array_up, index_up-1, ''):''
+    let d225 = (index_down>0)?get(chars_array_down, index_down-1, ''):''
+    let d315 = get(chars_array_down, index_down+1, '')
+
+    return [right, d45, up, d135, left, d225, down, d315]
+endfunction
+
