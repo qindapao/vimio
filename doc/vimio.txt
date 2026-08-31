@@ -1009,7 +1009,7 @@ replacement mode, which is what we call free mode.
 
     `sso`               draw end dot (at end of a line)
 
-only for unicode line style.
+    only for unicode line style.
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1023,7 +1023,7 @@ only for unicode line style.
     │  now line type:['─', '│']                                  │
     └────────────────────────────────────────────────────────────┘
 
-becomes to:
+    becomes to:
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1036,6 +1036,10 @@ becomes to:
     ├──┴─────────────────────────────────────────────────────────┤
     │  now line type:['─', '│']                                  │
     └────────────────────────────────────────────────────────────┘
+
+    Note: If this operation is in the middle of a line segment, the effect is to
+        update the cross point based on the current actual theme and
+        cross style.
 
 ==============================================================================
 5. Eraser                                                      *vimio-eraser*
