@@ -381,9 +381,9 @@ endfunction
 function! vimio#draw#draw_end_dot()
     let [right, d45, up, d135, left, d225, down, d315] = vimio#utils#get_cursor_neighbors()
     let center_char_key = vimio#config#multi_cross_get_char_key(right, d45, up, d135, left, d225, down, d315)
-    let center_char = get(
-        g:vimio_config_draw_end_dot_char_funcs_map[g:vimio_vimiomono_super_slash_mode.index],
-        center_char_key,
+    let center_char = get( \
+        g:vimio_config_draw_end_dot_char_funcs_map[g:vimio_vimiomono_super_slash_mode.index], \
+        center_char_key, \
         get(g:vimio_config_delete_char_funcs_map, center_char_key, ''))
 
     if center_char == ''
