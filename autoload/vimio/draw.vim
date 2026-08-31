@@ -385,6 +385,11 @@ function! vimio#draw#draw_end_dot()
 
     if center_char == ''
         return
+    else
+        " Check if there are any cross characters that need to be replaced
+        if has_key(g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index], center_char)
+            let center_char = g:vimio_config_draw_cross_styles[g:vimio_state_cross_style_index][center_char]
+        endif
     endif
 
     let [row, col] = [line('.'), virtcol('.')]
