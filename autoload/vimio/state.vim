@@ -24,8 +24,9 @@ let g:vimio_hintline_enable = 0
 " It is disabled by default and will only activate when the 
 " corresponding font is included.
 " normal => thin unicode line
-" dot    => thin dot unicode line
-let g:vimio_vimiomono_super_slash_mode = {"index": 0, "values": ['off', 'normal', 'dot']}
+" dot    => thin hollow dot unicode line
+" solid  => thin solid dot unicode line
+let g:vimio_vimiomono_super_slash_mode = {"index": 0, "values": ['off', 'normal', 'dot', 'solid']}
 
 " global state: last_pos=[r,c]
 let g:vimio_state_select_shape_state = {
