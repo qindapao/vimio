@@ -181,7 +181,7 @@ function! vimio#replace#replace_char_under_cursor_from_clip(direction)
     let cursor_char = matchstr(l:line, '\%' . col('.') . 'c.')
 
     let reg_content = getreg('+')
-    let cleaned_reg_content = substitute(reg_content, '[\s\r\n]\+', '', 'g')
+    let cleaned_reg_content = substitute(reg_content, '[[:space:]]\+', '', 'g')
 
     if exists("g:vimio_state_replace_char_under_cursor_chars")
         " Check whether the contents of the register have changed
