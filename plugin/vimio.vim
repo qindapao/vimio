@@ -160,6 +160,12 @@ if g:vimio_enable_default_mappings
     " ===============================end dot====================================
     nnoremap <silent> sso :call vimio#draw#draw_end_dot()<CR>
 
+    " ===============================txt tool===================================
+    nnoremap <silent> <C-S-+> :call vimio#txt#change_clipboard_txt_column_width('word', 1)<CR>
+    nnoremap <silent> <C-S-_> :call vimio#txt#change_clipboard_txt_column_width('word', -1)<CR>
+    nnoremap <silent> <C-=> :call vimio#txt#change_clipboard_txt_column_width('char', 1)<CR>
+    nnoremap <silent> <C-_> :call vimio#txt#change_clipboard_txt_column_width('char', -1)<CR>
+
     " =============================draw line style control======================
     " Cycle to change the current linetype
     nnoremap <silent> slc :call vimio#ui#switch_line_style(0)<CR>
