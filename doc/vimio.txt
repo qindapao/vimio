@@ -22,7 +22,8 @@ CONTENTS                                                     *vimio-contents*
     4.8 Smart line draw...............................|vimio-smart-line-draw|
     4.9 Smart shape draw.............................|vimio-smart-shape-draw|
       4.9.1 draw box.............................|vimio-smart-shape-draw-box|
-    4.10 draw end dot.................................... vimio-draw-end-dot
+    4.10 Draw dot............................................|vimio-draw-dot|
+    4.11 Automatically adjust text height and width.......|vimio-adjust-text|
   5. Eraser....................................................|vimio-eraser|
     5.1 Little Eraser...................................|vimio-little-eraser|
     5.2 Big eraser.........................................|vimio-big-eraser|
@@ -314,6 +315,34 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │now line type:['═', '║']                                    │
     └────────────────────────────────────────────────────────────┘
+  5.Special font theme (only for unicode thin line type)
+
+    `ssg`               Change unicode thin line type theme, implement 8-way
+                        cross mode.
+                        Special fonts are required to display the effect.
+                        vimiomono font: https://github.com/qindapao/custom_font
+
+    ┌────────────────────────────────────────────────────────────┐
+    │                        VIM - main.c                        │
+    ├──┬─────────────────────────────────────────────────────────┤
+    │ 1│        █                                                │
+    │ 2│                                                         │
+    │ 3│             ──󸀂───󸀂───󸀂─────────                      │
+    │ 4│            ╱                      ╲                     │
+    │ 5│           ╱                        ╲                    │
+    │ 6│    󸀋─────󸂡─────󸀂───󸀂───󸀂──         ╲                   │
+    │ 7│           ╲                ╲         ╲                  │
+    │ 8│            ╲                ╲         ╲                 │
+    │ 9│             ──────────────────────────          │
+    │10│                     ╲             ╱         ╱           │
+    │11│                      󸀯─󸁗─────󸀂────────󸀂───󸀰            │
+    │12│                         ╲       ╱                       │
+    │13│                          ───󸀂─                        │
+    │14│                                                         │
+    ├──┴─────────────────────────────────────────────────────────┤
+    │                                                            │
+    └────────────────────────────────────────────────────────────┘
+
 4.3.Quickly draw a rectangle                           *vimio-draw-rectangle*
 
   1.You need to enter the visual block mode and select a rectangle
@@ -1005,11 +1034,13 @@ replacement mode, which is what we call free mode.
     │  now line type:['─', '│']                                  │
     └────────────────────────────────────────────────────────────┘
 
-4.10.draw end dot                                        *vimio-draw-end-dot*
+4.10.Draw dot                                                *vimio-draw-dot*
 
-    `sso`               draw end dot (at end of a line)
+    `sso`               Draw dot
 
     only for unicode line style.
+    need installed the vimiomono font and opened the font theme,
+    see：|vimio-change-line-type|
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1040,6 +1071,19 @@ replacement mode, which is what we call free mode.
     Note: If this operation is in the middle of a line segment, the effect is to
         update the cross point based on the current actual theme and
         cross style.
+
+4.11.Automatically adjust text height and width           *vimio-adjust-text*
+
+    `<C-S-+>`               Word splitting increases column width
+    `<C-S-_>`               Word splitting reduces column width
+    `<C-=>`                 Character splitting increases column width
+    `<C-_>`                 Character splitting reduces column width
+
+    Note: First, you need to copy a rectangular text box to the clipboard, and
+        then you can see the preview. When the current effect meets our
+        requirements, just paste the text. How to copy and paste text,
+        See |vimio-copy-cut-paste|.
+
 
 ==============================================================================
 5. Eraser                                                      *vimio-eraser*
@@ -2276,6 +2320,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `slc`            Change line type                               |
 |              `su`             Change line type besed on cursor char          |
 |              `sls`            Show current line type                         |
+|              `ssg`            Switch vimiomono special font mode             |
 |              `sxs`            change cross style                             |
 |              `sxm`            flip clip cross enable                         |
 |              `sxh`            flip hintline on or off                        |
@@ -2296,6 +2341,12 @@ Let’s first talk about all the operation sets, and then give some examples.
 |              `ssr`            shape resize start                             |
 |              `sse`            shape resize end                               |
 |              `sst`            shape change border type                       |
+|              `sso`            Draw dot                                       |
+.------------------------------------------------------------------------------.
+| Text tool    `<C-S-+>`        Word splitting increases column width          |
+|              `<C-S-_>`        Word splitting reduces column width            |
+|              `<C-=>`          Character splitting increases column width     |
+|              `<C-_>`          Character splitting reduces column width       |
 .------------------------------------------------------------------------------.
 | Eraser       `C-M-l/h/j/k`    Little eraser                                  |
 |              `r`              (visual block)global replace,Entering a space  |
@@ -2306,37 +2357,37 @@ Let’s first talk about all the operation sets, and then give some examples.
 .------------------------------------------------------------------------------.
 | Cut          `xx`             (visual block) cut                             |
 .------------------------------------------------------------------------------.
-| Paste        `xc`             (visual block) Replace(The character to be     |       
-|                               replaced needs to be entered.)                 |           
-|              `sp`             Paste the characters from the clip to the      |        
+| Paste        `xc`             (visual block) Replace(The character to be     |
+|                               replaced needs to be entered.)                 |
+|              `sp`             Paste the characters from the clip to the      |
 |                               current cursor                                 |
-|              `sr`             (visual block)Replace the the visible block    |     
-|                               area with the character in the clip            |     
+|              `sr`             (visual block)Replace the the visible block    |
+|                               area with the character in the clip            |
 |                                                                              |
 |              `C-S-Right/Left/Up/Down`                                        |
-|                               Paste a character from the clipboard and move  | 
-|                               the cursor.                                    | 
-|              `C-S-Space`      Paste the shape from the clip                  |     
+|                               Paste a character from the clipboard and move  |
+|                               the cursor.                                    |
+|              `C-S-Space`      Paste the shape from the clip                  |
 .------------------------------------------------------------------------------.
 | Preview      `C-j/k/h/l`      Display preview and move                       |
 |              `so`             Make the preview window always appear          |
 |              `sq`             Turn off preview window always appear.         |
 |              `sv`             Displays the preview window without moving.    |
-|              `st`             Controls whether the preview window ignores    |  
-|                               spaces (transparent or opaque)                 |  
+|              `st`             Controls whether the preview window ignores    |
+|                               spaces (transparent or opaque)                 |
 .------------------------------------------------------------------------------.
 | Shape template                                                               |
 |                                                                              |
 |             `sg`              Switch the largest category, switch a template |
 |                               file.                                          |
-|             `sf`              Switch lev1 forward                            |       
-|             `sb`              Switch lev1 reverse                            |       
-|             `M-u`                                                            |         
-|             `<M-ScrollWheelDown>`                                            |         
-|                               Switch lev2 forwrad                            |       
-|             `M-y`                                                            |         
-|             `<M-ScrollWheelUp>`                                              |         
-|                               Switch lev2 reverse                            |       
+|             `sf`              Switch lev1 forward                            |
+|             `sb`              Switch lev1 reverse                            |
+|             `M-u`                                                            |
+|             `<M-ScrollWheelDown>`                                            |
+|                               Switch lev2 forwrad                            |
+|             `M-y`                                                            |
+|             `<M-ScrollWheelUp>`                                              |
+|                               Switch lev2 reverse                            |
 |             `M-t`             Displays the currently selected text graphic,  |
 |                               If the contents of the clipboard are           |
 |                               contaminated by something else, this operation |
@@ -2347,31 +2398,31 @@ Let’s first talk about all the operation sets, and then give some examples.
 |             `sss`             Search for a template by entering a keyword    |
 |                               within the template set.                       |
 .------------------------------------------------------------------------------.
-| Cursor highlight marking                                                     |  
+| Cursor highlight marking                                                     |
 |             `C-S-N`           Highlight the character under the cursor       |
 |                               without moving                                 |
 |             `C-S-J/K/L/H`     Highlight the character under the cursor and   |
-|                               move direction                                 |            
+|                               move direction                                 |
 |             `si`              Start free highlighting in normal mode, After  |
 |                               entering this mode, all characters encountered |
-|                               on the moving path will be highlighted         |                     
-|             `si`(v block)     Same as above, but this is in visual mode      |       
-|             `sj`              Clear the highlights we marked in normal mode. |       
+|                               on the moving path will be highlighted         |
+|             `si`(v block)     Same as above, but this is in visual mode      |
+|             `sj`              Clear the highlights we marked in normal mode. |
 |             `sj`(v block)     Clear the highlights we marked in visual block |
 |                               mode                                           |
 |             `C-S-C`           Clear all highlights on the screen and disable |
-|                               all highlightin                                |           
+|                               all highlightin                                |
 |             `sd`              just disable all highlighting(Existing         |
 |                               highlights will be retained), It is the reverse|
 |                               operation of `si`                              |
 |             `C-x`             Copy all highlighted characters to a rectangle,|
-|                               then save it to the clipboard                  |            
+|                               then save it to the clipboard                  |
 |             `C-S-X`           Cut all highlighted characters to a rectangle, |
-|                               then save it to the clipboard                  |            
+|                               then save it to the clipboard                  |
 |             `C-S-G`           Replace all highlighted characters with        |
-|                               character in the clip                          |                    
+|                               character in the clip                          |
 .------------------------------------------------------------------------------.
-| Algorithm-based smart selection                                              |  
+| Algorithm-based smart selection                                              |
 |             `<leader>s4`      solid select 4 direction                       |
 |             `<leader>s8`      solid select 8 direction                       |
 |             `<leader>b4`      (Minimum Cycle)border select 4 direction       |
