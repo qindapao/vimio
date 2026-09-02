@@ -17,13 +17,12 @@ CONTENTS                                                     *vimio-contents*
     4.3 Quickly draw a rectangle.......................|vimio-draw-rectangle|
     4.4 Automatically handle line crossings.....................|vimio-cross|
     4.5 Change the style of the cross points..............|vimio-cross-style|
-    4.6 Draw diagonal line.........................|vimio-draw-diagonal-line|
-    4.7 Automatically add arrows..........................|vimio-auto-arrows|
-    4.8 Smart line draw...............................|vimio-smart-line-draw|
-    4.9 Smart shape draw.............................|vimio-smart-shape-draw|
-      4.9.1 draw box.............................|vimio-smart-shape-draw-box|
-    4.10 Draw dot............................................|vimio-draw-dot|
-    4.11 Automatically adjust text height and width.......|vimio-adjust-text|
+    4.6 Automatically add arrows..........................|vimio-auto-arrows|
+    4.7 Smart line draw...............................|vimio-smart-line-draw|
+    4.8 Smart shape draw.............................|vimio-smart-shape-draw|
+      4.8.1 draw box.............................|vimio-smart-shape-draw-box|
+    4.9 Draw dot.............................................|vimio-draw-dot|
+    4.10 Automatically adjust text height and width.......|vimio-adjust-text|
   5. Eraser....................................................|vimio-eraser|
     5.1 Little Eraser...................................|vimio-little-eraser|
     5.2 Big eraser.........................................|vimio-big-eraser|
@@ -260,7 +259,7 @@ replacement mode, which is what we call free mode.
     │ 7│    '---------'                                          │
     └──┴─────────────────────────────────────────────────────────┘
 
-4.2.Change the type of straight line                 *vimio-change-line-type*
+4.2. Change the type of straight line                *vimio-change-line-type*
 
   1. `scl`              Change line type
      (switch line)
@@ -461,7 +460,7 @@ replacement mode, which is what we call free mode.
     style index. From the above diagram, you can see that the character at the 
     crossing point has changed. The main purpose of this is that for certain 
     graphics, such as circuit diagrams, when a crossing occurs, you may want to
-    use a symbol like '(' to represent the crossing point.
+    use a symbol like `)` to represent the crossing point.
 
     `sxm`               flip clip cross enable
     
@@ -491,7 +490,8 @@ replacement mode, which is what we call free mode.
     │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
     └───────────────────────────────────────────────────────────────────┘
 
-    1. First, we highlight the rectangular box.
+    1. First, we highlight the rectangular box. For the method of highlighting
+        , please see: |vimio-cursor|.
 
     ┌───────────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                               │
@@ -578,14 +578,9 @@ replacement mode, which is what we call free mode.
         whereas in non-cross mode, it is the original graphic that has been cut
         out, with no additional processing.
 
-    3. The copy operation is also a similar case.. Press `C-X`.
+    3. The copy operation is also a similar case. Press `C-X`.
 
-
-4.6.Draw a diagonal line                           *vimio-draw-diagonal-line*
-
-    `M-S-U/N/I/M`       Draw diagonal lines in four directions
-
-4.7.Automatically add arrows                              *vimio-auto-arrows*
+4.6.Automatically add arrows                              *vimio-auto-arrows*
 
     `sa`                auto add arrows
     (add arrow)
@@ -632,7 +627,7 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-4.8.Smart line draw                                   *vimio-smart-line-draw*
+4.7.Smart line draw                                   *vimio-smart-line-draw*
     `sms`               smart line draw start
     (smart line start)
     `sme`               smart line draw end
@@ -793,6 +788,7 @@ replacement mode, which is what we call free mode.
 
  10.The function of `smr` is to adjust the dimensions of the existing lines.
     1). First, we need to highlight and select the existing lines.
+        For highlighting selection, see: |vimio-cursor|.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -886,9 +882,9 @@ replacement mode, which is what we call free mode.
     once. Because some repetitive operations can be recorded as macros and
     saved to registers for quick execution.
 
-4.9.Smart line draw                                  *vimio-smart-shape-draw*
+4.8.Smart line draw                                  *vimio-smart-shape-draw*
 
-4.9.1.  draw box                                 *vimio-smart-shape-draw-box*
+4.8.1.  draw box                                 *vimio-smart-shape-draw-box*
 
     `ssb`               draw a box (draw box)
     `ssr`               shape resize start
@@ -1034,7 +1030,7 @@ replacement mode, which is what we call free mode.
     │  now line type:['─', '│']                                  │
     └────────────────────────────────────────────────────────────┘
 
-4.10.Draw dot                                                *vimio-draw-dot*
+4.9. Draw dot                                                *vimio-draw-dot*
 
     `sso`               Draw dot
 
@@ -1072,7 +1068,7 @@ replacement mode, which is what we call free mode.
         update the cross point based on the current actual theme and
         cross style.
 
-4.11.Automatically adjust text height and width           *vimio-adjust-text*
+4.10.Automatically adjust text height and width           *vimio-adjust-text*
 
     `<C-S-+>`               Word splitting increases column width
     `<C-S-_>`               Word splitting reduces column width
@@ -1230,13 +1226,18 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
+
+    Note: If there are multiple characters in the clipboard, the effect of the
+    above operation is to print these characters in a loop, which isequivalent
+    to a typewriter. This can be used to create vertically oriented text.
+
     
     `C-S-Space`         Paste the shape from the clip, There are two modes,
                         depending on the current preview mode. 
 
                         See |vimio-shape-preview|.
 
-    (1) When the preview mode is set to 'overlay', the paste will penetrate
+    (1) When the preview mode is set to `overlay`, the paste will penetrate
         the graphic.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1274,7 +1275,7 @@ of deletion.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     
-    (2) When the preview mode is 'cover', paste to cover the graphic.
+    (2) When the preview mode is `cover`, paste to cover the graphic.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1425,7 +1426,7 @@ and preview the effect after the text is inserted.
 8.1. Default shape template                             *vimio-default-shape*
 
 Shape templates are some predefined text graphics templates defined in the 
-draw_shaps directory that can be directly inserted into the buffer.
+`draw_shaps` directory that can be directly inserted into the buffer.
 
 A text template can have up to 3 levels of dimensions.
 
@@ -1611,8 +1612,8 @@ A text template can have up to 3 levels of dimensions.
     
 8.2. User-defined shape templates                  *vimio-user-defined-shape*
 
-Users can define their own shape templates in the draw_shaps directory. Here is
-an example:
+Users can define their own shape templates in the `draw_shaps` directory. Here
+is an example:
 
     1. The file name is `animal.vim`, Save the following content in the file.
     
@@ -2314,7 +2315,6 @@ Let’s first talk about all the operation sets, and then give some examples.
 | FreeInput    `S-R`            global replacement mode                        |
 .------------------------------------------------------------------------------.
 | Draw         `M-l/j/h/k`      draw straight lines                            |
-|              `M-S-U/N/I/M`    Draw diagonal lines                            |
 |              `sa`             auto add arrows                                |
 |              `sw`             (visual block)Draw rectangle                   |
 |              `slc`            Change line type                               |

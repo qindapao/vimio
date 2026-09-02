@@ -1,49 +1,47 @@
-*vimio.zh-cn.txt*
-                Vimio — ASCII 与 Unicode 字符画绘制插件
+*vimio.cnx*     Vimio — ASCII 与 Unicode 字符画绘制插件
                 版本号 1.0.2
 
 ==============================================================================
 目录                                                         *vimio-contents*
 
   0. 灵感来源和创作背景...................................|vimio-inspiration|
-  1. Overview................................................|vimio-overview|
-  2. Installation and Setup...................................|vimio-install|
-  3. First Steps and Examples..............................|vimio-quickstart|
-    3.1 Virtual text editing mode........................|vimio-virtual-text|
-    3.2 Highlight current col...........................|vimio-highlight-col|
-    3.3 Free input.........................................|vimio-free-input|
-  4. Draw line and rectangle.....................................|vimio-draw|
-    4.1 Draw straight line.........................|vimio-draw-straight-line|
-    4.2 Change the type of straight line.............|vimio-change-line-type|
-    4.3 Quickly draw a rectangle.......................|vimio-draw-rectangle|
-    4.4 Automatically handle line crossings.....................|vimio-cross|
-    4.5 Change the style of the cross points..............|vimio-cross-style|
-    4.6 Draw diagonal line.........................|vimio-draw-diagonal-line|
-    4.7 Automatically add arrows..........................|vimio-auto-arrows|
-    4.8 Smart line draw...............................|vimio-smart-line-draw|
-    4.9 Smart shape draw.............................|vimio-smart-shape-draw|
-      4.9.1 draw box.............................|vimio-smart-shape-draw-box|
-    4.10 Draw dot............................................|vimio-draw-dot|
-    4.11 Automatically adjust text height and width.......|vimio-adjust-text|
-  5. Eraser....................................................|vimio-eraser|
-    5.1 Little Eraser...................................|vimio-little-eraser|
-    5.2 Big eraser.........................................|vimio-big-eraser|
-  6. Copy and Cut and Paste............................|vimio-copy-cut-paste|
-    6.1 Copy.....................................................|vimio-copy|
-    6.2 Cut.......................................................|vimio-cut|
-    6.3 Paste...................................................|vimio-paste|
-  7. Shape Preview......................................|vimio-shape-preview|
-  8. shape template....................................|vimio-shape-template|
-    8.1 Default shape template..........................|vimio-default-shape|
-    8.2 User-defined shape templates...............|vimio-user-defined-shape|
-  9. Hint line...............................................|vimio-hintline|
- 10. Cursor marking and character operation....................|vimio-cursor|
- 11. Algorithm-based smart selection..................|vimio-smart-selection|
- 12. Summary of all operations................................|vimio-summary| 
- 13. CJK supports.................................................|vimio-cjk|
- 14. Configuration Options.....................................|vimio-config|
- 15. Troubleshooting & FAQ........................................|vimio-faq|
- 16. License & Credits........................................|vimio-license|
+  1. 概览....................................................|vimio-overview|
+  2. 安装和配置...............................................|vimio-install|
+  3. 第一步和示例..........................................|vimio-quickstart|
+    3.1 虚拟文本编辑模式.................................|vimio-virtual-text|
+    3.2 突出显示当前列..................................|vimio-highlight-col|
+    3.3 自由输入...........................................|vimio-free-input|
+  4. 画直线和矩形................................................|vimio-draw|
+    4.1 画直线.....................................|vimio-draw-straight-line|
+    4.2 更改直线类型.................................|vimio-change-line-type|
+    4.3 快速画一个矩形.................................|vimio-draw-rectangle|
+    4.4 自动处理线路交叉........................................|vimio-cross|
+    4.5 更改交叉点的样式..................................|vimio-cross-style|
+    4.6 自动添加箭头......................................|vimio-auto-arrows|
+    4.7 智能线条绘制..................................|vimio-smart-line-draw|
+    4.8 智能形状绘制.................................|vimio-smart-shape-draw|
+      4.8.1 画盒子...............................|vimio-smart-shape-draw-box|
+    4.9 画点.................................................|vimio-draw-dot|
+    4.10 自动调整文本高度和宽度...........................|vimio-adjust-text|
+  5. 橡皮擦....................................................|vimio-eraser|
+    5.1 小橡皮擦........................................|vimio-little-eraser|
+    5.2 大橡皮擦...........................................|vimio-big-eraser|
+  6. 复制、剪切和粘贴..................................|vimio-copy-cut-paste|
+    6.1 复制.....................................................|vimio-copy|
+    6.2 剪切......................................................|vimio-cut|
+    6.3 粘贴....................................................|vimio-paste|
+  7. 形状预览...........................................|vimio-shape-preview|
+  8. 形状模板..........................................|vimio-shape-template|
+    8.1 默认形状模板....................................|vimio-default-shape|
+    8.2 用户自定义形状模板.........................|vimio-user-defined-shape|
+  9. 形状对齐提示线...... ...................................|vimio-hintline|
+ 10. 光标高亮标记和字符操作....................................|vimio-cursor|
+ 11. 基于树图算法的智能选择...........................|vimio-smart-selection|
+ 12. 所有操作的总结...........................................|vimio-summary|
+ 13. 中日韩语言对齐支持...........................................|vimio-cjk|
+ 14. 配置选项..................................................|vimio-config|
+ 15. 故障排除与常见问题...........................................|vimio-faq|
+ 16. 许可与鸣谢...............................................|vimio-license|
 
 ==============================================================================
 0. 灵感来源和创作背景                                     *vimio-inspiration*
@@ -55,71 +53,62 @@
                    \_/    |_| |_| |_| |_| |_|  \___/
 
 
-Vimio draws its inspiration from and pays homage to Asciio 
-(https://github.com/nkh/P5-App-Asciio), Nadim Khemir’s object-oriented 
-ASCII/Unicode diagramming suite in Perl 5 that has been evolving for over twenty 
-years. Asciio offers a full GUI/TUI experience with shape grouping, automatic 
-routing, advanced connectors, and a wide range of additional features, all 
-accessible via keyboard-only workflows.
+Vimio 的灵感来自并致敬于 Asciio (https://github.com/nkh/P5-App-Asciio)，这是
+Nadim Khemir 开发的基于 Perl 5 的面向对象 ASCII/Unicode 图表绘制套件，已经发展
+了二十多年。Asciio 提供完整的 GUI/TUI 体验，具有形状分组、自动路由、高级连接器
+以及广泛的附加功能，所有功能均可通过仅使用键盘的工作流程来使用。
 
-Vimio, by contrast, is purely text-based—there is no object model, no grouping,
-and no metadata. Everything you draw is just characters in a Vim buffer. It’s 
-designed to be lightweight, keyboard-driven, and seamlessly integrated into the
-editing workflow. While it doesn’t aim to replicate Asciio’s full feature set,
-it brings a focused, minimal approach to diagramming directly within Vim. For 
-more complex and structured diagrams, Asciio is the best choice.
+相比之下，Vimio 完全基于文本——没有对象模型，没有分组，也没有元数据。你绘制的所
+有内容只是 Vim 缓冲区中的字符。它的设计是轻量级的、以键盘为驱动，并且可以无缝
+集成到编辑工作流程中。虽然它不打算复制 Asciio 的完整功能集，但它为在 Vim 中直
+接绘制图表提供了一种专注且简约的方法。对于更复杂和结构化的图表，Asciio 是最佳
+选择。
 
-I collaborated with Nadim on Asciio’s later development and drew heavily from 
-its design philosophy when building Vimio. Asciio is a remarkable piece of 
-engineering in the realm of text-based diagramming, and for anyone interested 
-in ASCII/Unicode graphics, it offers a wealth of ideas and techniques worth 
-exploring.
+我与 Nadim 合作开发了 Asciio 的后期版本，并在构建 Vimio 时大量借鉴了其设计理念
+。Asciio 在基于文本的图表绘制领域是一项了不起的工程，对于任何对 ASCII/Unicode
+图形感兴趣的人来说，它提供了丰富的值得探索的想法和技术。
 
 ==============================================================================
-1. Overview                                                  *vimio-overview*
+1. 概览                                                      *vimio-overview*
 
-Vimio is a lightweight Vim plugin for drawing text-based diagrams—such as
-flowcharts, architecture sketches, and layout mockups—using only ASCII and
-Unicode characters, directly in your editor.
+Vimio 是一个轻量级的 Vim 插件，用于绘制基于文本的图表——例如流程图、架构草图和
+布局模型——使用的仅是 ASCII 和 Unicode 字符，直接在你的编辑器中进行编辑。
 
-Key features include:
+主要功能包括：
 
-  • Virtual text mode: draw anywhere, even beyond line ends  
-  • Line tools: horizontal, vertical, diagonal, with smart joins and automatic
-                cross-point characters  
-  • Box-drawing: instant rectangles, adaptive corners, auto arrows  
-  • Erasers: cleanly remove characters, including wide glyphs  
-  • Clipboard: copy/cut/paste shapes or characters with precision  
-  • Shape templates: ASCII art, banners, LEDs, and user-defined sets  
-  • Live preview: floating overlay follows your cursor  
-  • Highlight marking: select irregular shapes for fine-grained edits  
-  • CJK support: draw with Chinese, Japanese, and Korean characters  
+  • 虚拟文本模式：可以在任何地方绘制，甚至超出行尾
+  • 线条工具：水平、垂直、斜线，带智能连接和自动交点字符
+  • 绘制方框：即时矩形、自适应拐角、自动箭头
+  • 橡皮擦：干净地擦除字符，包括宽字形
+  • 剪贴板：精确复制/剪切/粘贴形状或字符
+  • 形状模板：ASCII 艺术、横幅、LED和用户自定义集合
+  • 实时预览：浮动覆盖层跟随你的光标
+  • 高亮标记：选择不规则形状进行细粒度编辑
+  • CJK 支持：使用中文、日文和韩文字符绘制
 
 
 ==============================================================================
-2. Installation and Setup                                     *vimio-install*
+2. 安装和配置                                                 *vimio-install*
 
-Requirements:
+要求：
 
-• Vim 8.2+ compiled with:
-  • `+popupwin` (for popup window support)
-  • `+mouse` (for mouse interaction, optional)
-  • `+clipboard` (for system clipboard integration)
+• Vim 8.2+ 编译于：
+  • `+popupwin` (用于弹出窗口支持)
+  • `+mouse` (用于鼠标交互，可选)
+  • `+clipboard` (用于系统剪贴板集成)
 
-• Clipboard support on Linux:
-  • Install a GUI-enabled Vim build such as `vim-gtk3`:
+• 在 Linux 上的剪贴板支持：
+  • 安装一个带有图形界面的 Vim 版本，例如 `vim-gtk3`：
     >
     sudo apt install vim-gtk3
     <
 
-• A GUI version of Vim is recommended (e.g. gVim)  
-  • Neovim is not supported, as Vimio relies on Vim 8's `popup_*()` API, which
-    Neovim does not implement. Maybe adapted in the future.  
-  • Terminal Vim is partially supported — many features work, including popup
-    windows (with transparency in some terminals), but key mappings may
-    conflict with terminal shortcuts, and rendering could vary depending on
-    terminal emulator. Full support and refinement are planned in future
-    versions.
+• 推荐使用 Vim 的图形界面版本（例如 gVim）
+  • Neovim 不受支持，因为 Vimio 依赖 Vim 8 的 `popup_*()` API，而 Neovim 没有
+    实现该 API。未来可能会进行适配。
+  • 终端 Vim 部分受支持——许多功能可以使用，包括弹出窗口（在某些终端中支持透明
+    ），但键映射可能与终端快捷键冲突，渲染效果可能因终端模拟器而异。完全支持
+    和优化计划将在未来版本中实现。
 
 Manual (“packages”):
 
@@ -130,26 +119,26 @@ vim-plug:
 
     Plug 'qindapao/vimio'  
 
-Reload Vim or run:
+重新加载 Vim 或运行:
 
     :packloadall  
 
-Disable default mappings before loading (if desired):
+在加载之前禁用默认映射（如果需要）:
 
-    let g:vimio_enable_default_mappings = 0  
+    `let g:vimio_enable_default_mappings = 0`
 
-All current default mappings are in vimio.vim, modify them in your own vimrc.
+所有当前的默认映射都在 vimio.vim 中，可以在你自己的 vimrc 中修改它们。
 
-Notice: Currently, text containing TAB characters is not supported.
+注意：当前不支持包含制表符的文本。
 
-All operation instructions are based on the default mapping.
+所有操作说明均基于默认映射。
 
 ==============================================================================
-3. First Steps and Examples                                *vimio-quickstart*
+3. 第一步和示例                                            *vimio-quickstart*
 
-3.1. virtual text editing mode                           *vimio-virtual-text*
+3.1. 虚拟文本编辑模式                                    *vimio-virtual-text*
 
-  • `<Leader>vea` Enter virtual text mode so that vim becomes a canvas
+  • `<Leader>vea` 进入虚拟文本模式，使 vim 变成画布
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -157,10 +146,9 @@ All operation instructions are based on the default mapping.
     │ 2│  your text       █                                      │
     │ 3│                                                         │
     └──┴─────────────────────────────────────────────────────────┘
-    Your cursor can be anywhere on each line.
+    你的光标可以位于每一行的任意位置。
 
-  • `<Leader>ven` Exit virtual text mode, Your cursor cannot go beyond the end 
-    of the line.
+  • `<Leader>ven` 退出虚拟文本模式，你的光标不能超出行尾。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -169,27 +157,27 @@ All operation instructions are based on the default mapping.
     │ 3│                                                         │
     └──┴─────────────────────────────────────────────────────────┘
 
-It is strongly recommended to stay in virtual text mode while using vimio.
+强烈建议在使用 vimio 时保持虚拟文本模式。
 
-3.2. Highlight current col                              *vimio-highlight-col*
+3.2. 突出显示当前列                                     *vimio-highlight-col*
 
-  • `<leader>scc`   Its function is to provide a vertical reference line 
-    when we draw. If you don't like it, you can ignore this operation.
+  • `<leader>scc`   它的功能是在我们绘画时提供一条垂直参考线。如果你不喜欢它
+    ，你可以忽略此操作。
 
-  • `<leader>scn`   Unhighlight the current column
+  • `<leader>scn`   取消当前列的高亮显示
 
-3.3. Free input                                           *vimio-free-input*
+3.3. 自由输入                                             *vimio-free-input*
 
-vim natively supports free editing in drawing mode, `S-R` enters this global 
-replacement mode, which is what we call free mode.
+vim 原生支持在绘图模式下自由编辑，`S-R` 进入这一全局替换模式，这就是我们所说的
+自由模式。
 
 ==============================================================================
-4. Draw line and rectangle                                       *vimio-draw*
+4. 画直线和矩形                                                  *vimio-draw*
 
-4.1. Draw straight line                            *vimio-draw-straight-line*
+4.1. 画直线                                        *vimio-draw-straight-line*
 
-  1. Move the cursor to the start of the line.
-  2. `M-l` x 10         draw line to the right.
+  1. 将光标移动到行首。
+  2. `M-l` x 10         向右画线。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -200,7 +188,7 @@ replacement mode, which is what we call free mode.
     │ 5│                                                         │
     │ 6│                                                         │
     └──┴─────────────────────────────────────────────────────────┘
-  3. `M-j` x 5          draw line to the down
+  3. `M-j` x 5          向下画线
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -212,7 +200,7 @@ replacement mode, which is what we call free mode.
     │ 6│              |                                          │
     │ 7│              █                                          │
     └──┴─────────────────────────────────────────────────────────┘
-  4. `M-h` x 10         draw line to the left
+  4. `M-h` x 10         向左画线
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -224,7 +212,7 @@ replacement mode, which is what we call free mode.
     │ 6│              |                                          │
     │ 7│    █---------'                                          │
     └──┴─────────────────────────────────────────────────────────┘
-  5. `M-k` x 5          draw line to the up
+  5. `M-k` x 5          向上画线
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -236,7 +224,7 @@ replacement mode, which is what we call free mode.
     │ 6│    |         |                                          │
     │ 7│    '---------'                                          │
     └──┴─────────────────────────────────────────────────────────┘
-  6. `M-l` x 1          draw line to the right
+  6. `M-l` x 1          向右画线
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -248,7 +236,7 @@ replacement mode, which is what we call free mode.
     │ 6│    |         |                                          │
     │ 7│    '---------'                                          │
     └──┴─────────────────────────────────────────────────────────┘
-  7. In the end, we get a rectangle.
+  7. 最终，我们得到一个矩形。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -261,9 +249,9 @@ replacement mode, which is what we call free mode.
     │ 7│    '---------'                                          │
     └──┴─────────────────────────────────────────────────────────┘
 
-4.2.Change the type of straight line                 *vimio-change-line-type*
+4.2. 更改直线类型                                    *vimio-change-line-type*
 
-  1. `scl`              Change line type
+  1. `scl`              更改线型
      (switch line)
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -279,13 +267,12 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │now line type:['─', '│']                                    │
     └────────────────────────────────────────────────────────────┘
-  2.This time we drew a unicode rectangle instead of an ascii rectangle, and 
-    when you press `slc`, the line type changes in a cycle.
-  3.Switch line type based on the line type of the character under the current 
-    cursor
+  2.这一次我们绘制了一个 Unicode 矩形，而不是 ASCII 矩形，并且当你按 `slc` 时
+    ，线条类型会循环变化。
+  3.根据当前光标下字符的线型切换线型
 
-    `su`                Change line type besed on cursor char
-    (switch under)                    
+    `su`                根据光标字符更改线型
+    (switch under)
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -301,12 +288,11 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │now line type:['-', '|']                                    │
     └────────────────────────────────────────────────────────────┘
-    When you place the cursor on an ASCII drawing character, the ASCII line type
-    is switched back, regardless of the current line type. The same rule applies
-    to other line types.
-  4.Displays the current line type
+    当你将光标放在 ASCII 绘图字符上时，ASCII 线型将被切换回光标下线形的状态，
+    而不管当前的线型是什么。相同的规则也适用于其他线型。
+  4.显示当前线型
 
-    `sls`               show current line type
+    `sls`               显示当前线型
     (switch show)
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -316,12 +302,12 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │now line type:['═', '║']                                    │
     └────────────────────────────────────────────────────────────┘
-  5.Special font theme (only for unicode thin line type)
+  5.特殊字体主题（仅适用于 Unicode 细线类型）
 
-    `ssg`               Change unicode thin line type theme, implement 8-way
-                        cross mode.
-                        Special fonts are required to display the effect.
-                        vimiomono font: https://github.com/qindapao/custom_font
+    `ssg`               更改 Unicode 细线类型主题，实现八方向交叉模式。需要特
+                        殊字体来显示效果。
+                        vimiomono 字体：
+                            https://github.com/qindapao/custom_font
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -344,11 +330,11 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-4.3.Quickly draw a rectangle                           *vimio-draw-rectangle*
+4.3.快速画一个矩形                                     *vimio-draw-rectangle*
 
-  1.You need to enter the visual block mode and select a rectangle
+  1.你需要进入可视块模式并选择一个矩形
 
-    `C-S-V`             Enter the visual selection block mode
+    `C-S-V`             进入可视选择块模式
     (or `C-V`)
 
     ┌────────────────────────────────────────────────────────────┐
@@ -365,10 +351,9 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  2.Press `sw`, Then, based on the current line type, you quickly get a 
-    rectangle.
+  2.按下 `sw`，然后，根据当前的线条类型，你会快速得到一个矩形。
 
-    `sw`                Generate a rectangle based on the visible block
+    `sw`                根据可视块生成一个矩形
     (visual block)
 
     ┌────────────────────────────────────────────────────────────┐
@@ -386,10 +371,9 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     
-    The cursor position may change after the rectangle is generated, which is 
-    normal.
+    矩形生成后光标位置可能会改变，这是正常的。
 
-4.4.Automatically handle line crossings                         *vimio-cross* 
+4.4.自动处理线路交叉                                            *vimio-cross* 
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -406,22 +390,18 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    When we draw, whether it is a line or a rectangle intersection, the 
-    characters at the intersection point are automatically handled without 
-    manual intervention.
+    当我们绘制时，无论是线条还是矩形交点，交点处的字符都会自动处理，无需手动
+    干预。
 
-    The points marked with x in the above diagram are intersection points, 
-    which have been automatically processed.
+    上图中标有 x 的点是交点，已经自动处理。
 
-4.5.Change the style of the cross points.                 *vimio-cross-style*
+4.5.更改交叉点的样式                                      *vimio-cross-style*
 
-    `sxi`               show current cross and preview info
-    `sxa`               Switching crossover algorithm, one used for situations
-                        where multiple line segments are adjacent, and another
-                        used for scenarios where various line types intersect.
+    `sxi`               显示当前交叉和预览信息
+    `sxa`               切换交叉算法，一种用于多个线段相邻的情况，另一种用于
+                        各种线型相交的场景。
                         
-                        If the intersection in the preview does not meet
-                        expectations, switching will allow you to see the effect.                      
+                        如果预览中的交叉不符合预期，切换将允许您看到效果。
     
     ┌───────────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                               │
@@ -440,7 +420,7 @@ replacement mode, which is what we call free mode.
     │[Cross and Preview] mode=on algorithm=multi style=2 preview=overlay│
     └───────────────────────────────────────────────────────────────────┘  
 
-    `sxs`               change cross style
+    `sxs`               更改交叉样式
     (swith x style)
     
     ┌───────────────────────────────────────────────────────────────────┐
@@ -458,25 +438,20 @@ replacement mode, which is what we call free mode.
     │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
     └───────────────────────────────────────────────────────────────────┘  
 
-    When the crossing style is switched, the prompt bar will display the current
-    style index. From the above diagram, you can see that the character at the 
-    crossing point has changed. The main purpose of this is that for certain 
-    graphics, such as circuit diagrams, when a crossing occurs, you may want to
-    use a symbol like '(' to represent the crossing point.
+    当交叉样式被切换时，提示栏将显示当前的样式索引。从上图可以看出，交叉点的字
+    符已经发生了变化。这样做的主要目的是，对于某些图形，例如电路图，当发生交叉
+    时，你可能希望使用像 `)` 这样的符号来表示交叉点。
 
-    `sxm`               flip clip cross enable
+    `sxm`               翻转剪切板的交叉启用
     
-    By default, when pasting from the clipboard, if the content contains 
-    cross characters, it will perform an cross operation with the characters in
-    the bottom editor. This switch can be turned on or off.
+    默认情况下，从剪贴板粘贴时，如果内容包含交叉字符，它将与底部编辑器中的字符
+    执行交叉操作。此开关可以打开或关闭这种默认行为。
 
-    When this mode is activated, when copying or cutting, characters will be
-    re-rendered according to the cross-rendering rule.
+    当此模式被激活时，复制或剪切时，字符将根据交叉渲染规则重新渲染。
 
-    If you only want to copy and cut the original characters, please turn off
-    this mode.
+    如果你只想复制和剪切原始字符，请关闭此模式。
 
-    Let me give you an example to illustrate:
+    让我给你举个例子说明：
     ┌───────────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                               │
     ├──┬────────────────────────────────────────────────────────────────┤
@@ -492,7 +467,7 @@ replacement mode, which is what we call free mode.
     │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
     └───────────────────────────────────────────────────────────────────┘
 
-    1. First, we highlight the rectangular box.
+    1. 首先，我们高亮矩形框。高亮的方法请参见：|vimio-cursor|。
 
     ┌───────────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                               │
@@ -509,8 +484,8 @@ replacement mode, which is what we call free mode.
     │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
     └───────────────────────────────────────────────────────────────────┘
     
-    2. Then we cut the highlighted block. Press `C-S-X`.
-        1.) If in cross mode, we obtain the following graph.
+    2. 然后我们剪切高亮显示的块。按 `C-S-X`。
+        1.) 如果处于交叉模式，我们得到以下图表。
         ┌───────────────────────────────────────────────────────────────────┐
         │                        VIM - main.c                               │
         ├──┬────────────────────────────────────────────────────────────────┤
@@ -525,7 +500,7 @@ replacement mode, which is what we call free mode.
         ├──┴────────────────────────────────────────────────────────────────┤
         │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
         └───────────────────────────────────────────────────────────────────┘
-        2.) If not in cross mode, we obtain the following graph.
+        2.) 如果不是交叉模式，我们得到以下图表。
         ┌───────────────────────────────────────────────────────────────────┐
         │                        VIM - main.c                               │
         ├──┬────────────────────────────────────────────────────────────────┤
@@ -540,11 +515,9 @@ replacement mode, which is what we call free mode.
         ├──┴────────────────────────────────────────────────────────────────┤
         │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
         └───────────────────────────────────────────────────────────────────┘
-        You can see that in cross mode, the gaps left after deletion have been
-        automatically filled.
-        3.) Similarly, in cross mode, the characters in the preview will also
-            be automatically adjusted, whereas in non-cross mode, they remain
-            unchanged.
+        你可以看到，在交叉模式下，删除后留下的空隙已被自动填充。
+        3.) 同样地，在交叉模式下，预览中的字符也会自动调整，而在非交叉模式下，
+            它们保持不变。
         ┌───────────────────────────────────────────────────────────────────┐
         │                        VIM - main.c                               │
         ├──┬────────────────────────────────────────────────────────────────┤
@@ -574,21 +547,15 @@ replacement mode, which is what we call free mode.
         ├──┴────────────────────────────────────────────────────────────────┤
         │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
         └───────────────────────────────────────────────────────────────────┘
-        The shape on the right is the one in the preview. You can see that in
-        cross mode, the graphic in the preview is corrected into a rectangle,
-        whereas in non-cross mode, it is the original graphic that has been cut
-        out, with no additional processing.
+        右边的形状是预览中的形状。你可以看到，在交叉模式下，预览中的图形被修正
+        为一个矩形，而在非交叉模式下，则是原始图形被切割出来，没有额外的处理。
 
-    3. The copy operation is also a similar case.. Press `C-X`.
+    3. 复制操作也是类似的情况. 按 `C-X`。
 
 
-4.6.Draw a diagonal line                           *vimio-draw-diagonal-line*
+4.6.自动添加箭头                                          *vimio-auto-arrows*
 
-    `M-S-U/N/I/M`       Draw diagonal lines in four directions
-
-4.7.Automatically add arrows                              *vimio-auto-arrows*
-
-    `sa`                auto add arrows
+    `sa`                自动添加箭头
     (add arrow)
 
     ┌────────────────────────────────────────────────────────────┐
@@ -603,9 +570,8 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    Our current line type is unicode normal line, then we draw a line from A to 
-    B, and when we reach B, press `sa`, and the arrow automatically appears, 
-    and it is a unicode normal line type arrow.
+    我们当前的线型是 Unicode 细线，然后我们从 A 画一条线到 B，当到达 B 时，
+    按 `sa`，箭头会自动出现，并且它是 Unicode 细线型箭头。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -618,8 +584,8 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    If the current line type is something else, such as a bold line, then the 
-    arrow drawn will be a bold arrow(A bit ugly, may be adjusted later).
+    如果当前的线型是其他类型，例如粗线，那么绘制的箭头将是粗箭头（有点丑，可
+    能以后会调整）。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -633,30 +599,30 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-4.8.Smart line draw                                   *vimio-smart-line-draw*
-    `sms`               smart line draw start
+4.7.智能线条绘制                                      *vimio-smart-line-draw*
+    `sms`               智能线条绘制开始
     (smart line start)
-    `sme`               smart line draw end
+    `sme`               智能线条绘制结束
     (smart line end)
-    `smas`              smart line toggle the on and off of the start arrow
+    `smas`              智能线切换开始箭头的开和关
     (smart line arrow start flip)
-    `smae`              smart line toggle the on and off of the end arrow
+    `smae`              智能线切换结束箭头的开关
     (smart line arrow end flip)
-    `smd`               smart line flip diagonal allow
+    `smd`               智能线切换允许路由中出现斜线
     (smart line diagonal)
-    `smaf`              smart line arrow flip start end
+    `smaf`              智能线箭头翻转开始结束
     (smart line arrow flip)
-    `smx`               smart line flip cross mode
+    `smx`               智能线翻转交叉模式
     (smart line x mode)
-    `smc`               smart line cancel draw
+    `smc`               智能线取消绘制
     (smart line cancel)
-    `smf`               smart line flip direction
+    `smf`               智能线翻转方向
     (smart line flip)
-    `smr`               smart line resize
+    `smr`               智能线调整大小
     (smart line resize)
-    `s.`                execute the macro in register `a` once.
+    `s.`                执行寄存器 `a` 中的宏一次。
 
-  1.At point A, press `sms` to start draw, then move the cursor to point B.
+  1.在点A，按 `sms` 开始绘制，然后将光标移动到点B。
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -670,12 +636,11 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  2.Press `sme`, A straight arrow with a turning point will be drawn on the 
-    canvas.
-  3.If you don't want an arrow at the end position, press `smae` to toggle, and
-    press it again to bring the arrow back.
+  2.按下 `sme`，一条带有转折点的直箭头将被绘制在画布上。
+  3.如果你不想在末尾位置显示箭头，按 `smae` 进行切换，再次按下它即可将箭头显
+    示回来。
     
-    `smas` is used to toggle start arrow show or hide.
+    `smas` 用于切换开始箭头的显示或隐藏。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -688,8 +653,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  4.If you want to allow diagonal at the start and end points, use `smd` to 
-    toggle it.
+  4.如果你想在起点和终点允许对角线，请使用 `smd` 来切换它。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -702,9 +666,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  5.If during the operation you wish to switch the starting point to the
-    endpoint and the endpoint to the starting point, then use `smaf` to make 
-    the switch.
+  5.如果在操作过程中您希望将起点和终点互换，则使用 `smaf` 来进行切换。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -717,10 +679,8 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  6.If non-space characters are encountered in the path of the line drawing, a
-    crossing may occur. A preview of the crossing character will be
-    automatically generated. If you do not want a crossing, use `smx` to toggle
-    it on or off.
+  6.如果在绘制线路的路径上遇到非空格字符，可能会发生交叉。系统会自动生成交叉
+    字符的预览。如果您不希望出现交叉，请使用 `smx` 来切换开关。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -733,10 +693,8 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    The plus sign in the diagram above is the automatically completed cross
-    character.
-  7.If you want to cancel during the drawing process, simply press `smc`, and
-    nothing will be drawn on the canvas.
+    上图中的加号是自动完成的十字字符。
+  7.如果你想在绘图过程中取消，只需按 `smc`，画布上将不会绘制任何内容。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -749,8 +707,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  8.The line type of the smart line is shared with the line type of the regular
-    line. Press `slc` to switch.
+  8.智能线的线型与普通线的线型相同。按 `slc` 进行切换。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -763,8 +720,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │ now line type:['─', '│']                                   │
     └────────────────────────────────────────────────────────────┘
-  9.The function of `smf` is to switch the primary and secondary directions of 
-      the line.
+  9.`smf` 的功能是切换线路的主方向和副方向。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -778,7 +734,7 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    change to:
+    变成:
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -792,8 +748,8 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
- 10.The function of `smr` is to adjust the dimensions of the existing lines.
-    1). First, we need to highlight and select the existing lines.
+ 10.`smr` 的功能是调整现有线条的尺寸。
+    1). 首先，我们需要高亮选择现有的线条。关于高亮选择，参见：|vimio-cursor|。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -821,8 +777,8 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    2). We can press `smr` to readjust the position of the line, and press 
-        `sme` to finish once it reaches the target position.
+    2). 我们可以按 `smr` 来重新调整线路的位置，线路到达目标位置后按 `sme` 
+        完成。
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -837,9 +793,8 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    3). If you only want to manipulate a single line and then position your 
-        cursor at one of its endpoints.
-    4). The situation with more than two lines is also supported.
+    3). 如果你只想操作一条线，然后将光标定位在它的一个端点。
+    4). 也支持多于两条线的情况。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -880,27 +835,26 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    The method for highlighting selection can be done through regular selection,
-    smart selection(See |vimio-smart-selection|), or a combination of both.
+    高亮选择的方法可以通过常规选择、智能选择（参见 |vimio-smart-selection|）或
+    两者的组合来完成。
 
- 11.`s.` It's just a convenient operation to play the macro in the `a` register
-    once. Because some repetitive operations can be recorded as macros and
-    saved to registers for quick execution.
+ 11.`s.` 这只是一个方便的操作，用于在 `a` 寄存器中执行宏一次。因为一些重复操作
+    可以被记录为宏并保存到寄存器中以便快速执行。
 
-4.9.Smart line draw                                  *vimio-smart-shape-draw*
+4.8.智能形状绘制                                     *vimio-smart-shape-draw*
 
-4.9.1.  draw box                                 *vimio-smart-shape-draw-box*
+4.8.1.  画盒子                                   *vimio-smart-shape-draw-box*
 
-    `ssb`               draw a box (draw box)
-    `ssr`               shape resize start
+    `ssb`               画一个框（画框）
+    `ssr`               开始调整形状大小
     (shape switch resize)
-    `sse`               shape resize end
+    `sse`               形状调整大小结束
     (shape switch resize end)
-    `sst`               shape change border type
+    `sst`               形状更改边框类型
 
-  1.Draw an empty box
+  1.画一个空盒子
     
-    Press `ssb` in the blank area.
+    在空白区域按 `ssb`。
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -915,9 +869,9 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-  2.Draw an box with text in it.
+  2.画一个带有文字的盒子。
      
-    First, cursor highlight it(see |vimio-cursor|).
+    首先，光标高亮它（参见 |vimio-cursor|）。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -943,9 +897,8 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    Step two, press `ssb`.You will notice that the text is enclosed
-    within a box border. The type of border is determined by the current
-    ordinary line style.
+    第二步，按下 `ssb`。你会注意到文本被包含在一个边框内。边框的类型由当前的普
+    通线条样式决定。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -958,9 +911,8 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  3.Resize Shapes
-    Cursor highlight the whole shape or just put cursor on it's border.Then
-    press `ssr`. 
+  3.调整形状大小
+    光标高亮整个形状，或者只将光标放在其边框上。然后按 `ssr`。 
        
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -975,8 +927,7 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     
-    As the cursor moves, a preview of the current shape dimensions will be
-    visible.
+    随着光标移动，当前形状尺寸的预览将可见。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -989,8 +940,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    Once you reach the desired size, press `sse` to draw the box with
-    the new dimensions.  
+    一旦达到所需的尺寸，按 `sse` 以用新的尺寸绘制盒子。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1003,11 +953,10 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  4.Change the shape of the border type
+  4.更改边框类型的形状
 
-    Cursor highlight the whole shape or just put cursor on it's border.Then
-    press `sst`. It will switch to the border type of the current
-    normal line style.
+    光标高亮整个形状或只是将光标放在它的边框上。然后按 `sst`。它将切换到当前普
+    通线条样式的边框类型。
    
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1035,13 +984,12 @@ replacement mode, which is what we call free mode.
     │  now line type:['─', '│']                                  │
     └────────────────────────────────────────────────────────────┘
 
-4.10.Draw dot                                                *vimio-draw-dot*
+4.9. 画点                                                    *vimio-draw-dot*
 
-    `sso`               Draw dot
+    `sso`               画点
 
-    only for unicode line style.
-    need installed the vimiomono font and opened the font theme,
-    see：|vimio-change-line-type|
+    仅适用于 Unicode 线条样式。
+    需要安装 vimiomono 字体并打开字体主题，见：|vimio-change-line-type|
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1055,7 +1003,7 @@ replacement mode, which is what we call free mode.
     │  now line type:['─', '│']                                  │
     └────────────────────────────────────────────────────────────┘
 
-    becomes to:
+    变成:
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1069,53 +1017,46 @@ replacement mode, which is what we call free mode.
     │  now line type:['─', '│']                                  │
     └────────────────────────────────────────────────────────────┘
 
-    Note: If this operation is in the middle of a line segment, the effect is to
-        update the cross point based on the current actual theme and
-        cross style.
+    注意：如果此操作位于线段中间，其效果是根据当前实际主题和交叉样式更新交点。
 
-4.11.Automatically adjust text height and width           *vimio-adjust-text*
+4.10.自动调整文本高度和宽度                               *vimio-adjust-text*
 
-    `<C-S-+>`               Word splitting increases column width
-    `<C-S-_>`               Word splitting reduces column width
-    `<C-=>`                 Character splitting increases column width
-    `<C-_>`                 Character splitting reduces column width
+    `<C-S-+>`               拆分单词增加列宽
+    `<C-S-_>`               单词拆分减少列宽
+    `<C-=>`                 字符拆分增加列宽
+    `<C-_>`                 字符拆分减少列宽
 
-    Note: First, you need to copy a rectangular text box to the clipboard, and
-        then you can see the preview. When the current effect meets our
-        requirements, just paste the text. How to copy and paste text,
-        See |vimio-copy-cut-paste|.
+    注意：首先，您需要将一个矩形文本框复制到剪贴板，然后您才能看到预览。当当前
+    效果满足我们的要求时，只需粘贴文本。如何复制和粘贴文本，请参见 
+    |vimio-copy-cut-paste|。
 
 
 ==============================================================================
-5. Eraser                                                      *vimio-eraser*
+5. 橡皮擦                                                      *vimio-eraser*
 
-5.1. Little eraser                                      *vimio-little-eraser*
+5.1. 小橡皮擦                                           *vimio-little-eraser*
 
-    `C-M-l/h/j/k`   The eraser erases any characters it encounters in the path 
-                    in four directions.
-5.2. Big eraser                                            *vimio-big-eraser*
+    `C-M-l/h/j/k`   橡皮可以在四个方向上擦掉路径中遇到的任何字符。
+5.2. 大橡皮擦                                              *vimio-big-eraser*
 
-The big eraser is a native feature of vim. The method is to select a 
-rectangular area in visual block mode, then press `r`, and then enter a space.
-This replaces the entire rectangular block with spaces, achieving the purpose 
-of deletion.
+大橡皮擦是 vim 的一个原生功能。方法是在可视块模式下选择一个矩形区域，然后按
+`r`，然后输入空格。这会将整个矩形块替换为空格，从而达到删除的目的。
 
 ==============================================================================
-6. Copy and Cut and Paste                              *vimio-copy-cut-paste*
-6.1. Copy                                                        *vimio-copy*
+6. 复制、剪切和粘贴                                    *vimio-copy-cut-paste*
+6.1. 复制                                                        *vimio-copy*
 
-    `xy`                copy visual block to clip             
-    `sy`                Copy the character under the cursor to the clip
-6.2. Cut                                                          *vimio-cut*
+    `xy`                将可视块复制到剪贴板
+    `sy`                将光标下的字符复制到剪贴板
+6.2. 剪切                                                         *vimio-cut*
     
-    `xx`                visual block cut
-    The cut content is retained in the system clipboard for later use.
+    `xx`                可视块剪切
+    剪切的内容已保存在系统剪贴板中以备后用。
 
-6.3. Paste                                                      *vimio-paste*
+6.3. 粘贴                                                       *vimio-paste*
     
-    `xc`                visual block Replace(The character to be replaced needs 
-                        to be entered.) 
-    1. First, visual block select the content you want to delete.
+    `xc`                可视化块替换（需要输入要被替换的字符。）
+    1. 首先，用可视化块选择你想要删除的内容。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1129,8 +1070,7 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    2. Then press `xc`, Finally, enter the character you want to replace with. 
-        If it is a space, it is equivalent to deleting.
+    2. 然后按 `xc`，最后，输入你想要替换的字符。如果是空格，则相当于删除。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1144,10 +1084,9 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    The above is the effect of the last input of the asterisk.The deleted 
-    content is saved to the system clipboard for later use.
+    以上是星号最后一次输入的效果。删除的内容已保存到系统剪贴板以备后用。
     
-    `sp`                Paste the characters from the clip to the current cursor      
+    `sp`                将剪切板中的单字符粘贴到当前光标处
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1162,12 +1101,10 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    `sp` is often used together with `sy`, one copies a character, the other 
-    pastes a character, which is very useful in fine ascii art creation.
-    The effect of the above operation is that the '*' becomes a '#'.
+    `sp` 常与 `sy` 一起使用，一个用来复制字符，另一个用来粘贴字符，这在精细的
+    ASCII 艺术创作中非常有用。上述操作的效果是 '*' 变成了 '#'。
 
-    `sr`                Replace the the visible block area with the character 
-                        in the clip
+    `sr`                用剪切板中的字符来替换可见的方块区域
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1182,7 +1119,7 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    After the above operations, we get  
+    经过上述操作，我们得到
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1199,8 +1136,7 @@ of deletion.
     └────────────────────────────────────────────────────────────┘
     
     `C-S-Right/Left/Up/Down`
-                        Paste a character from the clipboard and move the 
-                        cursor.
+                        从剪贴板粘贴一个字符并移动光标。
     
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1216,7 +1152,7 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    After the above operations, we get  
+    经过上述操作后，我们得到  
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1231,14 +1167,15 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
+
+    注意：如果剪切板中有多个字符，那么上述操作的效果是循环打印这些字符，效果
+    相当于是一个打字机，这可以用来制作竖向方向的文本。
     
-    `C-S-Space`         Paste the shape from the clip, There are two modes,
-                        depending on the current preview mode. 
+    `C-S-Space`         从剪切板粘贴形状，有两种模式，取决于当前的预览模式。 
 
                         See |vimio-shape-preview|.
 
-    (1) When the preview mode is set to 'overlay', the paste will penetrate
-        the graphic.
+    (1) 当预览模式设置为 `overlay` 时，粘贴将穿透图形。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1275,7 +1212,7 @@ of deletion.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     
-    (2) When the preview mode is 'cover', paste to cover the graphic.
+    (2) 当预览模式为 `cover`, 粘贴以覆盖图形。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1312,7 +1249,7 @@ of deletion.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     
-    To illustrate the differences between the two preview modes when pasting.
+    为了说明在粘贴时两种预览模式之间的区别。
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1334,14 +1271,12 @@ of deletion.
     └────────────────────────────────────────────────────────────┘
 
 ==============================================================================
-7. Shape Preview                                        *vimio-shape-preview* 
+7. 形状预览                                             *vimio-shape-preview* 
 
-This function is used to preview the content in the current system clipboard, 
-but not to insert it, so that users can know what the next insertion will be 
-and preview the effect after the text is inserted.
+此功能用于预览当前系统剪贴板中的内容，但不会插入它，以便用户可以知道下一次插入
+的内容是什么，并预览文本插入后的效果。
 
-    `C-j/k/h/l`         When using these keys to move, the cursor automatically
-                        follows and displays a preview window.
+    `C-j/k/h/l`         使用这些键进行移动时，光标会自动跟随并显示预览窗口。
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1359,26 +1294,22 @@ and preview the effect after the text is inserted.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    If we copy an ascii circle to the system clipboard, then when you move it 
-    like this, a lighter virtual text will appear. You move the cursor with the 
-    shortcut keys above, and this virtual preview text will follow your cursor.
-    When you move to the right position, you can press `C-S-Space` to paste it.
+    如果我们将一个 ASCII 圆复制到系统剪贴板，那么当你像这样移动它时，会出现一
+    个较淡的虚拟文本。你可以使用上面的快捷键移动光标，这个虚拟预览文本会跟随
+    你的光标。当你移动到正确的位置时，你可以按 `C-S-Space` 来粘贴它。
     
-    `so`                Make the preview window always appear
+    `so`                让预览窗口始终显示
 
-    The effect of this is that virtual text previewing the clipboard contents 
-    always appears. If a mouse is supported, the preview will now also appear 
-    when the mouse moves the cursor, and pressing `C-mouseleft` will immediately
-    insert the shape at the cursor position.
+    其效果是，预览剪贴板内容的虚拟文本将始终出现。如果支持鼠标，当鼠标移动光
+    标时，预览现在也会出现，并且按下 `C-mouseleft` 将立即在光标位置插入该形状。
 
-    `sq`                Turn off preview window always appear.
+    `sq`                关闭预览窗口总是出现。
 
-    `so` and `sq` is the opposite operation
+    `so` 和 `sq` 是相反的操作
 
-    `sv`                Displays the preview window without moving.
+    `sv`                显示预览窗口而不移动。
     
-    `st`                Controls whether the preview window ignores spaces 
-                        (transparent or opaque)
+    `st`                控制预览窗口是否忽略空格（透明或不透明）
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1395,8 +1326,8 @@ and preview the effect after the text is inserted.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    There is already a regular hexagon drawn below the preview position. If it 
-    is an overlay preview, you will see something like the above.
+    在预览位置下方已经绘制了一个正六边形。如果这是叠加预览，你将看到类似上面
+    的东西。
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1414,48 +1345,43 @@ and preview the effect after the text is inserted.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    There is already a regular hexagon drawn below the preview position. If it 
-    is a non-overlap preview, you will see the above situation, just like the
-    underlying graphics are transparent.
+    在预览位置下方已经绘制了一个规则六边形。如果这是非叠加预览，你将会看到上
+    面的情况，就像底层的图形是透明的一样。
     
-    `st` is used to switch between these two preview modes.
+    `st` 用于在这两种预览模式之间切换。
 
 ==============================================================================
-8. shape template                                      *vimio-shape-template*
+8. 形状模板                                            *vimio-shape-template*
 
-8.1. Default shape template                             *vimio-default-shape*
+8.1. 默认形状模板                                       *vimio-default-shape*
 
-Shape templates are some predefined text graphics templates defined in the 
-draw_shaps directory that can be directly inserted into the buffer.
+形状模板是一些预定义的文本图形模板，定义在 `draw_shaps` 目录中，可以直接插入到
+缓冲区中。
 
-A text template can have up to 3 levels of dimensions.
+一个文本模板可以有最多3个层级的维度。
 
-    `sg`                Switch the largest category, switch a template file.     
+    `sg`                切换最大类别，切换一个模板文件。
 
-    `sf`                Switch lev1 forward
-    `sb`                Switch lev1 reverse
+    `sf`                将 lev1 类别向前切换
+    `sb`                将 lev1 类别向后切换
 
     `M-u`
     `<M-ScrollWheelDown>` 
-                        Switch lev2 forwrad
+                        将 lev2 类别向前切换
 
     `M-y`
     `<M-ScrollWheelUp>`   
-                        Switch lev2 reverse
+                        将 lev2 类别向后切换
 
-    `M-t`               Displays the currently selected text graphic,If the 
-                        contents of the clipboard are contaminated by something 
-                        else, this operation is immediately restored.
+    `M-t`               显示当前选定的文本图形，如果剪贴板的内容被其他东西污染
+                        ，此操作将立即恢复。
     
-    `sk`                For some templates, this operation means the update 
-                        step of lev2, which is often used to set the length 
-                        or width of the switching graphics.
+    `sk`                对于某些模板，这个操作意味着 lev2 的更新步进值，通常用
+                        于设置切换图形的长度或宽度。
 
-    `sss`               Search for a template by entering a keyword within the
-                        template set.
+    `sss`               在模板集中输入关键字以搜索模板。
 
-    When using the above operations to display or switch graphics sets, you 
-    can see real-time feedback in the preview window.
+    在使用上述操作显示或切换图形集时，你可以在预览窗口中看到实时反馈。
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1474,12 +1400,10 @@ A text template can have up to 3 levels of dimensions.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    The enumeration template can be filtered using numeric keys. `1xx` indicates
-    filtering level 1, and `2xx` indicates filtering level 2. Here, `xx`
-    represents a two-digit number; if it is a single-digit number, a 0 is added
-    in front.
+    可以使用数字键对枚举模板进行过滤。`1xx` 表示过滤级别 1，`2xx` 表示过滤级
+    别 2。这里，`xx` 表示两位数；如果是个位数，则在前面加 0。
     
-    For example, if you see the following preview image in the preview window.
+    例如，如果你在预览窗口中看到以下预览图像。
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1515,11 +1439,9 @@ A text template can have up to 3 levels of dimensions.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    When you press `231`, the preview character at the cursor will change to
-    `▟`.
+    当你按下 `231` 时，光标处的预览字符将会变为 `▟`。
 
-    When you press `107`, both the cursor preview and the preview template will
-    be updated.
+    当你按下 `107` 时，光标预览和预览模板都会被更新。
     
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1555,11 +1477,9 @@ A text template can have up to 3 levels of dimensions.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    Non-enum templates cannot use this method to switch the second
-    layer; they can only switch the first layer.
+    非枚举模板无法使用此方法切换第二层；它们只能切换第一层。
 
-    `sss` Enter the search keyword in the command line, and after finding the
-    content, use `N` or `n` to navigate through the search results.
+    `sss` 在命令行中输入搜索关键字，找到内容后，使用 `N` 或 `n` 浏览搜索结果。
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1610,12 +1530,11 @@ A text template can have up to 3 levels of dimensions.
     │found (1/2)                                                 │
     └────────────────────────────────────────────────────────────┘
     
-8.2. User-defined shape templates                  *vimio-user-defined-shape*
+8.2. 用户自定义形状模板                            *vimio-user-defined-shape*
 
-Users can define their own shape templates in the draw_shaps directory. Here is
-an example:
+用户可以在 `draw_shaps` 目录中定义自己的形状模板。这里有一个例子：
 
-    1. The file name is `animal.vim`, Save the following content in the file.
+    1. 文件名是 `animal.vim`，将以下内容保存到该文件中。
     
     function! Vimio__DefineSmartDrawShapesanimal(indexes, index)
         let cat =<< EOF
@@ -1654,10 +1573,10 @@ an example:
         return vimio_config_shapes
     endfunction
 
-    2. Please see |vimio-config|.
+    2. 请看 |vimio-config|.
 
 ==============================================================================
-9. Hint line                                                 *vimio-hintline*
+9. 形状对齐提示线                                            *vimio-hintline*
 
 By default, the hint line feature is turned off. During the preview, we can
 only see the graphics.
@@ -1702,7 +1621,7 @@ the graphic during the preview.
 This can help us align the edges of the moving graphic with other graphics.
 
 ==============================================================================
-10. Cursor marking and character operation                     *vimio-cursor*
+10. 光标高亮标记和字符操作                                     *vimio-cursor*
 
 If the characters we want to copy or cut are not standard rectangles, then we 
 cannot operate them all at once using the visual block. At this time, we need to
@@ -1845,7 +1764,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     them again or perform other operations, which can be combined at will.
 
 ==============================================================================
-11. Algorithm-based smart selection                   *vimio-smart-selection*
+11. 基于树图算法的智能选择                            *vimio-smart-selection*
 
 
     `<leader>s4`        solid select 4 direction
@@ -2301,7 +2220,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 
     
 ==============================================================================
-12. Summary of all operations                                 *vimio-summary*
+12. 所有操作的总结                                            *vimio-summary*
 
 .------------------------------------------------------------------------------.
 | Category     operate              Function                                   |
@@ -2315,7 +2234,6 @@ Let’s first talk about all the operation sets, and then give some examples.
 | FreeInput    `S-R`            global replacement mode                        |
 .------------------------------------------------------------------------------.
 | Draw         `M-l/j/h/k`      draw straight lines                            |
-|              `M-S-U/N/I/M`    Draw diagonal lines                            |
 |              `sa`             auto add arrows                                |
 |              `sw`             (visual block)Draw rectangle                   |
 |              `slc`            Change line type                               |
@@ -2460,7 +2378,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 '------------------------------------------------------------------------------'
 
 ==============================================================================
-13. CJK supports                                                  *vimio-cjk* 
+13. 中日韩语言对齐支持                                            *vimio-cjk* 
 
 
     ┌────────────────────────────────────────────────────────────┐
@@ -2484,7 +2402,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     Japanese and Korean text alignment and drawing
 
 ==============================================================================
-14. Configuration Options                                      *vimio-config*
+14. 配置选项                                                   *vimio-config*
 
 
 • To disable default mappings:
@@ -2526,7 +2444,7 @@ compatibility.
 See |vimio-user-defined-shape|.
 
 ==============================================================================
-15. Troubleshooting & FAQ                                         *vimio-faq*
+15. 故障排除与常见问题                                            *vimio-faq*
 
 Q: Misaligned blocks with tabs?  
 A: Convert tabs: `:set expandtab | :retab`.
@@ -2566,12 +2484,12 @@ A: Using Vim's quick movement plugins, such as `vim9-stargate` or
         \ "┶┷┸┹┺┽┾┿╀╁╂╃╄╅╆╇╈╉╊┌┐└┘┛\\)❫⟫▲▼◀▶△▽◁▷┬┴╋┫┓╦╩╫╪╢╡]")<CR>
 
 ==============================================================================
-16. License & Credits                                         *vimio-license*
+16. 许可与鸣谢                                                *vimio-license*
 
 MIT License © 2025 qindapao
 Inspired by Asciio by Nadim Khemir.
 Project repository: https://github.com/nkh/P5-App-Asciio
 
 ==============================================================================
-vim:tw=78:ts=8:ft=help:norl:encoding=utf-8:
+vim:tw=78:ts=8:ft=help:norl:
 
