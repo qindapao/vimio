@@ -3,7 +3,7 @@
 " Entry point for the vimio plugin.
 " Initializes configuration, commands, mappings, and loads shape templates.
 
-let g:vimio_version = '1.0.1'
+let g:vimio_version = '1.0.2'
 
 if exists('g:vimio_loaded')
     finish

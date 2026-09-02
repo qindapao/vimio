@@ -1,5 +1,5 @@
-*vimio.txt*    Vimio — ASCII & Unicode Diagramming Plugin
-               Version 1.0.0
+*vimio.txt*     Vimio — ASCII & Unicode Diagramming Plugin
+                Version 1.0.2
 
 ==============================================================================
 CONTENTS                                                     *vimio-contents*
@@ -47,13 +47,13 @@ CONTENTS                                                     *vimio-contents*
 ==============================================================================
 0. Inspiration and Background                             *vimio-inspiration*
 
-                __     __  _               _ 
-                \ \   / / (_)  _ __ ___   (_)   ___  
-                 \ \ / /  | | | '_ ` _ \  | |  / _ \ 
-                  \ V /   | | | | | | | | | | | (_) |       
-                   \_/    |_| |_| |_| |_| |_|  \___/        
-                                                            
-                                                            
+                __     __  _               _
+                \ \   / / (_)  _ __ ___   (_)   ___
+                 \ \ / /  | | | '_ ` _ \  | |  / _ \
+                  \ V /   | | | | | | | | | | | (_) |
+                   \_/    |_| |_| |_| |_| |_|  \___/
+
+
 Vimio draws its inspiration from and pays homage to Asciio 
 (https://github.com/nkh/P5-App-Asciio), Nadim Khemir’s object-oriented 
 ASCII/Unicode diagramming suite in Perl 5 that has been evolving for over twenty 
