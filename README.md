@@ -1,3 +1,6 @@
+
+[English](README.md) | [简体中文](README_CN.md)
+
 # Vimio
 
 Vimio is a lightweight Vim plugin for drawing text-based diagrams—such as flowcharts, architecture sketches, and layout mockups—using only ASCII and Unicode characters, directly in your editor.
@@ -55,15 +58,17 @@ With this plugin, you can draw:
 
 ## Features
 
-- Virtual text mode: draw anywhere, even beyond line ends  
-- Line tools: horizontal, vertical, diagonal, with smart joins and automatic cross-point characters  
-- Box-drawing: instant rectangles, adaptive corners, auto arrows  
-- Erasers: cleanly remove characters, including wide glyphs  
-- Clipboard: copy/cut/paste shapes or characters with precision  
-- Shape templates: ASCII art, banners, LEDs, and user-defined sets  
-- Live preview: floating overlay follows your cursor  
-- Highlight marking: select irregular shapes for fine-grained edits  
-- CJK support: draw with Chinese, Japanese, and Korean characters  
+- Virtual text mode: draw anywhere, even beyond line ends
+- Line tools: horizontal, vertical, diagonal, with smart joins and automatic cross-point characters
+- Box-drawing: instant rectangles, adaptive corners, auto arrows
+- Erasers: cleanly remove characters, including wide glyphs
+- Clipboard: copy/cut/paste shapes or characters with precision
+- Shape templates: ASCII art, banners, LEDs, and user-defined sets
+- Live preview: floating overlay follows your cursor
+- Highlight marking: select irregular shapes for fine-grained edits
+- CJK support: draw with Chinese, Japanese, and Korean characters
+- Support special characters in the custom font [vimiomono](https://github.com/qindapao/custom_font) to draw more beautiful charts
+
 
 ---
 
@@ -82,8 +87,8 @@ With this plugin, you can draw:
     sudo apt install vim-gtk3
     ```
 
-- A GUI version of Vim is recommended (e.g. gVim)  
-  ⚠️ **Neovim is not supported**, as Vimio relies on Vim 8's `popup_*()` API, which Neovim does not implement. Maybe adapted in the future.  
+- A GUI version of Vim is recommended (e.g. gVim)
+  ⚠️ **Neovim is not supported**, as Vimio relies on Vim 8's `popup_*()` API, which Neovim does not implement. Maybe adapted in the future.
   ⚠️ **Terminal Vim is partially supported** — many features work, including popup windows (with transparency in some terminals), but key mappings may conflict with terminal shortcuts, and rendering could vary depending on terminal emulator. Full support and refinement are planned in future versions.
 
 ### Using [vim-plug](https://github.com/junegunn/vim-plug)
@@ -206,8 +211,8 @@ Insert a cat from the shape library:
 
 ## Defining Your Own Shapes
 
-Create a file like `draw_shaps/animal.vim` and define your ASCII art.  
-Register it in `autoload/vimio/shapes.vim`. See `vimio.txt` section 13 for details.
+Create a file like `draw_shaps/animal.vim` and define your ASCII art.
+Register it in `autoload/vimio/shapes.vim`. See `vimio.txt` section 14 for details.
 
 ---
 
@@ -221,8 +226,8 @@ While Vimio doesn’t aim to replicate Asciio’s full feature set, it brings a 
 
 ## Known Limitations
 
-- Currently tested primarily in GUI Vim (e.g. gVim).  
-- Terminal Vim support is experimental and may have rendering issues.  
+- Currently tested primarily in GUI Vim (e.g. gVim).
+- Terminal Vim support is experimental and may have rendering issues.
 - TAB characters are not supported in drawing mode.
 - do not surport Neovim, Maybe adapted in the future.
 
