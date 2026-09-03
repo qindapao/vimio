@@ -37,7 +37,7 @@ CONTENTS                                                     *vimio-contents*
   9. Hint line...............................................|vimio-hintline|
  10. Cursor marking and character operation....................|vimio-cursor|
  11. Algorithm-based smart selection..................|vimio-smart-selection|
- 12. Summary of all operations................................|vimio-summary| 
+ 12. Summary of all operations................................|vimio-summary|
  13. CJK supports.................................................|vimio-cjk|
  14. Configuration Options.....................................|vimio-config|
  15. Troubleshooting & FAQ........................................|vimio-faq|
@@ -53,24 +53,24 @@ CONTENTS                                                     *vimio-contents*
                    \_/    |_| |_| |_| |_| |_|  \___/
 
 
-Vimio draws its inspiration from and pays homage to Asciio 
-(https://github.com/nkh/P5-App-Asciio), Nadim Khemir’s object-oriented 
-ASCII/Unicode diagramming suite in Perl 5 that has been evolving for over twenty 
-years. Asciio offers a full GUI/TUI experience with shape grouping, automatic 
-routing, advanced connectors, and a wide range of additional features, all 
+Vimio draws its inspiration from and pays homage to Asciio
+(https://github.com/nkh/P5-App-Asciio), Nadim Khemir’s object-oriented
+ASCII/Unicode diagramming suite in Perl 5 that has been evolving for over twenty
+years. Asciio offers a full GUI/TUI experience with shape grouping, automatic
+routing, advanced connectors, and a wide range of additional features, all
 accessible via keyboard-only workflows.
 
 Vimio, by contrast, is purely text-based—there is no object model, no grouping,
-and no metadata. Everything you draw is just characters in a Vim buffer. It’s 
+and no metadata. Everything you draw is just characters in a Vim buffer. It’s
 designed to be lightweight, keyboard-driven, and seamlessly integrated into the
 editing workflow. While it doesn’t aim to replicate Asciio’s full feature set,
-it brings a focused, minimal approach to diagramming directly within Vim. For 
+it brings a focused, minimal approach to diagramming directly within Vim. For
 more complex and structured diagrams, Asciio is the best choice.
 
-I collaborated with Nadim on Asciio’s later development and drew heavily from 
-its design philosophy when building Vimio. Asciio is a remarkable piece of 
-engineering in the realm of text-based diagramming, and for anyone interested 
-in ASCII/Unicode graphics, it offers a wealth of ideas and techniques worth 
+I collaborated with Nadim on Asciio’s later development and drew heavily from
+its design philosophy when building Vimio. Asciio is a remarkable piece of
+engineering in the realm of text-based diagramming, and for anyone interested
+in ASCII/Unicode graphics, it offers a wealth of ideas and techniques worth
 exploring.
 
 ==============================================================================
@@ -82,16 +82,16 @@ Unicode characters, directly in your editor.
 
 Key features include:
 
-  • Virtual text mode: draw anywhere, even beyond line ends  
+  • Virtual text mode: draw anywhere, even beyond line ends
   • Line tools: horizontal, vertical, diagonal, with smart joins and automatic
-                cross-point characters  
-  • Box-drawing: instant rectangles, adaptive corners, auto arrows  
-  • Erasers: cleanly remove characters, including wide glyphs  
-  • Clipboard: copy/cut/paste shapes or characters with precision  
-  • Shape templates: ASCII art, banners, LEDs, and user-defined sets  
-  • Live preview: floating overlay follows your cursor  
-  • Highlight marking: select irregular shapes for fine-grained edits  
-  • CJK support: draw with Chinese, Japanese, and Korean characters  
+                cross-point characters
+  • Box-drawing: instant rectangles, adaptive corners, auto arrows
+  • Erasers: cleanly remove characters, including wide glyphs
+  • Clipboard: copy/cut/paste shapes or characters with precision
+  • Shape templates: ASCII art, banners, LEDs, and user-defined sets
+  • Live preview: floating overlay follows your cursor
+  • Highlight marking: select irregular shapes for fine-grained edits
+  • CJK support: draw with Chinese, Japanese, and Korean characters
 
 
 ==============================================================================
@@ -110,9 +110,9 @@ Requirements:
     sudo apt install vim-gtk3
     <
 
-• A GUI version of Vim is recommended (e.g. gVim)  
+• A GUI version of Vim is recommended (e.g. gVim)
   • Neovim is not supported, as Vimio relies on Vim 8's `popup_*()` API, which
-    Neovim does not implement. Maybe adapted in the future.  
+    Neovim does not implement. Maybe adapted in the future.
   • Terminal Vim is partially supported — many features work, including popup
     windows (with transparency in some terminals), but key mappings may
     conflict with terminal shortcuts, and rendering could vary depending on
@@ -121,20 +121,20 @@ Requirements:
 
 Manual (“packages”):
 
-    mkdir -p ~/.vim/pack/vimio/start  
-    cp -r /path/to/vimio ~/.vim/pack/vimio/start  
+    mkdir -p ~/.vim/pack/vimio/start
+    cp -r /path/to/vimio ~/.vim/pack/vimio/start
 
 vim-plug:
 
-    Plug 'qindapao/vimio'  
+    Plug 'qindapao/vimio'
 
 Reload Vim or run:
 
-    :packloadall  
+    :packloadall
 
 Disable default mappings before loading (if desired):
 
-    let g:vimio_enable_default_mappings = 0  
+    let g:vimio_enable_default_mappings = 0
 
 All current default mappings are in vimio.vim, modify them in your own vimrc.
 
@@ -157,7 +157,7 @@ All operation instructions are based on the default mapping.
     └──┴─────────────────────────────────────────────────────────┘
     Your cursor can be anywhere on each line.
 
-  • `<Leader>ven` Exit virtual text mode, Your cursor cannot go beyond the end 
+  • `<Leader>ven` Exit virtual text mode, Your cursor cannot go beyond the end
     of the line.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -171,14 +171,14 @@ It is strongly recommended to stay in virtual text mode while using vimio.
 
 3.2. Highlight current col                              *vimio-highlight-col*
 
-  • `<leader>scc`   Its function is to provide a vertical reference line 
+  • `<leader>scc`   Its function is to provide a vertical reference line
     when we draw. If you don't like it, you can ignore this operation.
 
   • `<leader>scn`   Unhighlight the current column
 
 3.3. Free input                                           *vimio-free-input*
 
-vim natively supports free editing in drawing mode, `S-R` enters this global 
+vim natively supports free editing in drawing mode, `S-R` enters this global
 replacement mode, which is what we call free mode.
 
 ==============================================================================
@@ -277,13 +277,13 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │now line type:['─', '│']                                    │
     └────────────────────────────────────────────────────────────┘
-  2.This time we drew a unicode rectangle instead of an ascii rectangle, and 
+  2.This time we drew a unicode rectangle instead of an ascii rectangle, and
     when you press `slc`, the line type changes in a cycle.
-  3.Switch line type based on the line type of the character under the current 
+  3.Switch line type based on the line type of the character under the current
     cursor
 
     `su`                Change line type besed on cursor char
-    (switch under)                    
+    (switch under)
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -363,7 +363,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  2.Press `sw`, Then, based on the current line type, you quickly get a 
+  2.Press `sw`, Then, based on the current line type, you quickly get a
     rectangle.
 
     `sw`                Generate a rectangle based on the visible block
@@ -383,11 +383,11 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    
-    The cursor position may change after the rectangle is generated, which is 
+
+    The cursor position may change after the rectangle is generated, which is
     normal.
 
-4.4.Automatically handle line crossings                         *vimio-cross* 
+4.4.Automatically handle line crossings                         *vimio-cross*
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -404,11 +404,11 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    When we draw, whether it is a line or a rectangle intersection, the 
-    characters at the intersection point are automatically handled without 
+    When we draw, whether it is a line or a rectangle intersection, the
+    characters at the intersection point are automatically handled without
     manual intervention.
 
-    The points marked with x in the above diagram are intersection points, 
+    The points marked with x in the above diagram are intersection points,
     which have been automatically processed.
 
 4.5.Change the style of the cross points.                 *vimio-cross-style*
@@ -417,10 +417,10 @@ replacement mode, which is what we call free mode.
     `sxa`               Switching crossover algorithm, one used for situations
                         where multiple line segments are adjacent, and another
                         used for scenarios where various line types intersect.
-                        
+
                         If the intersection in the preview does not meet
-                        expectations, switching will allow you to see the effect.                      
-    
+                        expectations, switching will allow you to see the effect.
+
     ┌───────────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                               │
     ├──┬────────────────────────────────────────────────────────────────┤
@@ -436,11 +436,11 @@ replacement mode, which is what we call free mode.
     │10│                       (For cover mode)                         │
     ├──┴────────────────────────────────────────────────────────────────┤
     │[Cross and Preview] mode=on algorithm=multi style=2 preview=overlay│
-    └───────────────────────────────────────────────────────────────────┘  
+    └───────────────────────────────────────────────────────────────────┘
 
     `sxs`               change cross style
     (swith x style)
-    
+
     ┌───────────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                               │
     ├──┬────────────────────────────────────────────────────────────────┤
@@ -454,17 +454,17 @@ replacement mode, which is what we call free mode.
     │ 8│                │                                               │
     ├──┴────────────────────────────────────────────────────────────────┤
     │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
-    └───────────────────────────────────────────────────────────────────┘  
+    └───────────────────────────────────────────────────────────────────┘
 
     When the crossing style is switched, the prompt bar will display the current
-    style index. From the above diagram, you can see that the character at the 
-    crossing point has changed. The main purpose of this is that for certain 
+    style index. From the above diagram, you can see that the character at the
+    crossing point has changed. The main purpose of this is that for certain
     graphics, such as circuit diagrams, when a crossing occurs, you may want to
     use a symbol like `)` to represent the crossing point.
 
     `sxm`               flip clip cross enable
-    
-    By default, when pasting from the clipboard, if the content contains 
+
+    By default, when pasting from the clipboard, if the content contains
     cross characters, it will perform an cross operation with the characters in
     the bottom editor. This switch can be turned on or off.
 
@@ -507,7 +507,7 @@ replacement mode, which is what we call free mode.
     ├──┴────────────────────────────────────────────────────────────────┤
     │[Cross and Preview] mode=on algorithm=multi style=1 preview=overlay│
     └───────────────────────────────────────────────────────────────────┘
-    
+
     2. Then we cut the highlighted block. Press `C-S-X`.
         1.) If in cross mode, we obtain the following graph.
         ┌───────────────────────────────────────────────────────────────────┐
@@ -597,8 +597,8 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    Our current line type is unicode normal line, then we draw a line from A to 
-    B, and when we reach B, press `sa`, and the arrow automatically appears, 
+    Our current line type is unicode normal line, then we draw a line from A to
+    B, and when we reach B, press `sa`, and the arrow automatically appears,
     and it is a unicode normal line type arrow.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -612,7 +612,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    If the current line type is something else, such as a bold line, then the 
+    If the current line type is something else, such as a bold line, then the
     arrow drawn will be a bold arrow(A bit ugly, may be adjusted later).
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -664,11 +664,11 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  2.Press `sme`, A straight arrow with a turning point will be drawn on the 
+  2.Press `sme`, A straight arrow with a turning point will be drawn on the
     canvas.
   3.If you don't want an arrow at the end position, press `smae` to toggle, and
     press it again to bring the arrow back.
-    
+
     `smas` is used to toggle start arrow show or hide.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -682,7 +682,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-  4.If you want to allow diagonal at the start and end points, use `smd` to 
+  4.If you want to allow diagonal at the start and end points, use `smd` to
     toggle it.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -697,7 +697,7 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
   5.If during the operation you wish to switch the starting point to the
-    endpoint and the endpoint to the starting point, then use `smaf` to make 
+    endpoint and the endpoint to the starting point, then use `smaf` to make
     the switch.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -757,7 +757,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │ now line type:['─', '│']                                   │
     └────────────────────────────────────────────────────────────┘
-  9.The function of `smf` is to switch the primary and secondary directions of 
+  9.The function of `smf` is to switch the primary and secondary directions of
       the line.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -816,7 +816,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    2). We can press `smr` to readjust the position of the line, and press 
+    2). We can press `smr` to readjust the position of the line, and press
         `sme` to finish once it reaches the target position.
 
     ┌────────────────────────────────────────────────────────────┐
@@ -832,7 +832,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    3). If you only want to manipulate a single line and then position your 
+    3). If you only want to manipulate a single line and then position your
         cursor at one of its endpoints.
     4). The situation with more than two lines is also supported.
     ┌────────────────────────────────────────────────────────────┐
@@ -894,7 +894,7 @@ replacement mode, which is what we call free mode.
     `sst`               shape change border type
 
   1.Draw an empty box
-    
+
     Press `ssb` in the blank area.
 
     ┌────────────────────────────────────────────────────────────┐
@@ -911,7 +911,7 @@ replacement mode, which is what we call free mode.
     └────────────────────────────────────────────────────────────┘
 
   2.Draw an box with text in it.
-     
+
     First, cursor highlight it(see |vimio-cursor|).
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -955,8 +955,8 @@ replacement mode, which is what we call free mode.
     └────────────────────────────────────────────────────────────┘
   3.Resize Shapes
     Cursor highlight the whole shape or just put cursor on it's border.Then
-    press `ssr`. 
-       
+    press `ssr`.
+
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -969,7 +969,7 @@ replacement mode, which is what we call free mode.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    
+
     As the cursor moves, a preview of the current shape dimensions will be
     visible.
     ┌────────────────────────────────────────────────────────────┐
@@ -985,7 +985,7 @@ replacement mode, which is what we call free mode.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     Once you reach the desired size, press `sse` to draw the box with
-    the new dimensions.  
+    the new dimensions.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1003,7 +1003,7 @@ replacement mode, which is what we call free mode.
     Cursor highlight the whole shape or just put cursor on it's border.Then
     press `sst`. It will switch to the border type of the current
     normal line style.
-   
+
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1086,30 +1086,30 @@ replacement mode, which is what we call free mode.
 
 5.1. Little eraser                                      *vimio-little-eraser*
 
-    `C-M-l/h/j/k`   The eraser erases any characters it encounters in the path 
+    `C-M-l/h/j/k`   The eraser erases any characters it encounters in the path
                     in four directions.
 5.2. Big eraser                                            *vimio-big-eraser*
 
-The big eraser is a native feature of vim. The method is to select a 
+The big eraser is a native feature of vim. The method is to select a
 rectangular area in visual block mode, then press `r`, and then enter a space.
-This replaces the entire rectangular block with spaces, achieving the purpose 
+This replaces the entire rectangular block with spaces, achieving the purpose
 of deletion.
 
 ==============================================================================
 6. Copy and Cut and Paste                              *vimio-copy-cut-paste*
 6.1. Copy                                                        *vimio-copy*
 
-    `xy`                copy visual block to clip             
+    `xy`                copy visual block to clip
     `sy`                Copy the character under the cursor to the clip
 6.2. Cut                                                          *vimio-cut*
-    
+
     `xx`                visual block cut
     The cut content is retained in the system clipboard for later use.
 
 6.3. Paste                                                      *vimio-paste*
-    
-    `xc`                visual block Replace(The character to be replaced needs 
-                        to be entered.) 
+
+    `xc`                visual block Replace(The character to be replaced needs
+                        to be entered.)
     1. First, visual block select the content you want to delete.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1124,7 +1124,7 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    2. Then press `xc`, Finally, enter the character you want to replace with. 
+    2. Then press `xc`, Finally, enter the character you want to replace with.
         If it is a space, it is equivalent to deleting.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1139,10 +1139,10 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    The above is the effect of the last input of the asterisk.The deleted 
+    The above is the effect of the last input of the asterisk.The deleted
     content is saved to the system clipboard for later use.
-    
-    `sp`                Paste the characters from the clip to the current cursor      
+
+    `sp`                Paste the characters from the clip to the current cursor
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1157,11 +1157,11 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    `sp` is often used together with `sy`, one copies a character, the other 
+    `sp` is often used together with `sy`, one copies a character, the other
     pastes a character, which is very useful in fine ascii art creation.
     The effect of the above operation is that the '*' becomes a '#'.
 
-    `sr`                Replace the the visible block area with the character 
+    `sr`                Replace the the visible block area with the character
                         in the clip
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1177,7 +1177,7 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    After the above operations, we get  
+    After the above operations, we get
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1192,11 +1192,11 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    
+
     `C-S-Right/Left/Up/Down`
-                        Paste a character from the clipboard and move the 
+                        Paste a character from the clipboard and move the
                         cursor.
-    
+
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1211,7 +1211,7 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    After the above operations, we get  
+    After the above operations, we get
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1231,9 +1231,9 @@ of deletion.
     above operation is to print these characters in a loop, which isequivalent
     to a typewriter. This can be used to create vertically oriented text.
 
-    
+
     `C-S-Space`         Paste the shape from the clip, There are two modes,
-                        depending on the current preview mode. 
+                        depending on the current preview mode.
 
                         See |vimio-shape-preview|.
 
@@ -1255,7 +1255,7 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────┬───────────────────────────────┘
-                                 │                             
+                                 │
                                  │
                                  v
     ┌────────────────────────────────────────────────────────────┐
@@ -1274,7 +1274,7 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    
+
     (2) When the preview mode is `cover`, paste to cover the graphic.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1292,7 +1292,7 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────┬───────────────────────────────┘
-                                 │                             
+                                 │
                                  │
                                  v
     ┌────────────────────────────────────────────────────────────┐
@@ -1311,7 +1311,7 @@ of deletion.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    
+
     To illustrate the differences between the two preview modes when pasting.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1334,10 +1334,10 @@ of deletion.
     └────────────────────────────────────────────────────────────┘
 
 ==============================================================================
-7. Shape Preview                                        *vimio-shape-preview* 
+7. Shape Preview                                        *vimio-shape-preview*
 
-This function is used to preview the content in the current system clipboard, 
-but not to insert it, so that users can know what the next insertion will be 
+This function is used to preview the content in the current system clipboard,
+but not to insert it, so that users can know what the next insertion will be
 and preview the effect after the text is inserted.
 
     `C-j/k/h/l`         When using these keys to move, the cursor automatically
@@ -1359,15 +1359,15 @@ and preview the effect after the text is inserted.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    If we copy an ascii circle to the system clipboard, then when you move it 
-    like this, a lighter virtual text will appear. You move the cursor with the 
+    If we copy an ascii circle to the system clipboard, then when you move it
+    like this, a lighter virtual text will appear. You move the cursor with the
     shortcut keys above, and this virtual preview text will follow your cursor.
     When you move to the right position, you can press `C-S-Space` to paste it.
-    
+
     `so`                Make the preview window always appear
 
-    The effect of this is that virtual text previewing the clipboard contents 
-    always appears. If a mouse is supported, the preview will now also appear 
+    The effect of this is that virtual text previewing the clipboard contents
+    always appears. If a mouse is supported, the preview will now also appear
     when the mouse moves the cursor, and pressing `C-mouseleft` will immediately
     insert the shape at the cursor position.
 
@@ -1376,8 +1376,8 @@ and preview the effect after the text is inserted.
     `so` and `sq` is the opposite operation
 
     `sv`                Displays the preview window without moving.
-    
-    `st`                Controls whether the preview window ignores spaces 
+
+    `st`                Controls whether the preview window ignores spaces
                         (transparent or opaque)
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1395,7 +1395,7 @@ and preview the effect after the text is inserted.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    There is already a regular hexagon drawn below the preview position. If it 
+    There is already a regular hexagon drawn below the preview position. If it
     is an overlay preview, you will see something like the above.
 
     ┌────────────────────────────────────────────────────────────┐
@@ -1414,10 +1414,10 @@ and preview the effect after the text is inserted.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    There is already a regular hexagon drawn below the preview position. If it 
+    There is already a regular hexagon drawn below the preview position. If it
     is a non-overlap preview, you will see the above situation, just like the
     underlying graphics are transparent.
-    
+
     `st` is used to switch between these two preview modes.
 
 ==============================================================================
@@ -1425,36 +1425,36 @@ and preview the effect after the text is inserted.
 
 8.1. Default shape template                             *vimio-default-shape*
 
-Shape templates are some predefined text graphics templates defined in the 
+Shape templates are some predefined text graphics templates defined in the
 `draw_shaps` directory that can be directly inserted into the buffer.
 
 A text template can have up to 3 levels of dimensions.
 
-    `sg`                Switch the largest category, switch a template file.     
+    `sg`                Switch the largest category, switch a template file.
 
     `sf`                Switch lev1 forward
     `sb`                Switch lev1 reverse
 
     `M-u`
-    `<M-ScrollWheelDown>` 
+    `<M-ScrollWheelDown>`
                         Switch lev2 forwrad
 
     `M-y`
-    `<M-ScrollWheelUp>`   
+    `<M-ScrollWheelUp>`
                         Switch lev2 reverse
 
-    `M-t`               Displays the currently selected text graphic,If the 
-                        contents of the clipboard are contaminated by something 
+    `M-t`               Displays the currently selected text graphic,If the
+                        contents of the clipboard are contaminated by something
                         else, this operation is immediately restored.
-    
-    `sk`                For some templates, this operation means the update 
-                        step of lev2, which is often used to set the length 
+
+    `sk`                For some templates, this operation means the update
+                        step of lev2, which is often used to set the length
                         or width of the switching graphics.
 
     `sss`               Search for a template by entering a keyword within the
                         template set.
 
-    When using the above operations to display or switch graphics sets, you 
+    When using the above operations to display or switch graphics sets, you
     can see real-time feedback in the preview window.
 
     ┌────────────────────────────────────────────────────────────┐
@@ -1478,7 +1478,7 @@ A text template can have up to 3 levels of dimensions.
     filtering level 1, and `2xx` indicates filtering level 2. Here, `xx`
     represents a two-digit number; if it is a single-digit number, a 0 is added
     in front.
-    
+
     For example, if you see the following preview image in the preview window.
 
     ┌────────────────────────────────────────────────────────────┐
@@ -1520,7 +1520,7 @@ A text template can have up to 3 levels of dimensions.
 
     When you press `107`, both the cursor preview and the preview template will
     be updated.
-    
+
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -1609,17 +1609,17 @@ A text template can have up to 3 levels of dimensions.
     ├──┴─────────────────────────────────────────────────────────┤
     │found (1/2)                                                 │
     └────────────────────────────────────────────────────────────┘
-    
+
 8.2. User-defined shape templates                  *vimio-user-defined-shape*
 
 Users can define their own shape templates in the `draw_shaps` directory. Here
 is an example:
 
     1. The file name is `animal.vim`, Save the following content in the file.
-    
+
     function! Vimio__DefineSmartDrawShapesanimal(indexes, index)
         let cat =<< EOF
-       /\_/\ 
+       /\_/\
       ( o.o )
        > ^ <
     EOF
@@ -1630,7 +1630,7 @@ is an example:
     ='|--\
       /   #'-.
       \#|_   _'-. /
-       |/ \_( # |" 
+       |/ \_( # |"
       C/ ,--___/
     EOF
 
@@ -1638,8 +1638,8 @@ is an example:
     0   1
     cat dog
     EOF
-    
-        let vimio_config_shapes = {'set_index': a:index, 
+
+        let vimio_config_shapes = {'set_index': a:index,
             \ 'stencil_set_name': 'animals', 'value': [
             \ {
             \ 'index': a:indexes[0],
@@ -1650,7 +1650,7 @@ is an example:
             \ }
             \ ],
             \ }
-        
+
         return vimio_config_shapes
     endfunction
 
@@ -1704,7 +1704,7 @@ This can help us align the edges of the moving graphic with other graphics.
 ==============================================================================
 10. Cursor marking and character operation                     *vimio-cursor*
 
-If the characters we want to copy or cut are not standard rectangles, then we 
+If the characters we want to copy or cut are not standard rectangles, then we
 cannot operate them all at once using the visual block. At this time, we need to
 use the cursor to highlight and mark the characters we want to operate, and then
 give us the marking results through the highlighted visual feedback, and then
@@ -1719,7 +1719,7 @@ Let’s first talk about all the operation sets, and then give some examples.
                         direction
     `si`                Start free highlighting in normal mode, After entering
                         this mode, all characters encountered on the moving
-                        path will be highlighted 
+                        path will be highlighted
     `si`(v block)       Same as above, but this is in visual mode
     `sj`                Clear the highlights we marked in normal mode.
     `sj`(v block)       Clear the highlights we marked in visual block mode
@@ -1727,16 +1727,16 @@ Let’s first talk about all the operation sets, and then give some examples.
                         highlighting
     `sd`                just disable all highlighting(Existing highlights will
                         be retained), It is the reverse operation of `si`
-    `C-x`               Copy all highlighted characters to a rectangle, then 
+    `C-x`               Copy all highlighted characters to a rectangle, then
                         save it to the clipboard
     `C-S-X`             Cut all highlighted characters to a rectangle, then
                         save it to the clipboard
-    `C-S-G`             Replace all highlighted characters with character in 
+    `C-S-G`             Replace all highlighted characters with character in
                         the clip
 
 
     example.1   `C-S-N` Highlight all the asterisks and cut them out (equivalent
-                to deleting)  
+                to deleting)
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1775,9 +1775,9 @@ Let’s first talk about all the operation sets, and then give some examples.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    
-    example.2   Copy a six-pointed star from the messy graphics below, and 
-                there cannot be other characters inside the six-pointed star. 
+
+    example.2   Copy a six-pointed star from the messy graphics below, and
+                there cannot be other characters inside the six-pointed star.
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1819,7 +1819,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     └───────────────────────────┬────────────────────────────────┘
                                 │
                                 │
-                                │  `C-x` Copy the characters in the highlighted                  
+                                │  `C-x` Copy the characters in the highlighted
                                 │        group, then paste
                                 v
     ┌────────────────────────────────────────────────────────────┐
@@ -1839,7 +1839,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    The other cases are similar, except that the scope and scenario of the 
+    The other cases are similar, except that the scope and scenario of the
     highlighted selection are different. Regardless of whether you cut or copy,
     the highlighted characters are copied to the system clipboard. You can paste
     them again or perform other operations, which can be combined at will.
@@ -1856,20 +1856,20 @@ Let’s first talk about all the operation sets, and then give some examples.
     `<leader>bm8`       (Maximum Cycle)border select 8 direction
     `<leader>l4`        line selection but not penetration in 4 direction
     `<leader>p4`        line selection but penetration in 4 direction
-    `<leader>l8`        line selection but not penetration in 8 direction 
-    `<leader>p8`        line selection but penetration in 8 direction     
-    `<leader>i4`        (Minimum Cycle)border inside select 4 direction 
-    `<leader>im4`       (Maximum Cycle)border inside select 4 direction 
-    `<leader>i8`        (Minimum Cycle)border inside select 8 direction 
-    `<leader>im8`       (Maximum Cycle)border inside select 8 direction 
-    `<leader>a4`        (Minimum Cycle)border and border inside select 4 
-                        direction  
+    `<leader>l8`        line selection but not penetration in 8 direction
+    `<leader>p8`        line selection but penetration in 8 direction
+    `<leader>i4`        (Minimum Cycle)border inside select 4 direction
+    `<leader>im4`       (Maximum Cycle)border inside select 4 direction
+    `<leader>i8`        (Minimum Cycle)border inside select 8 direction
+    `<leader>im8`       (Maximum Cycle)border inside select 8 direction
+    `<leader>a4`        (Minimum Cycle)border and border inside select 4
+                        direction
     `<leader>am4`       (Maximum Cycle)border and border inside select 4
-                        direction  
+                        direction
     `<leader>a8`        (Minimum Cycle)border and border inside select 8
-                        direction  
+                        direction
     `<leader>am8`       (Maximum Cycle)border and border inside select 8
-                        direction  
+                        direction
     `<leader>lba`       box selection all based on penetration lines
     `<leader>lbi`       box selection inside border based on penetration lines
     `<leader>sos`       extract outgoing spokes inside in 4 direction
@@ -1879,11 +1879,11 @@ Let’s first talk about all the operation sets, and then give some examples.
     `<leader>t4`        text and no border select in 4 direction
     `<leader>t8`        text and no border select in 8 direction
 
-    Perhaps there are too many operations above, so let's use an example to 
+    Perhaps there are too many operations above, so let's use an example to
     briefly illustrate. When the smart selection highlights characters, the
     other operations remain the same as before. You can copy the highlighted
     character or cut it to the system clipboard(see: |vimio-cursor|).
-   
+
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -1918,13 +1918,13 @@ Let’s first talk about all the operation sets, and then give some examples.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
- 
+
     We have the mind map above, and now let's see which parts are highlighted
-    when different selection modes are applied. 
+    when different selection modes are applied.
 
     1. `<leader>s4` and `<leader>s8`
-        At point B, you can select this solid block using `<leader>s4`.
-        However, at point C, only `<leader>s8` can be used to select this solid
+        At point `B`, you can select this solid block using `<leader>s4`.
+        However, at point `C`, only `<leader>s8` can be used to select this solid
         block, because diagonal directions need to be considered. The same
         logic applies to all selections regarding the 4 directions and the 8
         directions, so it won't be explained again below.
@@ -1963,7 +1963,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     2. `<leader>b4` It is based on the selection of the smallest cycle border.
-        the final selection effect for point D in the diagram is as follows.
+        the final selection effect for point `D` in the diagram is as follows.
 
        `<leader>b8` No separate explanation will be provided; it is based on
         the consideration of the diagonal loop.
@@ -2000,7 +2000,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    3. `<leader>bm4` The effect of selecting point D in the diagram based on
+    3. `<leader>bm4` The effect of selecting point `D` in the diagram based on
         the maximum cycle.
 
     ┌────────────────────────────────────────────────────────────┐
@@ -2039,8 +2039,8 @@ Let’s first talk about all the operation sets, and then give some examples.
     Notes: The algorithm for finding the largest cycle is the slowest among all
         cycle-finding algorithms, so it may time out and fail to find the
         largest cycle. Optimization is needed. If it is found that finding the
-        largest cycle has failed, consider temporarily disconnecting a 
-        connecting character outside the cycle. For example, point E in the 
+        largest cycle has failed, consider temporarily disconnecting a
+        connecting character outside the cycle. For example, point `E` in the
         diagram above.
     4. `<leader>i4` Select the inside of the border.
 
@@ -2077,7 +2077,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     ├──┴─────────────────────────────────────────────────────────┤
     │                                                            │
     └────────────────────────────────────────────────────────────┘
-    5. `<leader>a4` Both the border and its internal area are selected.   
+    5. `<leader>a4` Both the border and its internal area are selected.
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -2112,8 +2112,8 @@ Let’s first talk about all the operation sets, and then give some examples.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
     6. `<leader>l4` Select a line, and if there is a turning point, do not
-        penetrate it. As shown at point F in the diagram below.
-    
+        penetrate it. As shown at point `F` in the diagram below.
+
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -2149,7 +2149,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     └────────────────────────────────────────────────────────────┘
 
     7. `<leader>p4` Select a line, and if there is a turning point, penetrate
-        it. As shown at point F in the diagram below.
+        it. As shown at point `F` in the diagram below.
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -2190,7 +2190,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     9. `<leader>sos` Select all line segments of the mind map or flowchart's
         divergent lines corresponding to the current point. Similarly,
         the selection effect based on point F is as follows.
-    
+
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
     ├──┬─────────────────────────────────────────────────────────┤
@@ -2227,7 +2227,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     Notes: This feature is currently unstable! The current radial lines cannot
         be within a closed cycle!
   10.  `<leader>t4` Select plain text outside the border or line.
-        
+
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -2263,7 +2263,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
   11. `<leader>r4` Select all related items, including the content within the
-        borders.                                               
+        borders.
 
     ┌────────────────────────────────────────────────────────────┐
     │                        VIM - main.c                        │
@@ -2299,7 +2299,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    
+
 ==============================================================================
 12. Summary of all operations                                 *vimio-summary*
 
@@ -2459,7 +2459,7 @@ Let’s first talk about all the operation sets, and then give some examples.
 '------------------------------------------------------------------------------'
 
 ==============================================================================
-13. CJK supports                                                  *vimio-cjk* 
+13. CJK supports                                                  *vimio-cjk*
 
 
     ┌────────────────────────────────────────────────────────────┐
@@ -2479,7 +2479,7 @@ Let’s first talk about all the operation sets, and then give some examples.
     │                                                            │
     └────────────────────────────────────────────────────────────┘
 
-    As long as there is a correct alignment font, `vimio` can support Chinese, 
+    As long as there is a correct alignment font, `vimio` can support Chinese,
     Japanese and Korean text alignment and drawing
 
 ==============================================================================
@@ -2513,10 +2513,10 @@ Then place your custom template files in the directory you specified
 templates, as they are reserved by the plugin and may cause conflicts:
 
     >
-    basic.vim  
-    figlet.vim  
-    led.vim  
-    animal.vim  
+    basic.vim
+    figlet.vim
+    led.vim
+    animal.vim
     <
 
 Use unique names like `my_animal.vim`, `custom_led.vim`, etc., to ensure
@@ -2527,13 +2527,13 @@ See |vimio-user-defined-shape|.
 ==============================================================================
 15. Troubleshooting & FAQ                                         *vimio-faq*
 
-Q: Misaligned blocks with tabs?  
+Q: Misaligned blocks with tabs?
 A: Convert tabs: `:set expandtab | :retab`.
 
-Q: Missing box glyphs?  
+Q: Missing box glyphs?
 A: Ensure your font supports Unicode drawing.
 
-Q: Key conflicts?  
+Q: Key conflicts?
 A: Disable default mappings, then define your own entry key for drawing mode:
 
     let g:vimio_enable_default_mappings = 0
@@ -2544,22 +2544,23 @@ A: Disable default mappings, then define your own entry key for drawing mode:
           drawing with directional keys. Avoid using <Leader> mappings for
           this, as they are not suitable for continuous input.
 
-Q: How to check the current version of Vimio?  
-A: Use the command:  
+Q: How to check the current version of Vimio?
+A: Use the command:
    >
    :VimioVersion
    <
    It will print the currently installed version (e.g. 1.0.0).
 
 Q: The cursor is moving too slowly; how can I quickly navigate the drawing?
-A: Using Vim's quick movement plugins, such as `vim9-stargate` or 
+A: Using Vim's quick movement plugins, such as `vim9-stargate` or
     `vim-easymotion`.
 
     `vim9-stargate`: https://github.com/monkoose/vim9-stargate
     `vim-easymotion`: https://github.com/easymotion/vim-easymotion
 
     If you are using the `vim9-stargate` plugin, you can set up the following
-    quick jump characters to assist with rapid navigation. 
+    quick jump characters to assist with rapid navigation.
+
     noremap <C-;> <Cmd>call stargate#OKvim("[\\+\\.\\'\\^v<>┼┤├╭╮╯╰┣┳┻┏"
         \ "┗╬╣╠╔╗╝╚╨╧╥╤╟╞╜╛╙╘╖╕╓╒┍┎┑┒┕┖┙┚┝┞┟┠┡┢┥┦┧┨┩┪┭┮┯┰┱┲┵" .
         \ "┶┷┸┹┺┽┾┿╀╁╂╃╄╅╆╇╈╉╊┌┐└┘┛\\)❫⟫▲▼◀▶△▽◁▷┬┴╋┫┓╦╩╫╪╢╡]")<CR>
